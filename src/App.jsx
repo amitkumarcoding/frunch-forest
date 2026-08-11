@@ -1,18 +1,18 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home/Home.jsx";
-import About from "./pages/About/About.jsx";
-import Account from "./pages/Account/Account.jsx";
-import ProductDetails from "./pages/ProductDetails/ProductDetails.jsx";
-import Products from "./pages/Products/Products.jsx";
-import Blog from "./pages/Blog/Blog.jsx";
-import Login from "./pages/Login/Login.jsx";
-import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy.jsx";
-import Register from "./pages/Register/Register.jsx";
-import ReturnRefundPolicy from "./pages/ReturnRefundPolicy/ReturnRefundPolicy.jsx";
-import ShippingPolicy from "./pages/ShippingPolicy/ShippingPolicy.jsx";
-import TermsAndConditions from "./pages/TermsAndConditions/TermsAndConditions.jsx";
-import Testimonials from "./pages/Testimonials/Testimonials.jsx";
-import Admin from "./pages/Admin/Admin.jsx";
+import Home from "./Pages/Home/Home.jsx";
+import About from "./Pages/About/About.jsx";
+import Account from "./Pages/Account/Account.jsx";
+import ProductDetails from "./Pages/ProductDetails/ProductDetails.jsx";
+import Products from "./Pages/Products/Products.jsx";
+import Blog from "./Pages/Blog/Blog.jsx";
+import Login from "./Pages/Login/Login.jsx";
+import PrivacyPolicy from "./Pages/PrivacyPolicy/PrivacyPolicy.jsx";
+import Register from "./Pages/Register/Register.jsx";
+import ReturnRefundPolicy from "./Pages/ReturnRefundPolicy/ReturnRefundPolicy.jsx";
+import ShippingPolicy from "./Pages/ShippingPolicy/ShippingPolicy.jsx";
+import TermsAndConditions from "./Pages/TermsAndConditions/TermsAndConditions.jsx";
+import Testimonials from "./Pages/Testimonials/Testimonials.jsx";
+import Admin from "./Pages/Admin/Admin.jsx";
 
 
 function App() {
