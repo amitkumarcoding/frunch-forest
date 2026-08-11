@@ -1,0 +1,298 @@
+.product-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:22px;
+  }
+  @media (max-width:900px){ .product-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:600px){ .product-grid{ grid-template-columns:1fr; } }
+  .product-card{
+    background:rgba(243,236,224,0.05);
+    border:1px solid rgba(243,236,224,0.14);
+    border-radius:20px;
+    overflow:hidden;
+    transition:transform .35s ease, background .35s ease, border-color .35s ease, box-shadow .35s ease;
+    transform-style:preserve-3d;
+    will-change:transform;
+    cursor:default;
+  }
+  .product-card:hover{
+    background:rgba(243,236,224,0.09);
+    border-color:rgba(201,151,59,0.5);
+    box-shadow:0 26px 44px -22px rgba(0,0,0,0.55);
+  }
+  .product-card.featured{ position:relative; }
+  .product-card.featured::before{
+    content:"";
+    position:absolute; inset:-1px; border-radius:20px; z-index:-1;
+    background:linear-gradient(135deg, var(--gold-1), transparent 30%, transparent 70%, var(--gold-2));
+    opacity:0; transition:opacity .4s ease;
+  }
+  .product-card.featured:hover::before{ opacity:1; }
+  .product-card:hover .card-photo img{ transform:scale(1.06); }
+  .product-card .card-photo{
+    position:relative; aspect-ratio:3/2; overflow:hidden;
+  }
+  .product-card .card-photo img{
+    width:100%; height:100%; object-fit:cover;
+    transition:transform .5s ease;
+  }
+  .product-card .card-photo::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(0deg, rgba(19,42,30,0.9) 0%, rgba(19,42,30,0) 55%);
+  }
+  .product-card .card-body{ padding:14px 20px 16px; }
+  .card-details-btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    margin-top:6px; width:100%;
+    background:var(--forest-dark); color:var(--parchment);
+    padding:8px 18px; border-radius:100px; font-size:0.85rem; font-weight:700;
+    text-decoration:none; letter-spacing:0.02em; cursor:pointer;
+    transition:transform .2s ease, background .2s ease;
+  }
+  .card-details-btn:hover{ transform:translateY(-2px); background:var(--forest-mid); }
+  .product-card .tag{
+    font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.08em;
+    color:var(--amber); text-transform:uppercase; font-weight:700; margin-bottom:6px; display:inline-block;
+  }
+  .product-card h3{
+    color:var(--parchment); font-size:1.25rem; margin-bottom:1px;
+  }
+  .product-card .hi{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500;
+    text-transform:none; color:var(--gold-1); font-size:0.9rem;
+    letter-spacing:0.015em;
+    display:flex; align-items:center; gap:8px;
+    margin:2px 0 8px;
+  }
+  .product-card .hi::before{
+    content:"";
+    width:16px; height:1px; flex-shrink:0;
+    background:linear-gradient(90deg, var(--gold-3), var(--gold-1));
+  }
+  .product-card .hi::after{
+    content:"";
+    flex:1 1 auto; height:1px;
+    background:linear-gradient(90deg, rgba(241,212,138,0.35), rgba(241,212,138,0));
+  }
+  .product-card ul{ list-style:none; margin-bottom:8px; }
+  .product-card ul li{
+    font-size:0.83rem; line-height:1.35; color:rgba(243,236,224,0.75);
+    padding-left:16px; position:relative; margin-bottom:3px;
+  }
+  .product-card ul li::before{
+    content:"";
+    position:absolute; left:0; top:8px;
+    width:6px; height:6px; border-radius:50%;
+    background:var(--forest-light);
+  }
+  .pack-sizes{
+    display:flex; flex-wrap:wrap; gap:6px;
+  }
+  .pack-sizes span{
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem;
+    border:1px solid rgba(243,236,224,0.25); color:rgba(243,236,224,0.85);
+    padding:4px 9px; border-radius:100px;
+  }
+  .product-card.featured{
+    background:linear-gradient(160deg, rgba(201,151,59,0.16), rgba(243,236,224,0.05));
+    border-color:rgba(201,151,59,0.45);
+  }
+  .best-strip{
+    position:absolute; bottom:12px; left:12px; z-index:2;
+    display:flex; align-items:center; gap:6px;
+    max-width:calc(100% - 68px); /* keep clear of the nutrient-toggle icon (42px + offsets) */
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    background:linear-gradient(120deg, var(--gold-3), var(--gold-1) 55%, var(--gold-2));
+    color:var(--forest-dark);
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem;
+    /* 700 isn't a loaded weight for JetBrains Mono (only 400/600 are
+       imported) — the browser was faking it via synthetic bold, which
+       distorted glyphs at this size + letter-spacing and made the "S"
+       in SELLER visually vanish. 600 is a real loaded weight. */
+    font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
+    font-synthesis:none;
+    padding:6px 12px; border-radius:100px;
+    opacity:1; visibility:visible;
+    box-shadow:0 6px 16px -6px rgba(201,151,59,0.5);
+    transition:opacity .25s ease, box-shadow .25s ease, background .25s ease;
+  }
+  /* NOTE: intentionally no `transform` here. .product-card already has
+     transform-style:preserve-3d + will-change:transform for its own
+     hover-lift; a *nested* transform on this badge fights that 3D
+     compositing context and corrupts/clips the text glyphs in Chrome
+     (this is what was eating the "S" in "SELLER"). Glow-only feedback
+     avoids that entirely while still reading as a hover response. */
+  .product-card:hover .best-strip{
+    box-shadow:0 10px 22px -8px rgba(201,151,59,0.65);
+  }
+  .best-strip:hover{
+    background:linear-gradient(120deg, var(--gold-2), var(--gold-1) 55%, var(--gold-3));
+    box-shadow:0 12px 26px -8px rgba(201,151,59,0.75);
+  }
+
+  /* ---------- nutrient reveal toggle ("i" button) ---------- */
+  .nutrient-toggle{
+    position:absolute; top:12px; right:12px; z-index:4;
+    width:42px; height:42px;
+    border-radius:50%;
+    background:rgba(19,42,30,0.88); backdrop-filter:blur(6px);
+    border:1px solid rgba(243,236,224,0.35);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--gold-1); cursor:pointer;
+    transition:transform .25s ease, border-color .25s ease, background .25s ease;
+  }
+  .nutrient-toggle::after{
+    content:"Tap for nutrients";
+    position:absolute; top:50%; right:100%; transform:translate(-8px,-50%);
+    background:rgba(19,42,30,0.95);
+    color:rgba(243,236,224,0.95);
+    font-size:0.76rem; letter-spacing:0.04em;
+    padding:8px 12px; border-radius:999px;
+    white-space:nowrap; border:1px solid rgba(243,236,224,0.16);
+    box-shadow:0 14px 36px -24px rgba(0,0,0,0.45);
+    opacity:1; pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .nutrient-toggle:hover{ transform:scale(1.08); border-color:var(--gold-1); background:rgba(19,42,30,0.95); }
+  .nutrient-toggle:hover::after{ transform:translate(-12px,-50%); }
+  .nutrient-toggle svg{ width:18px; height:18px; pointer-events:none; }
+  .nutrient-overlay{
+    position:absolute; inset:0; z-index:2;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:20px 22px;
+    opacity:0; pointer-events:none;
+    transform:scale(0.96);
+    transition:opacity .4s ease, transform .4s ease;
+    background:radial-gradient(circle at 50% 50%, rgba(201,151,59,0.32), rgba(19,42,30,0.95) 72%);
+    overflow:hidden;
+  }
+  .nutrient-overlay::before{
+    content:"";
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 50% 50%, rgba(241,212,138,0.22), transparent 62%);
+    pointer-events:none;
+  }
+  .nutrient-overlay.active{ opacity:1; pointer-events:auto; transform:scale(1); z-index:3; }
+  .nutrient-overlay.active ~ .best-strip{ opacity:0; visibility:hidden; transition:opacity .25s ease; }
+  .nutrient-overlay h4{
+    font-family:'JetBrains Mono', monospace; text-transform:uppercase; letter-spacing:0.08em;
+    font-size:0.7rem; color:var(--gold-1); margin-bottom:10px; position:relative;
+  }
+  .nutrient-overlay ul{ list-style:none; position:relative; margin-bottom:0; }
+  .nutrient-overlay ul li{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:0.86rem; color:var(--parchment);
+    padding:5px 0; margin-bottom:0;
+    border-bottom:1px dashed rgba(243,236,224,0.16);
+  }
+  .nutrient-overlay ul li::before{ content:none; }
+  .nutrient-overlay ul li span{ color:var(--gold-1); font-family:'JetBrains Mono', monospace; font-size:0.82rem; }
+  .nutrient-overlay .nutrient-basis{
+    position:relative; margin-top:10px; font-size:0.68rem;
+    color:rgba(243,236,224,0.55); font-style:italic;
+  }
+
+/* Inline styles migrated from the original HTML */
+
+  /* --- Price & discount UI (product cards) --- */
+  .card-price{
+    display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+    margin:10px 0 4px;
+  }
+  .price-now{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    font-size:1.35rem;
+    letter-spacing:0.01em;
+    color:var(--gold-1,#F1D48A);
+  }
+  .price-mrp{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.92rem;
+    color:rgba(243,236,224,0.45);
+    text-decoration:line-through;
+  }
+  .discount-badge{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.7rem;
+    font-weight:700;
+    color:#fff;
+    background:linear-gradient(135deg, var(--forest-mid,#3E7C4A), #2c5c38);
+    padding:3px 10px;
+    border-radius:20px;
+    letter-spacing:0.03em;
+    box-shadow:0 2px 6px rgba(0,0,0,0.25);
+  }
+  .tax-note{
+    font-size:0.75rem;
+    color:rgba(243,236,224,0.4);
+    margin:0 0 12px;
+  }
+  .per-unit-price{
+    font-size:0.75rem;
+    color:rgba(243,236,224,0.45);
+    margin:10px 0 0;
+    font-family:'JetBrains Mono', monospace;
+  }
+  .pack-sizes{ display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+  .pack-size-btn{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.82rem;
+    font-weight:600;
+    background:rgba(243,236,224,0.08);
+    border:1px solid rgba(243,236,224,0.25);
+    color:var(--parchment,#F3ECE0);
+    padding:7px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:background .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;
+    position:relative;
+  }
+  .pack-size-btn:hover{ border-color:var(--gold-2,#C9973B); background:rgba(243,236,224,0.14); }
+  .pack-size-btn.active{
+    background:var(--gold-2,#C9973B);
+    border-color:var(--gold-2,#C9973B);
+    color:var(--forest-dark,#132A1E);
+    box-shadow:0 3px 10px rgba(201,151,59,0.35);
+  }
+  .pack-size-btn.best-value{ border-color:rgba(241,212,138,0.6); }
+  .card-actions{ display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:14px; }
+  .card-buy-now-btn{
+    width:100%;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    font-family:'Manrope', sans-serif;
+    font-size:0.9rem;
+    font-weight:700;
+    color:var(--forest-dark,#132A1E);
+    background:linear-gradient(135deg, var(--gold-1,#F1D48A), var(--gold-2,#C9973B));
+    border:none;
+    padding:12px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    letter-spacing:0.02em;
+    box-shadow:0 4px 14px rgba(201,151,59,0.35);
+    transition:transform .2s ease, box-shadow .2s ease, filter .2s ease;
+  }
+  .card-buy-now-btn:hover{ transform:translateY(-2px); box-shadow:0 6px 18px rgba(201,151,59,0.45); filter:brightness(1.05); }
+  .card-buy-now-btn svg,.card-buy-now-btn img{ width:16px; height:16px; flex:none; }
+  .card-buy-now-btn.is-disabled{
+    background:rgba(243,236,224,0.15);
+    color:rgba(243,236,224,0.5);
+    box-shadow:none; cursor:not-allowed;
+  }
+  .card-buy-now-btn.is-disabled:hover{ transform:none; box-shadow:none; filter:none; }
+  .discount-badge.out-of-stock-badge{ background:linear-gradient(135deg,#8a3a3a,#6b2a2a); }
+  .product-card.out-of-stock .card-photo img{ opacity:0.55; filter:grayscale(0.4); }
+  .product-card.out-of-stock .pack-size-btn{ opacity:0.5; cursor:not-allowed; }
+  .card-actions .card-details-btn{ margin:0; }
+  .pack-size-btn .best-value-tag{
+    position:absolute; top:-11px; left:50%;
+    transform:translateX(-50%);
+    background:var(--gold-1,#F1D48A); color:var(--forest-dark,#132A1E);
+    font-size:0.52rem; font-weight:700;
+    padding:2px 7px; border-radius:20px;
+    letter-spacing:0.02em;
+    white-space:nowrap;
+    box-shadow:0 2px 5px rgba(0,0,0,0.3);
+  }
