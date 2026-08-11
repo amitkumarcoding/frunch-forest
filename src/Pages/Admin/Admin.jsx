@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -12,7 +12,7 @@ import {
   collection,
   getDocs,
   doc,
-  setDoc,
+  writeBatch,
   deleteDoc,
 } from "firebase/firestore";
 import "./Admin.css";
@@ -57,15 +57,26 @@ function packsSummary(packs) {
   return (packs || []).map((pk) => `${pk.size}:₹${pk.price}`).join(", ");
 }
 
+function toOriginalDraft(data) {
+  return {
+    name: data.name || "",
+    tag: data.tag || "",
+    inStock: data.inStock !== false,
+    packs: data.packs || [],
+  };
+}
+
 export default function Admin() {
   const [user, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [loginError, setLoginError] = useState("");
 
   const [products, setProducts] = useState([]); // [{slug, ...data}]
+  const [originals, setOriginals] = useState({}); // slug -> last-saved draft shape
   const [drafts, setDrafts] = useState({}); // slug -> { name, tag, inStock, packs }
   const [productsLoading, setProductsLoading] = useState(false);
   const [productsError, setProductsError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const [status, setStatus] = useState({ text: "", ok: true });
   const statusTimer = useRef(null);
@@ -121,18 +132,17 @@ export default function Admin() {
       const snap = await getDocs(collection(db, "products"));
       const list = [];
       const nextDrafts = {};
+      const nextOriginals = {};
       snap.forEach((docSnap) => {
         const data = docSnap.data();
         list.push({ slug: docSnap.id, ...data });
-        nextDrafts[docSnap.id] = {
-          name: data.name || "",
-          tag: data.tag || "",
-          inStock: data.inStock !== false,
-          packs: data.packs || [],
-        };
+        const shape = toOriginalDraft(data);
+        nextDrafts[docSnap.id] = shape;
+        nextOriginals[docSnap.id] = shape;
       });
       setProducts(list);
       setDrafts(nextDrafts);
+      setOriginals(nextOriginals);
     } catch (e) {
       setProductsError(`Error loading products: ${e.message}`);
     } finally {
@@ -144,23 +154,72 @@ export default function Admin() {
     setDrafts((prev) => ({ ...prev, [slug]: { ...prev[slug], ...patch } }));
   }
 
-  async function handleSaveRow(slug) {
-    if (!window.confirm(`Save changes to "${slug}"?`)) return;
-    const original = products.find((p) => p.slug === slug) || {};
-    const draft = drafts[slug] || {};
-    const updated = {
-      ...original,
-      name: draft.name,
-      tag: draft.tag,
-      inStock: draft.inStock,
-      packs: draft.packs,
-    };
-    delete updated.slug;
+  function fieldChanged(slug, field) {
+    const o = originals[slug]?.[field];
+    const d = drafts[slug]?.[field];
+    if (field === "packs") return JSON.stringify(o) !== JSON.stringify(d);
+    return o !== d;
+  }
+
+  function isRowDirty(slug) {
+    return ["name", "tag", "inStock", "packs"].some((f) => fieldChanged(slug, f));
+  }
+
+  const dirtySlugs = useMemo(
+    () => products.map((p) => p.slug).filter((slug) => isRowDirty(slug)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [products, drafts, originals]
+  );
+
+  function handleDiscardAll() {
+    if (!dirtySlugs.length) return;
+    if (!window.confirm(`Discard changes to ${dirtySlugs.length} product(s)?`)) return;
+    setDrafts((prev) => {
+      const next = { ...prev };
+      dirtySlugs.forEach((slug) => {
+        next[slug] = originals[slug];
+      });
+      return next;
+    });
+  }
+
+  async function handleSaveAll() {
+    if (!dirtySlugs.length) return;
+    if (!window.confirm(`Save changes to ${dirtySlugs.length} product(s)?`)) return;
+    setSaving(true);
     try {
-      await setDoc(doc(db, "products", slug), updated);
-      setStatusMessage(`Saved ${slug}.`);
+      const batch = writeBatch(db);
+      dirtySlugs.forEach((slug) => {
+        const original = products.find((p) => p.slug === slug) || {};
+        const draft = drafts[slug] || {};
+        const updated = {
+          ...original,
+          name: draft.name,
+          tag: draft.tag,
+          inStock: draft.inStock,
+          packs: draft.packs,
+        };
+        delete updated.slug;
+        batch.set(doc(db, "products", slug), updated);
+      });
+      await batch.commit();
+      setOriginals((prev) => {
+        const next = { ...prev };
+        dirtySlugs.forEach((slug) => {
+          next[slug] = drafts[slug];
+        });
+        return next;
+      });
+      setProducts((prev) =>
+        prev.map((p) =>
+          dirtySlugs.includes(p.slug) ? { ...p, ...drafts[p.slug] } : p
+        )
+      );
+      setStatusMessage(`Saved ${dirtySlugs.length} product(s).`);
     } catch (e) {
       setStatusMessage(`Save failed: ${e.message}`, false);
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -182,6 +241,11 @@ export default function Admin() {
       await deleteDoc(doc(db, "products", slug));
       setProducts((prev) => prev.filter((p) => p.slug !== slug));
       setDrafts((prev) => {
+        const next = { ...prev };
+        delete next[slug];
+        return next;
+      });
+      setOriginals((prev) => {
         const next = { ...prev };
         delete next[slug];
         return next;
@@ -224,7 +288,9 @@ export default function Admin() {
     if (!window.confirm(`Add new product "${slug}"?`)) return;
 
     try {
-      await setDoc(doc(db, "products", slug), product);
+      const batch = writeBatch(db);
+      batch.set(doc(db, "products", slug), product);
+      await batch.commit();
       setAddOpen(false);
       setNewProduct(EMPTY_NEW_PRODUCT);
       setStatusMessage(`Added ${slug}.`);
@@ -279,10 +345,17 @@ export default function Admin() {
       )}
 
       {isAuthorized && (
-        <main>
+        <main className={dirtySlugs.length ? "has-savebar" : ""}>
           <div className="toolbar">
-            <div className={`msg${status.text ? (status.ok ? " ok" : " err") : ""}`}>
-              {status.text}
+            <div>
+              <div className={`msg${status.text ? (status.ok ? " ok" : " err") : ""}`}>
+                {status.text}
+              </div>
+              {!status.text && (
+                <div className="hint">
+                  {products.length} product{products.length === 1 ? "" : "s"} · edit fields, then save
+                </div>
+              )}
             </div>
             <button type="button" className="btn-gold" onClick={() => setAddOpen((v) => !v)}>
               + Add product
@@ -316,7 +389,7 @@ export default function Admin() {
                 value={newProduct.image}
                 onChange={(e) => updateNewProduct({ image: e.target.value })}
               />
-              <label>
+              <label className="check-inline">
                 <input
                   type="checkbox"
                   style={{ width: "auto" }}
@@ -326,23 +399,17 @@ export default function Admin() {
                 Best seller
               </label>
             </div>
-            <p style={{ margin: "10px 0 2px", color: "var(--accent)", fontSize: "12px" }}>
-              Nutrition (JSON array)
-            </p>
+            <p className="field-label">Nutrition (JSON array)</p>
             <textarea
               value={newProduct.nutrition}
               onChange={(e) => updateNewProduct({ nutrition: e.target.value })}
             />
-            <p style={{ margin: "10px 0 2px", color: "var(--accent)", fontSize: "12px" }}>
-              Bullets (JSON array of strings)
-            </p>
+            <p className="field-label">Bullets (JSON array of strings)</p>
             <textarea
               value={newProduct.bullets}
               onChange={(e) => updateNewProduct({ bullets: e.target.value })}
             />
-            <p style={{ margin: "10px 0 2px", color: "var(--accent)", fontSize: "12px" }}>
-              Packs (JSON array)
-            </p>
+            <p className="field-label">Packs (JSON array)</p>
             <textarea
               value={newProduct.packs}
               onChange={(e) => updateNewProduct({ packs: e.target.value })}
@@ -384,35 +451,44 @@ export default function Admin() {
                   !productsError &&
                   products.map((p) => {
                     const draft = drafts[p.slug] || {};
+                    const dirty = isRowDirty(p.slug);
                     return (
-                      <tr key={p.slug}>
-                        <td className="slug-cell" data-label="Slug">{p.slug}</td>
+                      <tr key={p.slug} className={dirty ? "dirty-row" : ""}>
+                        <td className="slug-cell" data-label="Slug">
+                          {dirty && <span className="dirty-dot" title="Unsaved changes" />}
+                          {p.slug}
+                        </td>
                         <td data-label="Name">
                           <input
+                            className={fieldChanged(p.slug, "name") ? "changed" : ""}
                             value={draft.name || ""}
                             onChange={(e) => updateDraft(p.slug, { name: e.target.value })}
                           />
                         </td>
                         <td data-label="Tag">
                           <input
+                            className={fieldChanged(p.slug, "tag") ? "changed" : ""}
                             value={draft.tag || ""}
                             onChange={(e) => updateDraft(p.slug, { tag: e.target.value })}
                           />
                         </td>
                         <td data-label="Packs">
-                          <input value={packsSummary(draft.packs)} title="Edit packs JSON below" readOnly />
+                          <input
+                            className={fieldChanged(p.slug, "packs") ? "changed" : ""}
+                            value={packsSummary(draft.packs)}
+                            title="Edit packs JSON below"
+                            readOnly
+                          />
                         </td>
                         <td data-label="In stock">
                           <input
+                            className={fieldChanged(p.slug, "inStock") ? "changed" : ""}
                             type="checkbox"
                             checked={!!draft.inStock}
                             onChange={(e) => updateDraft(p.slug, { inStock: e.target.checked })}
                           />
                         </td>
                         <td className="row-actions">
-                          <button type="button" className="btn-gold" onClick={() => handleSaveRow(p.slug)}>
-                            Save
-                          </button>
                           <button type="button" className="btn-outline" onClick={() => handleEditPacks(p.slug)}>
                             Edit packs
                           </button>
@@ -427,6 +503,22 @@ export default function Admin() {
             </table>
           </div>
         </main>
+      )}
+
+      {isAuthorized && dirtySlugs.length > 0 && (
+        <div className="savebar">
+          <span className="savebar-text">
+            {dirtySlugs.length} product{dirtySlugs.length === 1 ? "" : "s"} changed
+          </span>
+          <div className="savebar-actions">
+            <button type="button" className="btn-outline" onClick={handleDiscardAll} disabled={saving}>
+              Discard
+            </button>
+            <button type="button" className="btn-gold" onClick={handleSaveAll} disabled={saving}>
+              {saving ? "Saving…" : `Save changes (${dirtySlugs.length})`}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
