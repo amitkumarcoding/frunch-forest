@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import SEO from "../../components/SEO/SEO";
 import "./PrivacyPolicy.css"
 
 export default function PrivacyPolicy() {
@@ -19,6 +20,11 @@ export default function PrivacyPolicy() {
 
   return (
     <>
+      <SEO
+        title="Privacy Policy"
+        description="Read Frunch Forest's privacy policy to understand how we collect, use and protect your personal information."
+        path="/privacy-policy"
+      />
       <Header />
       <main id="main">
         <section className="policy-hero">

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import './ShippingPolicy.css';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import SEO from '../../components/SEO/SEO';
 
 // TODO: replace these with your real shared header/footer components
 // (originally injected into #site-header / #site-footer by nav-footer.js)
@@ -188,6 +189,11 @@ export default function ShippingPolicy() {
 
   return (
     <>
+      <SEO
+        title="Shipping Policy"
+        description="Read Frunch Forest's shipping policy — delivery timelines, charges and coverage across India for your dry fruits order."
+        path="/shipping-policy"
+      />
       {/*
         Fonts: move these <link> tags to your document head (index.html /
         _document.js) once, rather than per-page, to avoid re-fetching:

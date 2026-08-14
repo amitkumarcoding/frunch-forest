@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import SEO from "../../components/SEO/SEO";
 import "./Blog.css"
 
 const SPECIMENS = [
@@ -80,6 +81,11 @@ export default function Blog() {
 
   return (
     <>
+      <SEO
+        title="The Nutrient Almanac — Blog"
+        description="A field guide to what's actually inside every handful — the vitamins, minerals and healthy fats that almonds, cashews, walnuts, raisins and fox nuts quietly carry to your plate."
+        path="/blog"
+      />
       <Header />
       <main id="main">
         <section className="blog-hero">

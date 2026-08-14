@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import "./About.css";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import SEO from "../../components/SEO/SEO";
 
 export default function About() {
   useEffect(() => {
@@ -88,6 +89,11 @@ export default function About() {
 
   return (
     <>
+      <SEO
+        title="About Us"
+        description="Learn how Frunch Forest sources handpicked, natural dry fruits — almonds, cashews, walnuts and more — with no preservatives and honest quality, from farm to your table."
+        path="/about"
+      />
       <Header />
       <main id="main">
         <section id="about-hero" style={{ paddingTop: 150 }}>

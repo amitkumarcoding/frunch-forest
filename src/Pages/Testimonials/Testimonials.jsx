@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import './Testimonials.css';
 import Footer from '../../components/Footer/Footer';
 import Header from '../../components/Header/Header';
+import SEO from '../../components/SEO/SEO';
 
 const WA_STORAGE_KEY = 'wa-float-pos-v2';
 const SCROLL_TOP_THRESHOLD = 480;
@@ -317,6 +318,11 @@ export default function Testimonials() {
 
   return (
     <>
+    <SEO
+      title="Customer Testimonials"
+      description="See what customers are saying about Frunch Forest's handpicked, natural dry fruits — real reviews on quality, freshness and delivery."
+      path="/testimonials"
+    />
     <Header />
       {!preloaderRemoved && (
         <div id="preloader" className={preloaderDone ? 'loaded' : ''}>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import './TermsAndConditions.css';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import SEO from '../../components/SEO/SEO';
 
 const WA_STORAGE_KEY = 'wa-float-pos-v2';
 const SCROLL_TOP_THRESHOLD = 480;
@@ -179,6 +180,11 @@ export default function TermsAndConditions() {
 
   return (
     <>
+      <SEO
+        title="Terms & Conditions"
+        description="Read the terms and conditions for using the Frunch Forest website and placing orders for natural dry fruits."
+        path="/terms-and-conditions"
+      />
       <Header />
       <div className="progress-bar" id="progressBar" />
 

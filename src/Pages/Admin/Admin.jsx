@@ -16,6 +16,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import "./Admin.css";
+import SEO from "../../components/SEO/SEO";
 
 // Only these Google accounts may access the admin panel.
 const ALLOWED_ADMINS = [
@@ -301,15 +302,22 @@ export default function Admin() {
   }
 
   return (
-    <div className="admin-page">
-      <header>
-        <div className="brand">
-          <div className="brand-badge">FF</div>
-          <div className="brand-text">
-            <h1>Frunch Forest</h1>
-            <span>Admin console</span>
+    <>
+      <SEO
+        title="Admin"
+        description="Frunch Forest admin console."
+        path="/admin"
+        noindex
+      />
+      <div className="admin-page">
+        <header>
+          <div className="brand">
+            <div className="brand-badge">FF</div>
+            <div className="brand-text">
+              <h1>Frunch Forest</h1>
+              <span>Admin console</span>
+            </div>
           </div>
-        </div>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {isAuthorized && (
             <a href="./" className="btn-outline" style={{ textDecoration: "none" }}>
@@ -520,6 +528,7 @@ export default function Admin() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

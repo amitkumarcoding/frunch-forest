@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import SEO from "../../components/SEO/SEO";
 import "./ReturnRefundPolicy.css"
 
 export default function ReturnRefundPolicy() {
@@ -19,6 +20,11 @@ export default function ReturnRefundPolicy() {
 
   return (
     <>
+      <SEO
+        title="Return & Refund Policy"
+        description="Read Frunch Forest's return and refund policy — how to raise a request, eligibility and timelines for refunds on your dry fruits order."
+        path="/return-refund-policy"
+      />
       <Header />
       <main id="main">
         <section className="policy-hero">

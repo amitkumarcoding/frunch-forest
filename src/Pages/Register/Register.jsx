@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { registerUser, friendlyAuthError } from "../../services/firebaseAuth";
+import SEO from "../../components/SEO/SEO";
 import "./Register.css"
 
 export default function Register() {
@@ -47,6 +48,12 @@ export default function Register() {
 
   return (
     <>
+      <SEO
+        title="Create Account"
+        description="Create a Frunch Forest account to order natural dry fruits."
+        path="/register"
+        noindex
+      />
       <Header />
       <main id="main">
         <section className="auth-section">

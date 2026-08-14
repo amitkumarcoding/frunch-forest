@@ -3,15 +3,12 @@ import { useParams, Link } from "react-router-dom";
 import { PRODUCTS } from "../../data/products";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import SEO from "../../components/SEO/SEO";
 import "./ProductDetails.css"
 
 export default function ProductDetails() {
   const { slug } = useParams();
   const product = PRODUCTS[slug];
-
-  useEffect(() => {
-    document.title = product ? `${product.name} — Frunch Forest` : "Product Details — Frunch Forest";
-  }, [product]);
 
   // scroll reveal (same pattern as About.jsx)
   useEffect(() => {
@@ -45,8 +42,42 @@ export default function ProductDetails() {
     .filter(([key]) => key !== slug)
     .slice(0, 3);
 
+  const seoDescription = product
+    ? `Buy ${product.name}${product.hindi ? ` (${product.hindi})` : ""} online from Frunch Forest — ${product.bullets?.[0]?.toLowerCase() || "handpicked, natural quality"}. Pan-India delivery, no preservatives.`
+    : "Browse handpicked, natural dry fruits from Frunch Forest.";
+
   return (
     <>
+      <SEO
+        title={product ? product.name : "Product Details"}
+        description={seoDescription}
+        path={`/products/${slug}`}
+        image={product?.image ? `https://frunchforest.com${product.image}` : undefined}
+        noindex={!product}
+        jsonLd={
+          product
+            ? {
+                "@context": "https://schema.org",
+                "@type": "Product",
+                name: product.name,
+                image: `https://frunchforest.com${product.image}`,
+                description: seoDescription,
+                brand: { "@type": "Brand", name: "Frunch Forest" },
+                offers: product.packs?.[0]
+                  ? {
+                      "@type": "Offer",
+                      priceCurrency: "INR",
+                      price: product.packs[0].price,
+                      availability: product.inStock
+                        ? "https://schema.org/InStock"
+                        : "https://schema.org/OutOfStock",
+                      url: `https://frunchforest.com/products/${slug}`,
+                    }
+                  : undefined,
+              }
+            : null
+        }
+      />
       <Header />
       <main id="main">
         <section className="detail-hero">

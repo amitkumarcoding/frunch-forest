@@ -5,6 +5,7 @@ import { loadProductsFromFirestore } from "../../services/firebaseProducts";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import ProductCard from "../../components/ProductCard/ProductCard";
+import SEO from "../../components/SEO/SEO";
 
 function Home() {
   const [products, setProducts] = useState(
@@ -118,7 +119,18 @@ function Home() {
 
   return (
     <>
-
+      <SEO
+        title="Frunch Forest — Natural Dry Fruits"
+        description="Frunch Forest brings handpicked almonds, cashews, walnuts, raisins, fox nuts and more from farm to your table — no preservatives, no shortcuts, just honest quality. Pan-India delivery, gifting and bulk orders."
+        path="/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Frunch Forest",
+          url: "https://frunchforest.com",
+          logo: "https://frunchforest.com/image/logo.png",
+        }}
+      />
 
       <a className="skip-link" href="#main">Skip to content</a>
 

@@ -4,6 +4,7 @@ import { loadProductsFromFirestore } from "../../services/firebaseProducts";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import ProductCard from "../../components/ProductCard/ProductCard";
+import SEO from "../../components/SEO/SEO";
 
 const FAV_KEY = "ff_favourites";
 
@@ -85,6 +86,11 @@ export default function Products() {
 
   return (
     <>
+      <SEO
+        title="Shop All Products"
+        description="Browse Frunch Forest's full range of natural dry fruits — almonds, cashews, walnuts, raisins, pistachios, dates, fox nuts and more. Handpicked, no preservatives, pan-India delivery."
+        path="/products"
+      />
       <Header />
       <main id="main">
         <section className="hero" id="productsPageHero">

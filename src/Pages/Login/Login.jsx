@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import SEO from "../../components/SEO/SEO";
 import "./Login.css";
 
 export default function LoginPage() {
@@ -75,6 +76,12 @@ export default function LoginPage() {
 
   return (
     <>
+      <SEO
+        title="Login"
+        description="Log in to your Frunch Forest account."
+        path="/login"
+        noindex
+      />
       <div className="progress-bar" style={{ width: `${progress}%` }} />
 
       <header id="siteHeader" className={scrolled ? "scrolled" : ""}>

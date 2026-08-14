@@ -5,6 +5,7 @@ import "./Account.css";
 import { auth, db } from "../../services/firebase";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import SEO from "../../components/SEO/SEO";
 
 // Same authorized accounts as admin — keep these two lists in sync.
 const ALLOWED_ADMINS = [
@@ -83,6 +84,12 @@ export default function Account() {
 
     return (
         <>
+            <SEO
+                title="My Account"
+                description="View and manage your Frunch Forest account."
+                path="/account"
+                noindex
+            />
             <Header />
 
             <main id="main">
