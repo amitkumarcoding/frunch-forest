@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./Home.css";
 import { PRODUCTS as LOCAL_PRODUCTS } from "../../data/products";
 import { loadProductsFromFirestore } from "../../services/firebaseProducts";
@@ -7,6 +7,25 @@ import Footer from "../../components/Footer/Footer";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import SEO from "../../components/SEO/SEO";
 
+const PACK_ITEMS = [
+  { name: "Almond", img: "/image/packaging/almonds.jpeg" },
+  { name: "Cashews", img: "/image/packaging/cashew.png" },
+  { name: "Raisin", img: "/image/packaging/raisin.png" },
+  { name: "Dates", img: "/image/packaging/datespackage.png" },
+  { name: "Dried Apricots", img: "/image/packaging/driedapricotsPackage.png" },
+  { name: "Dried Figs", img: "/image/packaging/driedfigspackage.png" },
+  { name: "Fox Nuts", img: "/image/packaging/foxnutspackage.png" },
+  { name: "Makhana", img: "/image/packaging/makhanapackage.png" },
+  { name: "Mixed Nuts", img: "/image/packaging/mixednutspackage.png" },
+  { name: "Pistachios", img: "/image/packaging/pistachiospackage.png" },
+  { name: "Walnuts", img: "/image/packaging/walnutspackage.png" },
+  { name: "Cardamom", img: "/image/packaging/spice/cardamom.png" },
+  { name: "Chilli", img: "/image/packaging/spice/chilli.png" },
+  { name: "Coriander", img: "/image/packaging/spice/coriander.png" },
+  { name: "Pepper", img: "/image/packaging/spice/pepper.png" },
+  { name: "Turmeric", img: "/image/packaging/spice/turmeric.png" },
+];
+
 function Home() {
   const [products, setProducts] = useState(
     Object.entries(LOCAL_PRODUCTS).map(([slug, p]) => ({ ...p, slug }))
@@ -14,6 +33,84 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [activeGiftItem, setActiveGiftItem] = useState("diwali");
   const [giftImgErrors, setGiftImgErrors] = useState({});
+
+  // ---- Pack showcase slider (arrows + dots) ----
+  const packTrackRef = useRef(null);
+  const [packActiveIndex, setPackActiveIndex] = useState(0);
+
+  const scrollToPackIndex = (index) => {
+    const track = packTrackRef.current;
+    if (!track) return;
+    const card = track.children[index];
+    if (!card) return;
+    track.scrollTo({
+      left: card.offsetLeft - track.offsetLeft,
+      behavior: "smooth",
+    });
+  };
+
+  const scrollShowcase = (direction) => {
+    const track = packTrackRef.current;
+    if (!track) return;
+    const nextIndex = Math.min(
+      Math.max(packActiveIndex + direction, 0),
+      PACK_ITEMS.length - 1
+    );
+    scrollToPackIndex(nextIndex);
+  };
+
+  useEffect(() => {
+    const track = packTrackRef.current;
+    if (!track) return;
+
+    let raf = null;
+    const handleScroll = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const cards = Array.from(track.children);
+        if (!cards.length) return;
+        const trackCenter = track.scrollLeft + track.clientWidth / 2;
+        let closest = 0;
+        let closestDist = Infinity;
+        cards.forEach((card, i) => {
+          const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+          const dist = Math.abs(cardCenter - trackCenter);
+          if (dist < closestDist) {
+            closestDist = dist;
+            closest = i;
+          }
+        });
+        setPackActiveIndex(closest);
+      });
+    };
+
+    track.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      track.removeEventListener("scroll", handleScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  // ---- Pack preview lightbox ----
+  const [lightboxIndex, setLightboxIndex] = useState(null);
+
+  const openLightbox = (index) => setLightboxIndex(index);
+  const closeLightbox = () => setLightboxIndex(null);
+  const showPrevInLightbox = () =>
+    setLightboxIndex((i) => (i === null ? i : (i - 1 + PACK_ITEMS.length) % PACK_ITEMS.length));
+  const showNextInLightbox = () =>
+    setLightboxIndex((i) => (i === null ? i : (i + 1) % PACK_ITEMS.length));
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") showPrevInLightbox();
+      if (e.key === "ArrowRight") showNextInLightbox();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [lightboxIndex]);
 
   useEffect(() => {
     async function loadProducts() {
@@ -386,129 +483,67 @@ function Home() {
               <p>No stock photos here — this is exactly what lands on your doorstep: hygienically packed, zip-locked, and bursting with flavour.</p>
             </div>
             <div className="showcase-slider">
-              <button type="button" className="showcase-arrow prev" id="showcasePrev" aria-label="Previous">
+              <button type="button" className="showcase-arrow prev" onClick={() => scrollShowcase(-1)} aria-label="Previous">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
               </button>
-              <div className="showcase-track" id="showcaseTrack">
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/almonds.jpeg" alt="Frunch Forest Almond pack" loading="lazy" />
-                    <span className="pack-index">№ 01</span>
+              <div className="showcase-track" ref={packTrackRef}>
+                {PACK_ITEMS.map((item, i) => (
+                  <div className="pack-card reveal" key={item.name}>
+                    <div className="pack-photo" onClick={() => openLightbox(i)}>
+                      <img src={item.img} alt={`Frunch Forest ${item.name} pack`} loading="lazy" />
+                      <span className="pack-index">№ {String(i + 1).padStart(2, "0")}</span>
+                    </div>
+                    <div className="pack-label"><span className="pack-name">{item.name}</span><span className="pack-tag">100% Natural</span></div>
                   </div>
-                  <div className="pack-label"><span className="pack-name">Almond</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/cashew.png" alt="Frunch Forest Cashews pack" loading="lazy" />
-                    <span className="pack-index">№ 02</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Cashews</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/raisin.png" alt="Frunch Forest Raisin pack" loading="lazy" />
-                    <span className="pack-index">№ 03</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Raisin</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/datespackage.png" alt="Frunch Forest Dates pack" loading="lazy" />
-                    <span className="pack-index">№ 04</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Dates</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/driedapricotsPackage.png" alt="Frunch Forest Dried Apricots pack" loading="lazy" />
-                    <span className="pack-index">№ 05</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Dried Apricots</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/driedfigspackage.png" alt="Frunch Forest Dried Figs pack" loading="lazy" />
-                    <span className="pack-index">№ 06</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Dried Figs</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/foxnutspackage.png" alt="Frunch Forest Fox Nuts pack" loading="lazy" />
-                    <span className="pack-index">№ 07</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Fox Nuts</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/makhanapackage.png" alt="Frunch Forest Makhana pack" loading="lazy" />
-                    <span className="pack-index">№ 08</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Makhana</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/mixednutspackage.png" alt="Frunch Forest Mixed Nuts pack" loading="lazy" />
-                    <span className="pack-index">№ 09</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Mixed Nuts</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/pistachiospackage.png" alt="Frunch Forest Pistachios pack" loading="lazy" />
-                    <span className="pack-index">№ 10</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Pistachios</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/walnutspackage.png" alt="Frunch Forest Walnuts pack" loading="lazy" />
-                    <span className="pack-index">№ 11</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Walnuts</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/spice/cardamom.png" alt="Frunch Forest Cardamom pack" loading="lazy" />
-                    <span className="pack-index">№ 12</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Cardamom</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/spice/chilli.png" alt="Frunch Forest Chilli pack" loading="lazy" />
-                    <span className="pack-index">№ 13</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Chilli</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/spice/coriander.png" alt="Frunch Forest Coriander pack" loading="lazy" />
-                    <span className="pack-index">№ 14</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Coriander</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/spice/pepper.png" alt="Frunch Forest Pepper pack" loading="lazy" />
-                    <span className="pack-index">№ 15</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Pepper</span><span className="pack-tag">100% Natural</span></div>
-                </div>
-                <div className="pack-card reveal">
-                  <div className="pack-photo">
-                    <img src="/image/packaging/spice/turmeric.png" alt="Frunch Forest Turmeric pack" loading="lazy" />
-                    <span className="pack-index">№ 16</span>
-                  </div>
-                  <div className="pack-label"><span className="pack-name">Turmeric</span><span className="pack-tag">100% Natural</span></div>
-                </div>
+                ))}
               </div>
-              <button type="button" className="showcase-arrow next" id="showcaseNext" aria-label="Next">
+              <button type="button" className="showcase-arrow next" onClick={() => scrollShowcase(1)} aria-label="Next">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
               </button>
             </div>
-            <div className="showcase-dots" id="showcaseDots"></div>
+            <div className="showcase-dots">
+              {PACK_ITEMS.map((item, i) => (
+                <button
+                  key={item.name}
+                  type="button"
+                  className={`showcase-dot${i === packActiveIndex ? " active" : ""}`}
+                  aria-label={`Go to ${item.name}`}
+                  onClick={() => scrollToPackIndex(i)}
+                />
+              ))}
+            </div>
             <p className="showcase-swipe-hint">Swipe to explore ⟶</p>
+
+            {lightboxIndex !== null && (
+              <div className="pack-lightbox open" onClick={closeLightbox}>
+                <button type="button" className="pack-lightbox-close" onClick={closeLightbox} aria-label="Close preview">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+                </button>
+                <button
+                  type="button"
+                  className="pack-lightbox-arrow prev"
+                  aria-label="Previous pack"
+                  onClick={(e) => { e.stopPropagation(); showPrevInLightbox(); }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <img
+                  className="pack-lightbox-img"
+                  src={PACK_ITEMS[lightboxIndex].img}
+                  alt={`Frunch Forest ${PACK_ITEMS[lightboxIndex].name} pack`}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <span className="pack-lightbox-caption">{PACK_ITEMS[lightboxIndex].name}</span>
+                <button
+                  type="button"
+                  className="pack-lightbox-arrow next"
+                  aria-label="Next pack"
+                  onClick={(e) => { e.stopPropagation(); showNextInLightbox(); }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+              </div>
+            )}
           </div>
         </section>
         <section id="testimonials">
