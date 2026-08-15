@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Particles, { ParticlesProvider } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
 import { loadSnowPreset } from "@tsparticles/preset-snow";
@@ -17,25 +17,37 @@ async function registerPresets(engine) {
   await loadStarsPreset(engine);
 }
 
-// Fewer particles on small screens — keeps this from competing with the
-// scroll thread on mobile (see Home.css hero perf pass).
-const isMobile =
-  typeof window !== "undefined" && window.matchMedia?.("(max-width: 640px)").matches;
-const scaleCount = (n) => Math.round(n * (isMobile ? 0.55 : 1));
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.matchMedia?.("(max-width: 640px)").matches
+  );
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(max-width: 640px)");
+    const onChange = (e) => setIsMobile(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return isMobile;
+}
 
-const shared = {
-  fullScreen: { enable: false }, // confine to the parent container, not the viewport
-  fpsLimit: 60,
-  detectRetina: true,
-  background: { color: { value: "transparent" } },
-};
+const scaleCount = (n, isMobile) => Math.round(n * (isMobile ? 0.55 : 1));
 
-function diyaLayer(colors) {
+function sharedFor(isMobile) {
+  return {
+    fullScreen: { enable: false }, // confine to the parent container, not the viewport
+    fpsLimit: 60,
+    detectRetina: true,
+    background: { color: { value: "transparent" } },
+  };
+}
+
+function diyaLayer(colors, isMobile) {
   const [c1, , c3] = colors;
   return {
-    ...shared,
+    ...sharedFor(isMobile),
     particles: {
-      number: { value: scaleCount(22) },
+      number: { value: scaleCount(22, isMobile) },
       color: { value: [c1, c3, "#fff3d6"] },
       shape: { type: "circle" },
       opacity: {
@@ -46,7 +58,7 @@ function diyaLayer(colors) {
         value: { min: 1.5, max: 4.5 },
         animation: { enable: true, speed: 1.5, sync: false, startValue: "random" },
       },
-      shadow: { enable: true, color: c1, blur: 6 },
+      shadow: { enable: !isMobile, color: c1, blur: 6 },
       move: { enable: true, speed: { min: 0.3, max: 0.9 }, direction: "top", random: true, straight: false, outModes: { default: "out" } },
       links: { enable: false },
       life: { count: 1, delay: { value: { min: 0, max: 3 } } },
@@ -54,32 +66,33 @@ function diyaLayer(colors) {
   };
 }
 
-function crackerLayer(colors) {
+function crackerLayer(colors, isMobile) {
   // Sparse, slow firework bursts layered above the diyas — a handful of
   // shells, not a nonstop show, so it stays a backdrop, not the headline.
   return {
-    ...shared,
+    ...sharedFor(isMobile),
     preset: "fireworks",
     particles: { color: { value: colors } },
     sounds: { enable: false },
     emitters: {
-      life: { count: 0, duration: 0.35, delay: isMobile ? 2.4 : 1.6 },
+      rate: { quantity: 1, delay: isMobile ? 2.4 : 1.6 },
+      life: { count: isMobile ? 3 : 6, duration: 0.35 },
     },
   };
 }
 
-function pichkariLayer(colors) {
+function pichkariLayer(colors, isMobile) {
   // Two upward colour sprays from the lower corners (like a pichkari squirt)
   // plus a soft ambient colour-blotch backdrop.
   return {
-    ...shared,
+    ...sharedFor(isMobile),
     particles: {
       number: { value: 0 },
       color: { value: colors },
       shape: { type: "circle" },
       opacity: { value: { min: 0.4, max: 0.85 }, animation: { enable: true, speed: 1, sync: false, startValue: "random" } },
       size: { value: { min: 2, max: 6 } },
-      shadow: { enable: true, color: colors[0], blur: 6 },
+      shadow: { enable: !isMobile, color: colors[0], blur: 6 },
       move: { enable: true, speed: { min: 3, max: 7 }, gravity: { enable: true, acceleration: 5 }, outModes: { default: "destroy" } },
       life: { count: 1 },
     },
@@ -100,28 +113,28 @@ function pichkariLayer(colors) {
   };
 }
 
-function splashLayer(colors) {
+function splashLayer(colors, isMobile) {
   const [c1, c2, c3] = colors;
   return {
-    ...shared,
+    ...sharedFor(isMobile),
     particles: {
-      number: { value: scaleCount(34) },
+      number: { value: scaleCount(34, isMobile) },
       color: { value: [c1, c2, c3] },
       shape: { type: "circle" },
       opacity: { value: { min: 0.2, max: 0.6 }, animation: { enable: true, speed: 0.8, sync: false, startValue: "random" } },
       size: { value: { min: 3, max: 10 }, animation: { enable: true, speed: 2, sync: false, startValue: "random" } },
-      shadow: { enable: true, color: c2, blur: 8 },
+      shadow: { enable: !isMobile, color: c2, blur: 8 },
       move: { enable: true, speed: { min: 0.4, max: 1.2 }, direction: "none", random: true, outModes: { default: "out" } },
     },
   };
 }
 
-function topDustLayer(colors) {
+function topDustLayer(colors, isMobile) {
   const [c1] = colors;
   return {
-    ...shared,
+    ...sharedFor(isMobile),
     particles: {
-      number: { value: scaleCount(6) },
+      number: { value: scaleCount(6, isMobile) },
       color: { value: c1 },
       shape: { type: "circle" },
       opacity: { value: { min: 0.15, max: 0.35 }, animation: { enable: true, speed: 0.4, sync: false, startValue: "random" } },
@@ -132,12 +145,12 @@ function topDustLayer(colors) {
   };
 }
 
-function bottomDustLayer(colors) {
+function bottomDustLayer(colors, isMobile) {
   const [, , c3] = colors;
   return {
-    ...shared,
+    ...sharedFor(isMobile),
     particles: {
-      number: { value: scaleCount(6) },
+      number: { value: scaleCount(6, isMobile) },
       color: { value: c3 },
       shape: { type: "circle" },
       opacity: { value: { min: 0.15, max: 0.35 }, animation: { enable: true, speed: 0.4, sync: false, startValue: "random" } },
@@ -148,16 +161,16 @@ function bottomDustLayer(colors) {
   };
 }
 
-function snowLayer() {
+function snowLayer(isMobile) {
   return {
-    ...shared,
+    ...sharedFor(isMobile),
     preset: "snow",
     particles: {
       color: { value: "#ffffff" },
-      number: { value: scaleCount(46) },
+      number: { value: scaleCount(46, isMobile) },
       opacity: { value: { min: 0.35, max: 0.85 }, animation: { enable: true, speed: 0.6, sync: false, startValue: "random" } },
       size: { value: { min: 1, max: 4 } },
-      shadow: { enable: true, color: "#ffffff", blur: 3 },
+      shadow: { enable: !isMobile, color: "#ffffff", blur: 3 },
       move: { speed: { min: 0.5, max: 1.6 }, drift: { min: -0.4, max: 0.4 } },
       wobble: { enable: true, distance: 6, speed: { min: 4, max: 10 } },
       life: { count: 1, delay: { value: { min: 0, max: 2 } } },
@@ -165,10 +178,10 @@ function snowLayer() {
   };
 }
 
-function confettiLayer(colors) {
+function confettiLayer(colors, isMobile) {
   const [c1, c2, c3] = colors;
   return {
-    ...shared,
+    ...sharedFor(isMobile),
     preset: "confetti",
     particles: {
       color: { value: [c1, c2, c3, "#ffffff"] },
@@ -183,17 +196,17 @@ function confettiLayer(colors) {
   };
 }
 
-function glowLayer(colors) {
+function glowLayer(colors, isMobile) {
   const [c1, c2, c3] = colors;
   return {
-    ...shared,
+    ...sharedFor(isMobile),
     preset: "stars",
     particles: {
       color: { value: [c1, c2, c3, "#ffffff"] },
-      number: { value: scaleCount(32) },
+      number: { value: scaleCount(32, isMobile) },
       opacity: { value: { min: 0.15, max: 0.65 }, animation: { enable: true, speed: { min: 0.5, max: 1.2 }, sync: false, startValue: "random" } },
       size: { value: { min: 0.5, max: 2.2 }, animation: { enable: true, speed: 1, sync: false, startValue: "random" } },
-      shadow: { enable: true, color: c1, blur: 4 },
+      shadow: { enable: !isMobile, color: c1, blur: 4 },
       move: { speed: { min: 0.15, max: 0.4 } },
     },
   };
@@ -201,55 +214,74 @@ function glowLayer(colors) {
 
 // pattern -> one or more layered configs. Order matters: earlier layers
 // render underneath later ones (e.g. diyas glow under cracker bursts).
-function buildLayers(pattern, colors) {
+function buildLayers(pattern, colors, isMobile) {
   switch (pattern) {
     case "flag":
       return []; // rendered by <FestiveFlag/> instead — no particle layer
+    case "stripes":
+      return [topDustLayer(colors, isMobile), bottomDustLayer(colors, isMobile)];
     case "independence":
-      return [topDustLayer(colors), bottomDustLayer(colors)];
+      return [topDustLayer(colors, isMobile), bottomDustLayer(colors, isMobile)];
     case "crackers":
-      return [diyaLayer(colors), crackerLayer(colors)];
+      return [diyaLayer(colors, isMobile), crackerLayer(colors, isMobile)];
     case "pichkari":
-      return [splashLayer(colors), pichkariLayer(colors)];
+      return [splashLayer(colors, isMobile), pichkariLayer(colors, isMobile)];
     case "diyas":
-      return [diyaLayer(colors)];
+      return [diyaLayer(colors, isMobile)];
     case "splash":
-      return [splashLayer(colors)];
+      return [splashLayer(colors, isMobile)];
     case "snow":
-      return [snowLayer()];
+      return [snowLayer(isMobile)];
     case "confetti":
-      return [confettiLayer(colors)];
+      return [confettiLayer(colors, isMobile)];
     case "glow":
     default:
-      return [glowLayer(colors)];
+      return [glowLayer(colors, isMobile)];
   }
 }
 
 // Drop this in place of the old .fp/.fp-spark markup inside
 // .hero-festive-layer. For pattern === "flag" this renders nothing —
 // render <FestiveFlag/> alongside it instead (see Home.jsx).
-// Respects prefers-reduced-motion by simply not mounting.
+// Respects prefers-reduced-motion by simply not mounting, and pauses
+// (unmounts the canvases) when scrolled out of view to save battery/CPU.
 export default function FestiveParticles({ pattern, colors }) {
+  const isMobile = useIsMobile();
+  const containerRef = useRef(null);
+  const [inView, setInView] = useState(true);
+
   const prefersReducedMotion = useMemo(
     () =>
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
     []
   );
-  const layers = useMemo(() => buildLayers(pattern, colors), [pattern, colors]);
+  const layers = useMemo(() => buildLayers(pattern, colors, isMobile), [pattern, colors, isMobile]);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   if (prefersReducedMotion || !layers.length) return null;
 
   return (
-    <ParticlesProvider init={registerPresets}>
-      {layers.map((options, i) => (
-        <Particles
-          key={`${pattern}-${i}`}
-          id={`festive-particles-${pattern}-${i}`}
-          options={options}
-          style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
-        />
-      ))}
-    </ParticlesProvider>
+    <div ref={containerRef} style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+      {inView && (
+        <ParticlesProvider init={registerPresets}>
+          {layers.map((options, i) => (
+            <Particles
+              key={`${pattern}-${i}`}
+              id={`festive-particles-${pattern}-${i}`}
+              options={options}
+              style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+            />
+          ))}
+        </ParticlesProvider>
+      )}
+    </div>
   );
 }
