@@ -212,6 +212,169 @@ function glowLayer(colors, isMobile) {
   };
 }
 
+// Slow, glinting coin-like discs for Dhanteras — heavier and slower than
+// the diya flame-dots, with a warm metallic twinkle instead of a soft glow.
+function coinsLayer(colors, isMobile) {
+  const [c1, c2] = colors;
+  return {
+    ...sharedFor(isMobile),
+    particles: {
+      number: { value: scaleCount(16, isMobile) },
+      color: { value: [c1, c2, "#fff3d6"] },
+      shape: { type: "circle" },
+      opacity: {
+        value: { min: 0.4, max: 0.95 },
+        animation: { enable: true, speed: { min: 1.2, max: 2.2 }, sync: false, startValue: "random" },
+      },
+      size: { value: { min: 3, max: 7 }, animation: { enable: true, speed: 1, sync: false, startValue: "random" } },
+      shadow: { enable: !isMobile, color: c1, blur: 8 },
+      stroke: { width: 1, color: { value: "#fff3d6" } },
+      move: { enable: true, speed: { min: 0.2, max: 0.5 }, direction: "bottom", random: true, straight: false, outModes: { default: "out" } },
+      rotate: { value: { min: 0, max: 360 }, animation: { enable: true, speed: { min: 3, max: 8 }, sync: false } },
+    },
+  };
+}
+
+// Fine looping red/gold flecks standing in for rakhi thread and tilak
+// rice-grains — used for Raksha Bandhan and Bhai Dooj. Deliberately
+// small and drifting rather than a bold shape, so it reads as texture,
+// not an attempt at an actual thread or hand illustration.
+function threadsLayer(colors, isMobile) {
+  const [c1, , c3] = colors;
+  return {
+    ...sharedFor(isMobile),
+    particles: {
+      number: { value: scaleCount(26, isMobile) },
+      color: { value: [c1, c3, "#fff3d6"] },
+      shape: { type: ["circle", "square"] },
+      opacity: { value: { min: 0.3, max: 0.85 }, animation: { enable: true, speed: 0.9, sync: false, startValue: "random" } },
+      size: { value: { min: 1.5, max: 4 } },
+      shadow: { enable: !isMobile, color: c1, blur: 4 },
+      move: {
+        enable: true,
+        speed: { min: 0.3, max: 0.8 },
+        direction: "none",
+        random: true,
+        straight: false,
+        outModes: { default: "bounce" },
+        path: { enable: true, options: { sides: 5, turnSpeed: 2, angle: { value: 90, offset: 0 } } },
+      },
+    },
+  };
+}
+
+// A single large, slow-breathing glow rising toward the top of the hero —
+// stands in for moonlight rather than a literal moon disc — with a thin
+// scatter of cool stars beneath it.
+function moonGlowLayer(colors, isMobile) {
+  const [, , c3] = colors;
+  return {
+    ...sharedFor(isMobile),
+    preset: "stars",
+    particles: {
+      color: { value: ["#EDE3C8", "#ffffff", c3] },
+      number: { value: scaleCount(24, isMobile) },
+      opacity: { value: { min: 0.15, max: 0.6 }, animation: { enable: true, speed: { min: 0.4, max: 1 }, sync: false, startValue: "random" } },
+      size: { value: { min: 0.6, max: 2 }, animation: { enable: true, speed: 0.8, sync: false, startValue: "random" } },
+      shadow: { enable: !isMobile, color: "#EDE3C8", blur: 5 },
+      move: { speed: { min: 0.08, max: 0.2 }, direction: "top" },
+    },
+    emitters: { position: { x: 82, y: 15 }, rate: { quantity: 1, delay: 1.5 }, life: { count: 0 } },
+  };
+}
+
+// Warm diya glow paired with a slow, gentle sparkle overhead — a "blessing"
+// treatment for occasions that call for reverence without a specific
+// figure (Ganesh Chaturthi, and reusable anywhere the feeling is devotional
+// rather than festive-loud).
+function blessingSparkleLayer(colors, isMobile) {
+  const [c1, c2, c3] = colors;
+  return {
+    ...sharedFor(isMobile),
+    particles: {
+      number: { value: scaleCount(14, isMobile) },
+      color: { value: [c1, c2, c3] },
+      shape: { type: "star" },
+      opacity: { value: { min: 0.25, max: 0.7 }, animation: { enable: true, speed: 0.7, sync: false, startValue: "random" } },
+      size: { value: { min: 1.5, max: 3.5 }, animation: { enable: true, speed: 1, sync: false, startValue: "random" } },
+      shadow: { enable: !isMobile, color: c2, blur: 5 },
+      rotate: { value: { min: 0, max: 360 }, animation: { enable: true, speed: 2, sync: false } },
+      move: { enable: true, speed: { min: 0.15, max: 0.35 }, direction: "top", random: true, outModes: { default: "out" } },
+    },
+  };
+}
+
+// Fast, thin golden streaks tracing an arc — evokes an arrow's flight
+// (Ram Navami / Dussehra) without drawing a bow or a figure. Sparse and
+// occasional, like the cracker bursts, so it punctuates rather than fills.
+function arrowsLayer(colors, isMobile) {
+  const [c1, c2] = colors;
+  return {
+    ...sharedFor(isMobile),
+    particles: {
+      number: { value: 0 },
+      color: { value: [c1, c2, "#fff3d6"] },
+      shape: { type: "triangle" },
+      opacity: { value: { min: 0.7, max: 1 } },      // was 0.6–0.9
+      size: { value: { min: 4, max: 7 } },            // was 3–5
+      shadow: { enable: !isMobile, color: c1, blur: 6 },
+      rotate: { value: 90, animation: { enable: false } },
+      move: {
+        enable: true,
+        speed: { min: 5, max: 8 },
+        direction: "top-right",
+        straight: true,
+        trail: { enable: true, length: 8, fill: { color: "#00000000" } },
+        outModes: { default: "destroy" },
+      },
+      life: { count: 1 },
+    },
+    emitters: {
+      position: { x: 6, y: 92 },
+      rate: { quantity: 2, delay: isMobile ? 1.4 : 1 },   // was 1 qty / 2–3s
+      life: { count: 0 },
+    },
+  };
+}
+// Falling snow plus a slow twinkle of ornament-coloured bokeh — an upgrade
+// on plain snow for Christmas so it reads as "lights on a tree" rather
+// than a generic winter scene.
+function ornamentTwinkleLayer(colors, isMobile) {
+  const [c1, c2, c3] = colors;
+  return {
+    ...sharedFor(isMobile),
+    particles: {
+      number: { value: scaleCount(18, isMobile) },
+      color: { value: [c1, c2, c3, "#F1D48A"] },
+      shape: { type: "circle" },
+      opacity: { value: { min: 0.3, max: 0.9 }, animation: { enable: true, speed: { min: 1, max: 2 }, sync: false, startValue: "random" } },
+      size: { value: { min: 1.5, max: 3.5 } },
+      shadow: { enable: !isMobile, color: c1, blur: 6 },
+      move: { enable: true, speed: { min: 0.1, max: 0.3 }, direction: "none", random: true, outModes: { default: "out" } },
+    },
+  };
+}
+
+// Big, slow, playful drifting circles for Children's Day — larger and
+// lighter than the splash/glow treatments, moving upward like balloons
+// rather than scattering like confetti.
+function balloonsLayer(colors, isMobile) {
+  const [c1, c2, c3] = colors;
+  return {
+    ...sharedFor(isMobile),
+    particles: {
+      number: { value: scaleCount(12, isMobile) },
+      color: { value: [c1, c2, c3, "#ffffff"] },
+      shape: { type: "circle" },
+      opacity: { value: { min: 0.5, max: 0.85 } },
+      size: { value: { min: 8, max: 16 }, animation: { enable: true, speed: 1.2, sync: false, startValue: "random" } },
+      shadow: { enable: !isMobile, color: c2, blur: 6 },
+      move: { enable: true, speed: { min: 0.4, max: 0.9 }, direction: "top", random: true, straight: false, wobble: { enable: true, distance: 8, speed: { min: 3, max: 7 } }, outModes: { default: "out" } },
+      life: { count: 1, delay: { value: { min: 0, max: 3 } } },
+    },
+  };
+}
+
 // pattern -> one or more layered configs. Order matters: earlier layers
 // render underneath later ones (e.g. diyas glow under cracker bursts).
 function buildLayers(pattern, colors, isMobile) {
@@ -234,6 +397,20 @@ function buildLayers(pattern, colors, isMobile) {
       return [snowLayer(isMobile)];
     case "confetti":
       return [confettiLayer(colors, isMobile)];
+    case "coins":
+      return [coinsLayer(colors, isMobile)];
+    case "threads":
+      return [threadsLayer(colors, isMobile)];
+    case "moonglow":
+      return [moonGlowLayer(colors, isMobile)];
+    case "blessing":
+      return [diyaLayer(colors, isMobile), blessingSparkleLayer(colors, isMobile)];
+    case "arrows":
+      return [topDustLayer(colors, isMobile), arrowsLayer(colors, isMobile)];
+    case "ornaments":
+      return [snowLayer(isMobile), ornamentTwinkleLayer(colors, isMobile)];
+    case "balloons":
+      return [balloonsLayer(colors, isMobile)];
     case "glow":
     default:
       return [glowLayer(colors, isMobile)];

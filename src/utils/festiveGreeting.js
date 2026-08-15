@@ -38,6 +38,13 @@ const DEFAULT_FESTIVALS = [
   { date: "2026-12-25", key: "christmas", text: "Merry Christmas", eyebrow: "Celebrating warmth & joy", emoji: "🎄", priority: 5 },
 ];
 
+// Lets calendar-sourced festivals (which don't carry their own eyebrow
+// text) reuse the curated copy here instead of shipping with a blank
+// eyebrow line. Returns undefined for keys with no local entry.
+export function getDefaultEyebrow(key) {
+  return DEFAULT_FESTIVALS.find((f) => f.key === key)?.eyebrow;
+}
+
 function toGreeting(f) {
   return { key: f.key, text: f.text, eyebrow: f.eyebrow, emoji: f.emoji };
 }

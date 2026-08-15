@@ -32,6 +32,13 @@ export default function FestiveFlag({ className = "" }) {
     >
       <title>Indian flag</title>
       <defs>
+        <radialGradient id="flagGlow" cx="50%" cy="45%" r="60%">
+          <stop offset="0%" stopColor="#FFDFA8" stopOpacity="0.55" />
+          <stop offset="100%" stopColor="#FFDFA8" stopOpacity="0" />
+        </radialGradient>
+        <filter id="flagShadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="1.5" stdDeviation="1.2" floodColor="#2C2C2A" floodOpacity="0.25" />
+        </filter>
         <filter id="flagWave" x="-20%" y="-20%" width="140%" height="140%">
           <feTurbulence
             type="fractalNoise"
@@ -53,8 +60,11 @@ export default function FestiveFlag({ className = "" }) {
         </filter>
       </defs>
 
+      <circle cx="90" cy="40" r="55" fill="url(#flagGlow)" />
+
       <line x1="14" y1="6" x2="14" y2="104" stroke="#7A6A4E" strokeWidth="3" strokeLinecap="round" />
 
+      <g filter="url(#flagShadow)">
       <g filter="url(#flagWave)">
         <rect x="16" y="10" width="130" height="24" fill="#FF9933" />
         <rect x="16" y="34" width="130" height="24" fill="#F3ECE0" />
@@ -72,6 +82,7 @@ export default function FestiveFlag({ className = "" }) {
             />
           ))}
         </g>
+      </g>
       </g>
     </svg>
   );

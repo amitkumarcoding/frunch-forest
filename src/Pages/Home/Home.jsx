@@ -49,8 +49,8 @@ function Home() {
     Object.entries(LOCAL_PRODUCTS).map(([slug, p]) => ({ ...p, slug }))
   );
   const [loading, setLoading] = useState(true);
-  const [festive, setFestive] = useState(() => getFestiveGreeting());
-  // const [festive, setFestive] = useState(() => getFestiveGreeting(new Date('2026-04-02')));
+  const TEST_DATE = new Date('2026-04-02'); // ← change this line only to test a festival
+  const [festive, setFestive] = useState(() => getFestiveGreeting(TEST_DATE || undefined));
   const festiveTheme = festive ? getFestiveTheme(festive.key) : null;
   const FestiveIcon = festive ? getFestiveIcon(festive.key) : null;
   const festiveVars = festiveTheme
@@ -166,7 +166,7 @@ function Home() {
     async function loadFestivals() {
       const festivals = await loadFestivalsFromGoogleCalendar();
       if (festivals) {
-        setFestive(getFestiveGreeting(new Date(), festivals));
+        setFestive(getFestiveGreeting(TEST_DATE || new Date(), festivals));
       }
     }
 

@@ -77,6 +77,20 @@ export function CrescentMoonIcon(props) {
   );
 }
 
+// The moon-viewing sieve (chalni) — the specific ritual object of Karwa
+// Chauth, used instead of a crescent moon so the icon isn't shared with
+// four other festivals.
+export function SieveIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="11" r="8" />
+      <path d="M6 8h12M5.2 11h13.6M6 14h12" />
+      <path d="M9 5.5v11M15 5.5v11" />
+      <path d="M12 19v3M9.5 22h5" />
+    </svg>
+  );
+}
+
 export function TrishulIcon(props) {
   return (
     <svg {...base} {...props}>
@@ -110,7 +124,9 @@ export function BowArrowIcon(props) {
   return (
     <svg {...base} {...props}>
       <path d="M6 3a15 15 0 0 1 0 18" />
-      <path d="M6 3 20 12 6 21" strokeDasharray="1 3" />
+      <path d="M6 12h13" />
+      <path d="M16 8l3 4-3 4" />
+      <path d="M6 3 20 12 6 21" strokeDasharray="1 3" opacity="0.5" />
     </svg>
   );
 }
@@ -127,7 +143,23 @@ export function FluteIcon(props) {
 export function ModakIcon(props) {
   return (
     <svg {...base} {...props}>
-      <path d="M12 3c4 3 6 6 6 9a6 6 0 1 1-12 0c0-3 2-6 6-9Z" />
+      <path d="M12 8c4 3 6 6 6 9a6 6 0 1 1-12 0c0-3 2-6 6-9Z" />
+      <path d="M9.5 3.5c.5.9.5 1.6 0 2.3M12.5 2.5c.5 1 .5 1.8 0 2.6" />
+    </svg>
+  );
+}
+
+// Tilak mark + a small diya — the specific Bhai Dooj ritual (forehead
+// mark and a lit lamp), kept separate from the Raksha Bandhan rakhi icon
+// so the two occasions look distinct.
+export function TilakDiyaIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 3v6" />
+      <path d="M9.5 7c0-1.5 1-2.5 2.5-2.5S14.5 5.5 14.5 7" />
+      <path d="M4 17c0 2.5 3.5 4 8 4s8-1.5 8-4" />
+      <path d="M4 17c1.5-1.5 4-2.5 8-2.5s6.5 1 8 2.5" />
+      <path d="M12 14.5c-.8-1.6-.8-3.2 0-4.8.8 1.6.8 3.2 0 4.8Z" fill="currentColor" stroke="none" />
     </svg>
   );
 }
@@ -144,8 +176,9 @@ export function RakhiIcon(props) {
 export function CoinIcon(props) {
   return (
     <svg {...base} {...props}>
-      <circle cx="12" cy="12" r="8" />
-      <path d="M9 12h6M12 9v6" />
+      <circle cx="11" cy="13" r="7" />
+      <path d="M8 13h6M11 10v6" />
+      <path d="M18 4v3M16.5 5.5h3" />
     </svg>
   );
 }
@@ -183,8 +216,10 @@ export function MountainIcon(props) {
 export function BalloonIcon(props) {
   return (
     <svg {...base} {...props}>
-      <ellipse cx="12" cy="9" rx="6" ry="7" />
-      <path d="M12 16v6M10 20h4" />
+      <ellipse cx="9" cy="8" rx="4.2" ry="5" />
+      <ellipse cx="16" cy="10.5" rx="3.2" ry="4" />
+      <path d="M9 13v8M16 14.5v6" />
+      <path d="M7.7 21h2.6M14.7 20.5h2.6" />
     </svg>
   );
 }
@@ -192,7 +227,11 @@ export function BalloonIcon(props) {
 export function TreeIcon(props) {
   return (
     <svg {...base} {...props}>
-      <path d="M12 2 7 10h3l-4 6h4v6h4v-6h4l-4-6h3Z" />
+      <path d="M12 5 8 11h2.5l-3 5H11v5h2v-5h3.5l-3-5H16Z" />
+      <path d="M12 2v1.4" />
+      <circle cx="9.5" cy="12.5" r="0.6" fill="currentColor" stroke="none" />
+      <circle cx="14.5" cy="14.5" r="0.6" fill="currentColor" stroke="none" />
+      <circle cx="10" cy="17.5" r="0.6" fill="currentColor" stroke="none" />
     </svg>
   );
 }
@@ -256,11 +295,11 @@ const ICON_BY_KEY = {
   onam: LotusIcon,
   navratri: ColorSplashIcon,
   dussehra: BowArrowIcon,
-  "karwa-chauth": CrescentMoonIcon,
+  "karwa-chauth": SieveIcon,
   dhanteras: CoinIcon,
   diwali: DiyaIcon,
   "govardhan-puja": MountainIcon,
-  "bhai-dooj": RakhiIcon,
+  "bhai-dooj": TilakDiyaIcon,
   "children-s-day": BalloonIcon,
   "guru-nanak-jayanti": KhandaIcon,
   christmas: TreeIcon,

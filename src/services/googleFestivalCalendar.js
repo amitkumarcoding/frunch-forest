@@ -1,3 +1,4 @@
+import { getDefaultEyebrow } from "../utils/festiveGreeting";
 const CALENDAR_ID = "en.indian#holiday@group.v.calendar.google.com";
 const API_KEY = import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY;
 const CACHE_KEY = "ff_festivals_cache_v1";
@@ -20,7 +21,7 @@ const ALIASES = [
   { match: /mahavir/i, key: "mahavir-jayanti" },
   { match: /good\s*friday/i, key: "good-friday" },
   { match: /hanuman/i, key: "hanuman-jayanti" },
-  { match: /buddh?a?\s*purnima/i, key: "buddha-purnima" },
+  { match: /bud[dh]h?a?\s*purnima/i, key: "buddha-purnima" },
   { match: /adha|bakri/i, key: "eid-al-adha" },
   { match: /muharram/i, key: "muharram" },
   { match: /onam/i, key: "onam" },
@@ -83,12 +84,16 @@ export async function loadFestivalsFromGoogleCalendar() {
     const data = await res.json();
     const festivals = (data.items || [])
       .filter((event) => event.start?.date && event.summary)
-      .map((event) => ({
-        date: event.start.date,
-        key: resolveKey(event.summary),
-        text: `Happy ${event.summary}`,
-        emoji: "🎉",
-      }));
+      .map((event) => {
+        const key = resolveKey(event.summary);
+        return {
+          date: event.start.date,
+          key,
+          text: `Happy ${event.summary}`,
+          eyebrow: getDefaultEyebrow(key) || "Wishing you a wonderful day",
+          emoji: "🎉",
+        };
+      });
 
     sessionStorage.setItem(CACHE_KEY, JSON.stringify({ savedAt: Date.now(), festivals }));
 
