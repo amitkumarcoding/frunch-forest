@@ -55,8 +55,8 @@ function Home() {
     Object.entries(LOCAL_PRODUCTS).map(([slug, p]) => ({ ...p, slug }))
   );
   const [loading, setLoading] = useState(true);
-  const TEST_DATE = new Date('2026-08-02'); // ← change this line only to test a festival
-  // const TEST_DATE = null
+  // const TEST_DATE = new Date('2026-08-02'); // ← change this line only to test a festival
+  const TEST_DATE = null
   const [festive, setFestive] = useState(() => getFestiveGreeting(TEST_DATE || undefined));
   // Fallback hero theme for days with no festival — swaps between
   // morning/afternoon/evening/night as the clock moves. Refreshed every
