@@ -11,7 +11,6 @@ import { getFestiveTheme } from "../../utils/festiveTheme";
 import { getFestiveIcon } from "../../utils/festiveIcons";
 import { loadFestivalsFromGoogleCalendar } from "../../services/googleFestivalCalendar";
 import FestiveParticles from "../../components/FestiveParticles";
-import FestiveFlag from "../../components/FestiveFlag";
 
 // Converts "#RRGGBB" (or "#RGB") to an rgba() string with the given alpha.
 // Used instead of CSS color-mix() for the festive backdrop wash, since
@@ -51,7 +50,7 @@ function Home() {
   );
   const [loading, setLoading] = useState(true);
   const [festive, setFestive] = useState(() => getFestiveGreeting());
-  // const [festive, setFestive] = useState(() => getFestiveGreeting(new Date('2026-01-01')));
+  // const [festive, setFestive] = useState(() => getFestiveGreeting(new Date('2026-09-04')));
   const festiveTheme = festive ? getFestiveTheme(festive.key) : null;
   const FestiveIcon = festive ? getFestiveIcon(festive.key) : null;
   const festiveVars = festiveTheme
@@ -311,7 +310,6 @@ function Home() {
               aria-hidden="true"
             >
               <div className={`hero-festive-backdrop hero-festive-backdrop--${festiveTheme.pattern}`}></div>
-              {festiveTheme.pattern === "flag" && <FestiveFlag />}
               <FestiveParticles pattern={festiveTheme.pattern} colors={festiveTheme.colors} />
             </div>
           )}
@@ -334,9 +332,7 @@ function Home() {
                     </span>
                   </span>
                   <span className="festive-banner-copy">
-                    <span className="festive-banner-eyebrow">
-                      {festive.key === "independence-day" ? "Celebrating the spirit of India" : "Wishing you well"}
-                    </span>
+                    <span className="festive-banner-eyebrow">{festive.eyebrow}</span>
                     <span className="festive-banner-text">{festive.text}</span>
                   </span>
                   <button

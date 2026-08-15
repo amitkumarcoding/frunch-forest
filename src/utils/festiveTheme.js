@@ -23,7 +23,7 @@ export const FESTIVE_THEMES = {
   "eid-al-fitr": { colors: ["#2F6B3F", "#F1D48A", "#EDE3C8"], pattern: "glow" },
   "eid-al-adha": { colors: ["#3E7C4A", "#F1D48A", "#8B6420"], pattern: "glow" },
   muharram: { colors: ["#2C2C2A", "#3E7C4A", "#8B6420"], pattern: "glow" },
-  "independence-day": { colors: ["#E8A23A", "#F8F1E4", "#315C45"], pattern: "independence" },
+  "independence-day": { colors: ["#E8A23A", "#F8F1E4", "#315C45"], pattern: "stripes" },
   janmashtami: { colors: ["#2A4B8D", "#F1D48A", "#3E7C4A"], pattern: "glow" },
   "ganesh-chaturthi": { colors: ["#D85A30", "#F1D48A", "#8B6420"], pattern: "glow" },
   onam: { colors: ["#3E7C4A", "#F1D48A", "#B23B3B"], pattern: "glow" },
