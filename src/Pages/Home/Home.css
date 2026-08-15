@@ -458,7 +458,7 @@
   .indep-leaf{
     position:absolute;
     width:120px; height:60px;
-    background:#315C45;
+    background:var(--tc-1);
     opacity:0.06;
     filter:blur(6px);
     border-radius:0 100% 0 100%;
@@ -467,6 +467,32 @@
   .indep-leaf-2{ bottom:-10px; right:-10px; transform:rotate(160deg); animation:leafFloat 12s ease-in-out infinite reverse; }
   @keyframes leafFloat{ 0%,100%{ translate:0 0; } 50%{ translate:0 -8px; } }
   @media (prefers-reduced-motion: reduce){ .indep-leaf{ animation:none; } }
+
+  /* ---------- generic festival emblem — festival's own icon, right side, for non-national days ---------- */
+  .festive-emblem-decor{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:1; }
+  .festive-emblem-glow{
+    position:absolute;
+    top:-100px; right:-100px;
+    width:360px; height:360px;
+    border-radius:50%;
+    background:radial-gradient(circle at center, var(--tc-3-a), transparent 70%);
+    filter:blur(2px);
+  }
+  .festive-emblem-icon{
+    position:absolute;
+    top:-30px; right:-30px;
+    width:220px; height:220px;
+    color:var(--tc-3);
+    opacity:0.14;
+    animation:emblemSpin 90s linear infinite;
+  }
+  .festive-emblem-icon svg{ width:100%; height:100%; }
+  @keyframes emblemSpin{ to{ transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){ .festive-emblem-icon{ animation:none; } }
+  @media (max-width:640px){
+    .festive-emblem-glow{ width:240px; height:240px; top:-70px; right:-70px; }
+    .festive-emblem-icon{ width:140px; height:140px; top:-15px; right:-15px; }
+  }
 
   .festive-banner[data-festival="independence-day"]{
     background:

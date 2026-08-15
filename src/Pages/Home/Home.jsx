@@ -49,8 +49,8 @@ function Home() {
     Object.entries(LOCAL_PRODUCTS).map(([slug, p]) => ({ ...p, slug }))
   );
   const [loading, setLoading] = useState(true);
-  const [festive, setFestive] = useState(() => getFestiveGreeting());
-  // const [festive, setFestive] = useState(() => getFestiveGreeting(new Date('2026-09-04')));
+  // const [festive, setFestive] = useState(() => getFestiveGreeting());
+  const [festive, setFestive] = useState(() => getFestiveGreeting(new Date('2026-04-02')));
   const festiveTheme = festive ? getFestiveTheme(festive.key) : null;
   const FestiveIcon = festive ? getFestiveIcon(festive.key) : null;
   const festiveVars = festiveTheme
@@ -313,9 +313,18 @@ function Home() {
               <FestiveParticles pattern={festiveTheme.pattern} colors={festiveTheme.colors} />
             </div>
           )}
-          {festive?.key === "independence-day" && (
+          {(festive?.key === "independence-day" || festive?.key === "republic-day") && (
             <div className="indep-decor" aria-hidden="true">
               <div className="indep-chakra"></div>
+              <div className="indep-leaf indep-leaf-1"></div>
+              <div className="indep-leaf indep-leaf-2"></div>
+              <div className="indep-grain"></div>
+            </div>
+          )}
+          {festive && festive.key !== "independence-day" && festive.key !== "republic-day" && FestiveIcon && (
+            <div className="festive-emblem-decor" aria-hidden="true">
+              <div className="festive-emblem-glow"></div>
+              <div className="festive-emblem-icon"><FestiveIcon /></div>
               <div className="indep-leaf indep-leaf-1"></div>
               <div className="indep-leaf indep-leaf-2"></div>
               <div className="indep-grain"></div>
