@@ -8,6 +8,7 @@ import ProductCard from "../../components/ProductCard/ProductCard";
 import SEO from "../../components/SEO/SEO";
 import { getFestiveGreeting } from "../../utils/festiveGreeting";
 import { getFestiveTheme } from "../../utils/festiveTheme";
+import { loadFestivalsFromGoogleCalendar } from "../../services/googleFestivalCalendar";
 
 // Converts "#RRGGBB" (or "#RGB") to an rgba() string with the given alpha.
 // Used instead of CSS color-mix() for the festive backdrop wash, since
@@ -150,6 +151,17 @@ function Home() {
     }
 
     loadProducts();
+  }, []);
+
+  useEffect(() => {
+    async function loadFestivals() {
+      const festivals = await loadFestivalsFromGoogleCalendar();
+      if (festivals) {
+        setFestive(getFestiveGreeting(new Date(), festivals));
+      }
+    }
+
+    loadFestivals();
   }, []);
 
   // Keep the original site's preloader timing, but let React control it.
