@@ -6,6 +6,21 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import SEO from "../../components/SEO/SEO";
+import { getFestiveGreeting } from "../../utils/festiveGreeting";
+import { getFestiveTheme } from "../../utils/festiveTheme";
+
+// Converts "#RRGGBB" (or "#RGB") to an rgba() string with the given alpha.
+// Used instead of CSS color-mix() for the festive backdrop wash, since
+// color-mix() isn't supported on some Android WebViews / older browsers.
+function hexToRgba(hex, alpha) {
+  const clean = hex.replace("#", "");
+  const full = clean.length === 3 ? clean.split("").map((c) => c + c).join("") : clean;
+  const num = parseInt(full, 16);
+  const r = (num >> 16) & 255;
+  const g = (num >> 8) & 255;
+  const b = num & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 const PACK_ITEMS = [
   { name: "Almond", img: "/image/packaging/almonds.jpeg" },
@@ -31,6 +46,18 @@ function Home() {
     Object.entries(LOCAL_PRODUCTS).map(([slug, p]) => ({ ...p, slug }))
   );
   const [loading, setLoading] = useState(true);
+  const [festive, setFestive] = useState(() => getFestiveGreeting());
+  const festiveTheme = festive ? getFestiveTheme(festive.key) : null;
+  const festiveVars = festiveTheme
+    ? {
+        "--tc-1": festiveTheme.colors[0],
+        "--tc-2": festiveTheme.colors[1],
+        "--tc-3": festiveTheme.colors[2],
+        "--tc-1-a": hexToRgba(festiveTheme.colors[0], 0.24),
+        "--tc-2-a": hexToRgba(festiveTheme.colors[1], 0.3),
+        "--tc-3-a": hexToRgba(festiveTheme.colors[2], 0.2),
+      }
+    : undefined;
   const [activeGiftItem, setActiveGiftItem] = useState("diwali");
   const [giftImgErrors, setGiftImgErrors] = useState({});
 
@@ -266,8 +293,48 @@ function Home() {
             <source src="/video/hero-bg.mp4" type="video/mp4" />
           </video>
           <div className="hero-video-overlay"></div>
+          {festive && (
+            <div
+              className="hero-festive-layer"
+              style={festiveVars}
+              aria-hidden="true"
+            >
+              <div className={`hero-festive-backdrop hero-festive-backdrop--${festiveTheme.pattern}`}></div>
+              <span className="fp fp1"></span>
+              <span className="fp fp2"></span>
+              <span className="fp fp3"></span>
+              <span className="fp fp4"></span>
+              <span className="fp fp5"></span>
+              <span className="fp fp6"></span>
+              <span className="fp fp7"></span>
+              <span className="fp fp8"></span>
+              <span className="fp-spark fs1">✦</span>
+              <span className="fp-spark fs2">✦</span>
+              <span className="fp-spark fs3">✦</span>
+            </div>
+          )}
           <div className="wrap hero-grid hero-inner">
             <div>
+              {festive && (
+                <div className="festive-banner hero-anim a1">
+                  <span className="festive-banner-icon">
+                    <span className="festive-banner-icon-glow" aria-hidden="true"></span>
+                    <span className="festive-banner-icon-emoji">{festive.emoji}</span>
+                  </span>
+                  <span className="festive-banner-copy">
+                    <span className="festive-banner-eyebrow">Wishing you well</span>
+                    <span className="festive-banner-text">{festive.text}</span>
+                  </span>
+                  <button
+                    type="button"
+                    className="festive-banner-close"
+                    aria-label="Dismiss"
+                    onClick={() => setFestive(null)}
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
               <div className="eyebrow hero-anim a1"><span className="dot"></span> Handpicked · Farm-fresh · Pan-India delivery</div>
               <h1 className="hero-anim a2">Natural dry fruits,<em>a crunch of nature in every bite</em></h1>
               <p className="lede hero-anim a3">Frunch Forest brings almonds, cashews, walnuts, raisins and fox nuts from farm to your table — no preservatives, no shortcuts, just honest quality in every pack.</p>
