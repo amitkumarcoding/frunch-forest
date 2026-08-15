@@ -9,9 +9,13 @@ import SEO from "../../components/SEO/SEO";
 import { getFestiveGreeting } from "../../utils/festiveGreeting";
 import { getFestiveTheme } from "../../utils/festiveTheme";
 import { getFestiveIcon } from "../../utils/festiveIcons";
+import { getTimeGreeting } from "../../utils/timeGreeting";
+import { getTimeTheme } from "../../utils/timeTheme";
+import { getTimeIcon } from "../../utils/timeIcons";
 import { loadFestivalsFromGoogleCalendar } from "../../services/googleFestivalCalendar";
 import FestiveParticles from "../../components/FestiveParticles";
 import FestiveWelcomeOverlay from "../../components/FestiveWelcomeOverlay";
+import FestiveGarland from "../../components/FestiveGarland";
 
 // Converts "#RRGGBB" (or "#RGB") to an rgba() string with the given alpha.
 // Used instead of CSS color-mix() for the festive backdrop wash, since
@@ -50,24 +54,39 @@ function Home() {
     Object.entries(LOCAL_PRODUCTS).map(([slug, p]) => ({ ...p, slug }))
   );
   const [loading, setLoading] = useState(true);
-  // const TEST_DATE = new Date('2026-08-02'); // ← change this line only to test a festival
-  const TEST_DATE = null
+  const TEST_DATE = new Date('2026-08-02'); // ← change this line only to test a festival
+  // const TEST_DATE = null
   const [festive, setFestive] = useState(() => getFestiveGreeting(TEST_DATE || undefined));
-  const festiveTheme = festive ? getFestiveTheme(festive.key) : null;
-  const FestiveIcon = festive ? getFestiveIcon(festive.key) : null;
-  const festiveVars = festiveTheme
+  // Fallback hero theme for days with no festival — swaps between
+  // morning/afternoon/evening/night as the clock moves. Refreshed every
+  // few minutes so a tab left open across a slot boundary picks it up.
+  const [timeGreeting, setTimeGreeting] = useState(() => getTimeGreeting(TEST_DATE || undefined));
+  useEffect(() => {
+    const id = setInterval(() => setTimeGreeting(getTimeGreeting()), 5 * 60 * 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Festival takes priority when one's active; otherwise the hero falls
+  // back to the time-of-day theme. `active` drives the hero banner,
+  // backdrop and emblem for both — they share the same {key,text,eyebrow,emoji}
+  // shape so the rest of the render tree doesn't need to branch.
+  const isFestival = Boolean(festive);
+  const active = festive || timeGreeting;
+  const activeTheme = isFestival ? getFestiveTheme(active.key) : getTimeTheme(active.key);
+  const ActiveIcon = isFestival ? getFestiveIcon(active.key) : getTimeIcon(active.key);
+  const festiveVars = activeTheme
     ? {
-        "--tc-1": festiveTheme.colors[0],
-        "--tc-2": festiveTheme.colors[1],
-        "--tc-3": festiveTheme.colors[2],
-        "--tc-1-a": hexToRgba(festiveTheme.colors[0], 0.24),
-        "--tc-2-a": hexToRgba(festiveTheme.colors[1], 0.3),
-        "--tc-3-a": hexToRgba(festiveTheme.colors[2], 0.2),
+        "--tc-1": activeTheme.colors[0],
+        "--tc-2": activeTheme.colors[1],
+        "--tc-3": activeTheme.colors[2],
+        "--tc-1-a": hexToRgba(activeTheme.colors[0], 0.24),
+        "--tc-2-a": hexToRgba(activeTheme.colors[1], 0.3),
+        "--tc-3-a": hexToRgba(activeTheme.colors[2], 0.2),
         // Lighter alpha, used for the full-hero background wash (see
         // .hero in Home.css) — same colours, subtler than the top strip.
-        "--tc-1-wash": hexToRgba(festiveTheme.colors[0], 0.1),
-        "--tc-2-wash": hexToRgba(festiveTheme.colors[1], 0.18),
-        "--tc-3-wash": hexToRgba(festiveTheme.colors[2], 0.14),
+        "--tc-1-wash": hexToRgba(activeTheme.colors[0], 0.1),
+        "--tc-2-wash": hexToRgba(activeTheme.colors[1], 0.18),
+        "--tc-3-wash": hexToRgba(activeTheme.colors[2], 0.14),
       }
     : undefined;
   const [activeGiftItem, setActiveGiftItem] = useState("diwali");
@@ -303,23 +322,24 @@ function Home() {
       <div className="progress-bar" id="progressBar"></div>
 
       {!loading && (
-        <FestiveWelcomeOverlay festive={festive} theme={festiveTheme} Icon={FestiveIcon} />
+        <FestiveWelcomeOverlay festive={festive} theme={activeTheme} Icon={ActiveIcon} />
       )}
 
       <Header />
 
       <main id="main">
         <section className="hero" id="heroSection" style={festiveVars}>
-          {festive && (
+          {active && (
             <div
               className="hero-festive-layer"
               aria-hidden="true"
             >
-              <div className={`hero-festive-backdrop hero-festive-backdrop--${festiveTheme.pattern}`}></div>
-              <FestiveParticles pattern={festiveTheme.pattern} colors={festiveTheme.colors} />
+              <div className={`hero-festive-backdrop hero-festive-backdrop--${activeTheme.pattern}`}></div>
+              <FestiveParticles pattern={activeTheme.pattern} colors={activeTheme.colors} />
+              {isFestival && <FestiveGarland theme={activeTheme} />}
             </div>
           )}
-          {(festive?.key === "independence-day" || festive?.key === "republic-day") && (
+          {(active?.key === "independence-day" || active?.key === "republic-day") && (
             <div className="indep-decor" aria-hidden="true">
               <div className="indep-chakra"></div>
               <div className="indep-leaf indep-leaf-1"></div>
@@ -327,10 +347,10 @@ function Home() {
               <div className="indep-grain"></div>
             </div>
           )}
-          {festive && festive.key !== "independence-day" && festive.key !== "republic-day" && FestiveIcon && (
+          {active && active.key !== "independence-day" && active.key !== "republic-day" && ActiveIcon && (
             <div className="festive-emblem-decor" aria-hidden="true">
               <div className="festive-emblem-glow"></div>
-              <div className="festive-emblem-icon"><FestiveIcon /></div>
+              <div className="festive-emblem-icon"><ActiveIcon /></div>
               <div className="indep-leaf indep-leaf-1"></div>
               <div className="indep-leaf indep-leaf-2"></div>
               <div className="indep-grain"></div>
@@ -338,8 +358,8 @@ function Home() {
           )}
           <div className="wrap hero-grid hero-inner">
             <div>
-              {festive && (
-                <div className="festive-banner hero-anim a1" data-festival={festive.key}>
+              {active && (
+                <div className="festive-banner hero-anim a1" data-festival={active.key}>
                   <span className="festive-banner-ambient" aria-hidden="true"></span>
                   <span className="festive-banner-icon">
                     <span className="festive-banner-icon-ring" aria-hidden="true"></span>
@@ -347,12 +367,12 @@ function Home() {
                     <span className="festive-banner-icon-spark s1" aria-hidden="true"></span>
                     <span className="festive-banner-icon-spark s2" aria-hidden="true"></span>
                     <span className="festive-banner-icon-emoji">
-                      {FestiveIcon && <FestiveIcon width={20} height={20} />}
+                      {ActiveIcon && <ActiveIcon width={20} height={20} />}
                     </span>
                   </span>
                   <span className="festive-banner-copy">
-                    <span className="festive-banner-eyebrow">{festive.eyebrow}</span>
-                    <span className="festive-banner-text">{festive.text}</span>
+                    <span className="festive-banner-eyebrow">{active.eyebrow}</span>
+                    <span className="festive-banner-text">{active.text}</span>
                   </span>
                 </div>
               )}
