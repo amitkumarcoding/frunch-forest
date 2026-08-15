@@ -261,6 +261,11 @@
   .hero-festive-backdrop--snow{
     background:linear-gradient(160deg, var(--tc-1-a), var(--tc-2-a));
   }
+  .hero-festive-backdrop--independence{
+    background:
+      radial-gradient(70% 60% at 15% 0%, var(--tc-1-a), transparent 65%),
+      radial-gradient(70% 60% at 85% 100%, var(--tc-3-a), transparent 65%);
+  }
 
   @media (max-width:640px){
     .hero-festive-layer{ height:220px; }
@@ -294,6 +299,11 @@
         radial-gradient(140px 140px at 70% 12%, var(--tc-3-a), transparent 72%),
         radial-gradient(120px 120px at 88% 48%, var(--tc-1-a), transparent 72%),
         radial-gradient(110px 110px at 24% 86%, var(--tc-2-a), transparent 72%);
+    }
+    .hero-festive-backdrop--independence{
+      background:
+        radial-gradient(120% 70% at 15% 0%, var(--tc-1-a), transparent 68%),
+        radial-gradient(120% 70% at 85% 100%, var(--tc-3-a), transparent 70%);
     }
     .hero-festive-backdrop::after,
     .hero-visual::before{
@@ -415,6 +425,72 @@
     .festive-banner{ margin-bottom:18px; padding:6px 14px 6px 6px; gap:10px; }
     .festive-banner-icon{ width:32px; height:32px; }
     .festive-banner-text{ font-size:0.98rem; max-width:64vw; }
+  }
+
+  /* ---------- Independence Day — premium nature x tricolour decor ---------- */
+  .indep-decor{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:1; }
+
+  .indep-grain{
+    position:absolute; inset:0;
+    opacity:0.035;
+    mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .indep-chakra{
+    position:absolute;
+    top:-90px; right:-110px;
+    width:340px; height:340px;
+    border-radius:50%;
+    opacity:0.07;
+    filter:blur(1.5px);
+    background:
+      repeating-conic-gradient(from 0deg, #1F3A5F 0deg 3deg, transparent 3deg 15deg),
+      radial-gradient(circle at center, transparent 62%, #1F3A5F 63%, transparent 65%);
+    animation:chakraSpin 90s linear infinite;
+  }
+  @keyframes chakraSpin{ to{ transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){ .indep-chakra{ animation:none; } }
+  @media (max-width:640px){
+    .indep-chakra{ width:220px; height:220px; top:-50px; right:-60px; }
+  }
+
+  .indep-leaf{
+    position:absolute;
+    width:120px; height:60px;
+    background:#315C45;
+    opacity:0.06;
+    filter:blur(6px);
+    border-radius:0 100% 0 100%;
+  }
+  .indep-leaf-1{ top:6px; left:-20px; transform:rotate(-18deg); animation:leafFloat 10s ease-in-out infinite; }
+  .indep-leaf-2{ bottom:-10px; right:-10px; transform:rotate(160deg); animation:leafFloat 12s ease-in-out infinite reverse; }
+  @keyframes leafFloat{ 0%,100%{ translate:0 0; } 50%{ translate:0 -8px; } }
+  @media (prefers-reduced-motion: reduce){ .indep-leaf{ animation:none; } }
+
+  .festive-banner[data-festival="independence-day"]{
+    background:
+      linear-gradient(180deg, rgba(248,241,228,0.92), rgba(248,241,228,0.75)) padding-box,
+      linear-gradient(90deg, #E8A23A, #F8F1E4, #315C45) border-box;
+    border:1px solid transparent;
+    box-shadow:0 16px 34px -18px rgba(31,42,34,0.35), inset 0 1px 0 rgba(255,255,255,0.7);
+  }
+  .festive-banner[data-festival="independence-day"] .festive-banner-eyebrow{
+    color:#315C45;
+  }
+  .festive-banner[data-festival="independence-day"] .festive-banner-text{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    background:linear-gradient(100deg, #315C45 20%, #315C45 60%, #C9973B 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .festive-banner[data-festival="independence-day"]::after{
+    content:"";
+    position:absolute; left:14px; right:14px; bottom:2px;
+    height:2px;
+    background:linear-gradient(90deg, #E8A23A, #F8F1E4, #315C45);
+    border-radius:2px;
+    opacity:0.7;
   }
 
   .hero-inner{ padding-bottom:70px !important; position:relative; z-index:2; }

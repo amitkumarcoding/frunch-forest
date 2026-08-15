@@ -315,10 +315,18 @@ function Home() {
               <FestiveParticles pattern={festiveTheme.pattern} colors={festiveTheme.colors} />
             </div>
           )}
+          {festive?.key === "independence-day" && (
+            <div className="indep-decor" aria-hidden="true">
+              <div className="indep-chakra"></div>
+              <div className="indep-leaf indep-leaf-1"></div>
+              <div className="indep-leaf indep-leaf-2"></div>
+              <div className="indep-grain"></div>
+            </div>
+          )}
           <div className="wrap hero-grid hero-inner">
             <div>
               {festive && (
-                <div className="festive-banner hero-anim a1">
+                <div className="festive-banner hero-anim a1" data-festival={festive.key}>
                   <span className="festive-banner-icon">
                     <span className="festive-banner-icon-glow" aria-hidden="true"></span>
                     <span className="festive-banner-icon-emoji">
@@ -326,7 +334,9 @@ function Home() {
                     </span>
                   </span>
                   <span className="festive-banner-copy">
-                    <span className="festive-banner-eyebrow">Wishing you well</span>
+                    <span className="festive-banner-eyebrow">
+                      {festive.key === "independence-day" ? "Celebrating the spirit of India" : "Wishing you well"}
+                    </span>
                     <span className="festive-banner-text">{festive.text}</span>
                   </span>
                   <button

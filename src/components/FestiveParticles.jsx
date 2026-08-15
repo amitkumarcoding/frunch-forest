@@ -116,6 +116,38 @@ function splashLayer(colors) {
   };
 }
 
+function topDustLayer(colors) {
+  const [c1] = colors;
+  return {
+    ...shared,
+    particles: {
+      number: { value: scaleCount(6) },
+      color: { value: c1 },
+      shape: { type: "circle" },
+      opacity: { value: { min: 0.15, max: 0.35 }, animation: { enable: true, speed: 0.4, sync: false, startValue: "random" } },
+      size: { value: { min: 1, max: 2.5 } },
+      move: { enable: true, speed: { min: 0.1, max: 0.25 }, direction: "top", random: true, outModes: { default: "out" } },
+    },
+    emitters: { position: { x: 50, y: 5 }, rate: { quantity: 1, delay: 2 }, life: { count: 0 } },
+  };
+}
+
+function bottomDustLayer(colors) {
+  const [, , c3] = colors;
+  return {
+    ...shared,
+    particles: {
+      number: { value: scaleCount(6) },
+      color: { value: c3 },
+      shape: { type: "circle" },
+      opacity: { value: { min: 0.15, max: 0.35 }, animation: { enable: true, speed: 0.4, sync: false, startValue: "random" } },
+      size: { value: { min: 1, max: 2.5 } },
+      move: { enable: true, speed: { min: 0.1, max: 0.25 }, direction: "top", random: true, outModes: { default: "out" } },
+    },
+    emitters: { position: { x: 50, y: 95 }, rate: { quantity: 1, delay: 2 }, life: { count: 0 } },
+  };
+}
+
 function snowLayer() {
   return {
     ...shared,
@@ -173,6 +205,8 @@ function buildLayers(pattern, colors) {
   switch (pattern) {
     case "flag":
       return []; // rendered by <FestiveFlag/> instead — no particle layer
+    case "independence":
+      return [topDustLayer(colors), bottomDustLayer(colors)];
     case "crackers":
       return [diyaLayer(colors), crackerLayer(colors)];
     case "pichkari":
