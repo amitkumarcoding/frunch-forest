@@ -17,6 +17,7 @@ const DEFAULT_FESTIVALS = [
   { date: "2026-05-01", key: "buddha-purnima", text: "Happy Buddha Purnima", emoji: "☸️" },
   { date: "2026-05-27", key: "eid-al-adha", text: "Happy Eid al-Adha", emoji: "🕌" },
   { date: "2026-06-26", key: "muharram", text: "Muharram", emoji: "🌑" },
+  { date: "2026-08-15", key: "independence-day", text: "Happy Independence Day", emoji: "🇮🇳" },
   { date: "2026-08-26", key: "onam", text: "Happy Onam", emoji: "🌺" },
   { date: "2026-08-28", key: "raksha-bandhan", text: "Happy Raksha Bandhan", emoji: "🎗️" },
   { date: "2026-09-04", key: "janmashtami", text: "Happy Janmashtami", emoji: "🪈" },
