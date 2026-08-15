@@ -30,7 +30,6 @@ const PACK_ITEMS = [
   { name: "Dates", img: "/image/packaging/datespackage.png" },
   { name: "Dried Apricots", img: "/image/packaging/driedapricotsPackage.png" },
   { name: "Dried Figs", img: "/image/packaging/driedfigspackage.png" },
-  { name: "Fox Nuts", img: "/image/packaging/foxnutspackage.png" },
   { name: "Makhana", img: "/image/packaging/makhanapackage.png" },
   { name: "Mixed Nuts", img: "/image/packaging/mixednutspackage.png" },
   { name: "Pistachios", img: "/image/packaging/pistachiospackage.png" },
