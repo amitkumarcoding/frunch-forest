@@ -11,6 +11,7 @@ import { getFestiveTheme } from "../../utils/festiveTheme";
 import { getFestiveIcon } from "../../utils/festiveIcons";
 import { loadFestivalsFromGoogleCalendar } from "../../services/googleFestivalCalendar";
 import FestiveParticles from "../../components/FestiveParticles";
+import FestiveWelcomeOverlay from "../../components/FestiveWelcomeOverlay";
 
 // Converts "#RRGGBB" (or "#RGB") to an rgba() string with the given alpha.
 // Used instead of CSS color-mix() for the festive backdrop wash, since
@@ -300,6 +301,10 @@ function Home() {
       )}
 
       <div className="progress-bar" id="progressBar"></div>
+
+      {!loading && (
+        <FestiveWelcomeOverlay festive={festive} theme={festiveTheme} Icon={FestiveIcon} />
+      )}
 
       <Header />
 
