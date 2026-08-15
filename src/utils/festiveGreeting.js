@@ -61,6 +61,17 @@ function getPreviewKey() {
   }
 }
 
+function toLocalISODate(date) {
+  // Local calendar date, not UTC — toISOString() converts to UTC first,
+  // which for IST (UTC+5:30) keeps yesterday's date showing for the first
+  // ~5.5 hours of today. Festivals are IST calendar days, so match on
+  // the browser's local date instead.
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 // `festivals` — optional list from Google Calendar ({date,key,text,emoji}).
 // Falls back to DEFAULT_FESTIVALS when Google Calendar is unavailable.
 export function getFestiveGreeting(date = new Date(), festivals = null) {
@@ -74,7 +85,7 @@ export function getFestiveGreeting(date = new Date(), festivals = null) {
     if (preview) return toGreeting(preview);
   }
 
-  const iso = date.toISOString().slice(0, 10);
+  const iso = toLocalISODate(date);
   const matches = list.filter((f) => f.date === iso);
   if (!matches.length) return null;
   const match = matches.sort((a, b) => (b.priority || 0) - (a.priority || 0))[0];

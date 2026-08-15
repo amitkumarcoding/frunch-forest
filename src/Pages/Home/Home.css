@@ -341,6 +341,23 @@
     max-width:100%;
     animation:festiveFoilRotate 9s linear infinite;
   }
+  .festive-banner-ambient{
+    /* fills the space where a loud ticker used to be — a quiet glow
+       instead of moving text, so the top of the hero still feels
+       finished without anything scrolling */
+    position:absolute;
+    top:50%; left:50%;
+    width:340px; height:180px;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(ellipse at center, var(--tc-1-a,rgba(241,212,138,0.3)), transparent 70%);
+    filter:blur(6px);
+    pointer-events:none;
+    z-index:-1;
+    opacity:0.8;
+    animation:festiveAmbientPulse 5s ease-in-out infinite;
+  }
+  @keyframes festiveAmbientPulse{ 0%,100%{ opacity:0.6; } 50%{ opacity:1; } }
+  @media (prefers-reduced-motion: reduce){ .festive-banner-ambient{ animation:none; } }
   @property --foil-angle{ syntax:'<angle>'; initial-value:0deg; inherits:false; }
   @keyframes festiveFoilRotate{ to{ --foil-angle:360deg; } }
   @media (prefers-reduced-motion: reduce){ .festive-banner{ animation:none; } }
@@ -400,6 +417,13 @@
     100%{ top:-6px; left:50%; opacity:0; }
   }
   @media (prefers-reduced-motion: reduce){ .festive-banner-icon-spark{ animation:none; opacity:0; } }
+  @media (max-width:640px){
+    /* fewer concurrently-animating layers on mobile keeps the marquee
+       above it smooth — spinning ring + 2 orbit sparks + shimmer sweep
+       all compositing at once is the main jank source on low-end phones */
+    .festive-banner-icon-spark{ display:none; }
+    .festive-banner-icon-ring{ animation-duration:7s; }
+  }
   .festive-banner-icon-glow{
     position:absolute; inset:-3px;
     border-radius:50%;
@@ -437,25 +461,17 @@
     overflow:hidden;
     text-overflow:ellipsis;
   }
-  .festive-banner-close{
-    position:relative; z-index:1;
-    width:22px; height:22px; flex:none;
-    margin-left:2px;
-    border-radius:50%;
-    border:1px solid rgba(34,30,23,0.18);
-    background:rgba(255,255,255,0.5);
-    color:rgba(34,30,23,0.55);
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer;
-    font-size:0.75rem;
-    line-height:1;
-    transition:border-color .2s ease, color .2s ease, background .2s ease;
-  }
-  .festive-banner-close:hover{ border-color:var(--gold-1); color:var(--forest-mid); background:#fff; }
   @media (max-width:480px){
     .festive-banner{ margin-bottom:18px; padding:6px 14px 6px 6px; gap:10px; }
     .festive-banner-icon{ width:32px; height:32px; }
     .festive-banner-text{ font-size:0.98rem; max-width:64vw; }
+  }
+  @media (max-width:640px){
+    /* backdrop-filter recomputes every scroll frame on mobile GPUs —
+       swap the frosted-glass blur for a plain tinted fill so scrolling
+       the hero stays smooth. Also drop the gold-foil sheen sweep. */
+    .festive-banner{ backdrop-filter:none; -webkit-backdrop-filter:none; background:linear-gradient(180deg, rgba(255,253,247,0.97), rgba(243,236,224,0.92)) padding-box, conic-gradient(from var(--foil-angle,0deg), var(--gold-2), var(--gold-1), #fff, var(--gold-2)) border-box; animation:none; }
+    .festive-banner::before{ animation:none; display:none; }
   }
 
   /* ---------- Independence Day — premium nature x tricolour decor ---------- */
@@ -483,7 +499,7 @@
   @keyframes chakraSpin{ to{ transform:rotate(360deg); } }
   @media (prefers-reduced-motion: reduce){ .indep-chakra{ animation:none; } }
   @media (max-width:640px){
-    .indep-chakra{ width:220px; height:220px; top:-50px; right:-60px; }
+    .indep-chakra{ width:220px; height:220px; top:-50px; right:-60px; animation:none; }
   }
 
   .indep-leaf{
@@ -498,6 +514,12 @@
   .indep-leaf-2{ bottom:-10px; right:-10px; transform:rotate(160deg); animation:leafFloat 12s ease-in-out infinite reverse; }
   @keyframes leafFloat{ 0%,100%{ translate:0 0; } 50%{ translate:0 -8px; } }
   @media (prefers-reduced-motion: reduce){ .indep-leaf{ animation:none; } }
+  @media (max-width:640px){
+    /* blur() filters are the most expensive property to keep compositing
+       during a scroll on mobile GPUs — these are barely visible at this
+       size anyway, so just freeze them instead of animating. */
+    .indep-leaf{ animation:none; }
+  }
 
   /* ---------- generic festival emblem — festival's own icon, right side, for non-national days ---------- */
   .festive-emblem-decor{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:1; }
@@ -522,7 +544,7 @@
   @media (prefers-reduced-motion: reduce){ .festive-emblem-icon{ animation:none; } }
   @media (max-width:640px){
     .festive-emblem-glow{ width:240px; height:240px; top:-70px; right:-70px; }
-    .festive-emblem-icon{ width:140px; height:140px; top:-15px; right:-15px; }
+    .festive-emblem-icon{ width:140px; height:140px; top:-15px; right:-15px; animation:none; }
   }
 
   .festive-banner[data-festival="independence-day"]{
