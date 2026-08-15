@@ -12,6 +12,7 @@ import { getFestiveIcon } from "../../utils/festiveIcons";
 import { loadFestivalsFromGoogleCalendar } from "../../services/googleFestivalCalendar";
 import FestiveParticles from "../../components/FestiveParticles";
 import FestiveWelcomeOverlay from "../../components/FestiveWelcomeOverlay";
+import FestiveTopRibbon from "../../components/FestiveTopRibbon";
 
 // Converts "#RRGGBB" (or "#RGB") to an rgba() string with the given alpha.
 // Used instead of CSS color-mix() for the festive backdrop wash, since
@@ -308,6 +309,10 @@ function Home() {
 
       <Header />
 
+      {festive && (
+        <FestiveTopRibbon festive={festive} theme={festiveTheme} Icon={FestiveIcon} />
+      )}
+
       <main id="main">
         <section className="hero" id="heroSection" style={festiveVars}>
           {festive && (
@@ -341,7 +346,10 @@ function Home() {
               {festive && (
                 <div className="festive-banner hero-anim a1" data-festival={festive.key}>
                   <span className="festive-banner-icon">
+                    <span className="festive-banner-icon-ring" aria-hidden="true"></span>
                     <span className="festive-banner-icon-glow" aria-hidden="true"></span>
+                    <span className="festive-banner-icon-spark s1" aria-hidden="true"></span>
+                    <span className="festive-banner-icon-spark s2" aria-hidden="true"></span>
                     <span className="festive-banner-icon-emoji">
                       {FestiveIcon && <FestiveIcon width={20} height={20} />}
                     </span>
