@@ -1,81 +1,222 @@
+/* ---------- Festival offers — premium promo band ---------- */
+#festival-offers {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(64px, 9vw, 100px) 0;
+  background: linear-gradient(180deg, var(--forest-dark) 0%, #0F2318 100%);
+  color: var(--parchment);
+}
+
+/* fine grain texture, matches the site's other dark sections */
+#festival-offers::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+#festival-offers .offers-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(46% 60% at 8% 0%, rgba(241, 212, 138, 0.16), transparent 70%),
+    radial-gradient(50% 55% at 100% 100%, rgba(143, 191, 110, 0.12), transparent 70%);
+}
+
+#festival-offers .wrap { position: relative; z-index: 1; }
+
+#festival-offers .section-head { max-width: 640px; margin: 0 auto 48px; text-align: center; }
+#festival-offers .section-head .eyebrow {
+  color: var(--gold-1);
+  border-color: rgba(241, 212, 138, 0.32);
+  background: rgba(241, 212, 138, 0.08);
+  justify-content: center;
+}
+#festival-offers .section-head h2 {
+  font-family: 'Anton', sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(2.1rem, 4.2vw, 3rem);
+  line-height: 0.98;
+  color: var(--parchment);
+}
+#festival-offers .section-head h2 em {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 500;
+  text-transform: none;
+  color: var(--gold-1);
+}
+#festival-offers .section-head p {
+  margin-top: 16px;
+  color: rgba(243, 236, 224, 0.66);
+  font-size: 1.02rem;
+}
+
 #festival-offers .offers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 22px;
-  margin-top: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 28px;
 }
 
 #festival-offers .offer-card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  background: #fff;
-  border: 1px solid rgba(139, 100, 32, 0.16);
-  border-radius: 18px;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(241, 212, 138, 0.22);
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 10px 28px rgba(19, 42, 30, 0.08);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 20px 44px -24px rgba(0, 0, 0, 0.55);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 #festival-offers .offer-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 36px rgba(19, 42, 30, 0.14);
+  transform: translateY(-6px);
+  border-color: rgba(241, 212, 138, 0.55);
+  box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(241, 212, 138, 0.15);
 }
 
+/* thin gold shimmer along the top edge */
+#festival-offers .offer-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-1), transparent);
+  opacity: 0.7;
+}
+
+/* delicate corner flourishes, like a card of invitation */
+#festival-offers .offer-card-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid rgba(241, 212, 138, 0.5);
+  z-index: 2;
+  pointer-events: none;
+}
+#festival-offers .offer-card-corner.tl { top: 10px; left: 10px; border-right: none; border-bottom: none; border-top-left-radius: 8px; }
+#festival-offers .offer-card-corner.br { bottom: 10px; right: 10px; border-left: none; border-top: none; border-bottom-right-radius: 8px; }
+
 #festival-offers .offer-card-media {
+  position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;
 }
-
 #festival-offers .offer-card-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.5s ease;
+}
+#festival-offers .offer-card:hover .offer-card-media img { transform: scale(1.06); }
+#festival-offers .offer-card-media-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15, 35, 24, 0) 55%, rgba(15, 35, 24, 0.9) 100%);
 }
 
 #festival-offers .offer-card-body {
-  padding: 20px 22px 24px;
+  position: relative;
+  padding: 22px 24px 26px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 #festival-offers .offer-card-badge {
   align-self: flex-start;
-  background: linear-gradient(135deg, var(--gold-1), var(--gold-2));
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(120deg, var(--gold-3), var(--gold-1) 55%, var(--gold-2));
   color: var(--forest-dark);
+  font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
-  font-size: 0.85rem;
-  padding: 4px 12px;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  padding: 6px 14px;
   border-radius: 999px;
+  box-shadow: 0 8px 18px -8px rgba(241, 212, 138, 0.6);
 }
 
 #festival-offers .offer-card-body h3 {
-  margin: 4px 0 0;
-  font-size: 1.15rem;
-  color: var(--forest-dark);
+  margin: 2px 0 0;
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: var(--parchment);
 }
 
-#festival-offers .offer-card-body p {
+#festival-offers .offer-card-body > p {
   margin: 0;
-  color: var(--walnut);
+  color: rgba(243, 236, 224, 0.68);
   font-size: 0.95rem;
-  opacity: 0.85;
+  line-height: 1.5;
+}
+
+#festival-offers .offer-card-footer {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(241, 212, 138, 0.25);
 }
 
 #festival-offers .offer-card-code {
-  margin-top: 4px;
-  font-size: 0.9rem;
-  color: var(--gold-3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+}
+#festival-offers .offer-card-code-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(243, 236, 224, 0.5);
+}
+#festival-offers .offer-card-code-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--gold-1);
+  border: 1px dashed rgba(241, 212, 138, 0.5);
+  padding: 3px 10px;
+  border-radius: 8px;
 }
 
 #festival-offers .offer-card-cta {
-  margin-top: 10px;
-  align-self: flex-start;
-  font-weight: 600;
-  color: var(--forest-mid);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--forest-dark);
+  background: var(--gold-1);
+  padding: 9px 16px;
+  border-radius: 999px;
   text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+#festival-offers .offer-card-cta svg { width: 15px; height: 15px; transition: transform 0.2s ease; }
+#festival-offers .offer-card-cta:hover { background: var(--parchment); transform: translateY(-2px); }
+#festival-offers .offer-card-cta:hover svg { transform: translateX(3px); }
+
+@media (max-width: 640px) {
+  #festival-offers .offer-card-footer { flex-direction: column; align-items: flex-start; }
+  #festival-offers .offer-card-cta { align-self: stretch; justify-content: center; }
 }
 
-#festival-offers .offer-card-cta:hover {
-  text-decoration: underline;
+@media (prefers-reduced-motion: reduce) {
+  #festival-offers .offer-card,
+  #festival-offers .offer-card-media img,
+  #festival-offers .offer-card-cta,
+  #festival-offers .offer-card-cta svg { transition: none; }
 }

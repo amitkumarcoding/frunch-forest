@@ -12,6 +12,17 @@ import { db } from './firebase';
 // `startDate`/`endDate` are optional "YYYY-MM-DD" strings — when set,
 // the offer only shows within that window. `active` lets an admin
 // hide an offer without deleting it.
+// Firestore doc images sometimes carry a relative path (e.g.
+// "./image/offers/x.jpg") — normalize to absolute so it resolves the
+// same regardless of which page/route renders it.
+function normalizeImagePath(image) {
+  if (!image || typeof image !== 'string') return image;
+  if (/^(https?:)?\/\//i.test(image)) return image;
+  if (image.startsWith('./')) return image.slice(1);
+  if (!image.startsWith('/')) return `/${image}`;
+  return image;
+}
+
 export async function loadOffersFromFirestore() {
   try {
     const snapshot = await getDocs(collection(db, 'offers'));
@@ -29,7 +40,7 @@ export async function loadOffersFromFirestore() {
           description: data.description || '',
           discount: data.discount || '',
           code: data.code || '',
-          image: data.image || '',
+          image: normalizeImagePath(data.image) || '',
           link: data.link || '',
           active: data.active !== false,
           startDate: data.startDate || '',

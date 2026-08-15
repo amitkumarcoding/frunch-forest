@@ -700,7 +700,7 @@ export default function Admin() {
                 onChange={(e) => updateNewProduct({ tag: e.target.value })}
               />
               <input
-                placeholder="./image/products/x.png"
+                placeholder="/image/products/x.png"
                 value={newProduct.image}
                 onChange={(e) => updateNewProduct({ image: e.target.value })}
               />
@@ -1049,7 +1049,7 @@ export default function Admin() {
               <label className="field-inline">
                 <span className="field-label">Image URL</span>
                 <input
-                  placeholder="./image/offers/diwali.jpg"
+                  placeholder="/image/offers/diwali.jpg"
                   value={newOffer.image}
                   onChange={(e) => updateNewOffer({ image: e.target.value })}
                 />
