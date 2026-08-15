@@ -49,8 +49,8 @@ function Home() {
     Object.entries(LOCAL_PRODUCTS).map(([slug, p]) => ({ ...p, slug }))
   );
   const [loading, setLoading] = useState(true);
-  // const [festive, setFestive] = useState(() => getFestiveGreeting());
-  const [festive, setFestive] = useState(() => getFestiveGreeting(new Date('2026-04-02')));
+  const [festive, setFestive] = useState(() => getFestiveGreeting());
+  // const [festive, setFestive] = useState(() => getFestiveGreeting(new Date('2026-04-02')));
   const festiveTheme = festive ? getFestiveTheme(festive.key) : null;
   const FestiveIcon = festive ? getFestiveIcon(festive.key) : null;
   const festiveVars = festiveTheme
