@@ -178,13 +178,18 @@ function Home() {
       const firestoreProducts = await loadProductsFromFirestore();
 
       if (firestoreProducts) {
-        // Merge per-slug over local defaults so a Firestore doc missing
-        // a field (e.g. image, bullets) falls back to data/products.js
-        // instead of rendering as undefined.
+        // Merge per-slug over local defaults, and only override a field
+        // when Firestore actually has a value for it — an admin-edited
+        // doc missing/blank on e.g. image shouldn't blank out the good
+        // local default (data/products.js).
         setProducts((prev) => {
           const bySlug = Object.fromEntries(prev.map((p) => [p.slug, p]));
           Object.entries(firestoreProducts).forEach(([slug, data]) => {
-            bySlug[slug] = { ...bySlug[slug], ...data, slug };
+            const base = bySlug[slug] || {};
+            const filled = Object.fromEntries(
+              Object.entries(data).filter(([, v]) => v !== "" && v !== null && v !== undefined)
+            );
+            bySlug[slug] = { ...base, ...filled, slug };
           });
           return Object.values(bySlug);
         });

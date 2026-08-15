@@ -26,9 +26,22 @@ export default function Products() {
   useEffect(() => {
     async function load() {
       const firestoreProducts = await loadProductsFromFirestore();
-      if (firestoreProducts) {
-        setProducts(Object.entries(firestoreProducts).map(([slug, p]) => ({ ...p, slug })));
-      }
+      if (!firestoreProducts) return;
+      // Merge per-slug over local defaults, and only override a field
+      // when Firestore actually has a value for it — an admin-edited
+      // doc missing/blank on e.g. image shouldn't blank out the good
+      // local default (data/products.js).
+      setProducts((prev) => {
+        const bySlug = Object.fromEntries(prev.map((p) => [p.slug, p]));
+        Object.entries(firestoreProducts).forEach(([slug, data]) => {
+          const base = bySlug[slug] || {};
+          const filled = Object.fromEntries(
+            Object.entries(data).filter(([, v]) => v !== "" && v !== null && v !== undefined)
+          );
+          bySlug[slug] = { ...base, ...filled, slug };
+        });
+        return Object.values(bySlug);
+      });
     }
     load();
   }, []);

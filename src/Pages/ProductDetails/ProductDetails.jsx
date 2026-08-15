@@ -17,13 +17,18 @@ export default function ProductDetails() {
   useEffect(() => {
     loadProductsFromFirestore().then((firestoreProducts) => {
       if (!firestoreProducts) return;
-      // Merge per-slug over local defaults instead of a full replace —
-      // a Firestore doc missing a field (e.g. image, bullets) falls
-      // back to data/products.js instead of rendering as undefined.
+      // Merge per-slug over local defaults, and only override a field
+      // when Firestore actually has a value for it — an admin-edited
+      // doc missing/blank on e.g. image shouldn't blank out the good
+      // local default (data/products.js).
       setProducts((prev) => {
         const next = { ...prev };
         Object.entries(firestoreProducts).forEach(([slug, data]) => {
-          next[slug] = { ...next[slug], ...data };
+          const base = next[slug] || {};
+          const filled = Object.fromEntries(
+            Object.entries(data).filter(([, v]) => v !== "" && v !== null && v !== undefined)
+          );
+          next[slug] = { ...base, ...filled };
         });
         return next;
       });
