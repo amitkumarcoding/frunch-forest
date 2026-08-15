@@ -8,7 +8,10 @@ import ProductCard from "../../components/ProductCard/ProductCard";
 import SEO from "../../components/SEO/SEO";
 import { getFestiveGreeting } from "../../utils/festiveGreeting";
 import { getFestiveTheme } from "../../utils/festiveTheme";
+import { getFestiveIcon } from "../../utils/festiveIcons";
 import { loadFestivalsFromGoogleCalendar } from "../../services/googleFestivalCalendar";
+import FestiveParticles from "../../components/FestiveParticles";
+import FestiveFlag from "../../components/FestiveFlag";
 
 // Converts "#RRGGBB" (or "#RGB") to an rgba() string with the given alpha.
 // Used instead of CSS color-mix() for the festive backdrop wash, since
@@ -30,6 +33,7 @@ const PACK_ITEMS = [
   { name: "Dates", img: "/image/packaging/datespackage.png" },
   { name: "Dried Apricots", img: "/image/packaging/driedapricotsPackage.png" },
   { name: "Dried Figs", img: "/image/packaging/driedfigspackage.png" },
+  { name: "Fox Nuts", img: "/image/packaging/foxnutspackage.png" },
   { name: "Makhana", img: "/image/packaging/makhanapackage.png" },
   { name: "Mixed Nuts", img: "/image/packaging/mixednutspackage.png" },
   { name: "Pistachios", img: "/image/packaging/pistachiospackage.png" },
@@ -46,9 +50,10 @@ function Home() {
     Object.entries(LOCAL_PRODUCTS).map(([slug, p]) => ({ ...p, slug }))
   );
   const [loading, setLoading] = useState(true);
-  const [festive, setFestive] = useState(() => getFestiveGreeting());
-  // const [festive, setFestive] = useState(() => getFestiveGreeting(new Date('2026-11-08')));
+  // const [festive, setFestive] = useState(() => getFestiveGreeting());
+  const [festive, setFestive] = useState(() => getFestiveGreeting(new Date('2026-01-01')));
   const festiveTheme = festive ? getFestiveTheme(festive.key) : null;
+  const FestiveIcon = festive ? getFestiveIcon(festive.key) : null;
   const festiveVars = festiveTheme
     ? {
         "--tc-1": festiveTheme.colors[0],
@@ -57,6 +62,11 @@ function Home() {
         "--tc-1-a": hexToRgba(festiveTheme.colors[0], 0.24),
         "--tc-2-a": hexToRgba(festiveTheme.colors[1], 0.3),
         "--tc-3-a": hexToRgba(festiveTheme.colors[2], 0.2),
+        // Lighter alpha, used for the full-hero background wash (see
+        // .hero in Home.css) — same colours, subtler than the top strip.
+        "--tc-1-wash": hexToRgba(festiveTheme.colors[0], 0.1),
+        "--tc-2-wash": hexToRgba(festiveTheme.colors[1], 0.18),
+        "--tc-3-wash": hexToRgba(festiveTheme.colors[2], 0.14),
       }
     : undefined;
   const [activeGiftItem, setActiveGiftItem] = useState("diwali");
@@ -294,35 +304,15 @@ function Home() {
       <Header />
 
       <main id="main">
-        <section className="hero" id="heroSection">
-          <video
-            className="hero-video-bg"
-            autoPlay
-            muted
-            loop
-            playsInline
-          >
-            <source src="/video/hero-bg.mp4" type="video/mp4" />
-          </video>
-          <div className="hero-video-overlay"></div>
+        <section className="hero" id="heroSection" style={festiveVars}>
           {festive && (
             <div
               className="hero-festive-layer"
-              style={festiveVars}
               aria-hidden="true"
             >
               <div className={`hero-festive-backdrop hero-festive-backdrop--${festiveTheme.pattern}`}></div>
-              <span className="fp fp1"></span>
-              <span className="fp fp2"></span>
-              <span className="fp fp3"></span>
-              <span className="fp fp4"></span>
-              <span className="fp fp5"></span>
-              <span className="fp fp6"></span>
-              <span className="fp fp7"></span>
-              <span className="fp fp8"></span>
-              <span className="fp-spark fs1">✦</span>
-              <span className="fp-spark fs2">✦</span>
-              <span className="fp-spark fs3">✦</span>
+              {festiveTheme.pattern === "flag" && <FestiveFlag />}
+              <FestiveParticles pattern={festiveTheme.pattern} colors={festiveTheme.colors} />
             </div>
           )}
           <div className="wrap hero-grid hero-inner">
@@ -331,7 +321,9 @@ function Home() {
                 <div className="festive-banner hero-anim a1">
                   <span className="festive-banner-icon">
                     <span className="festive-banner-icon-glow" aria-hidden="true"></span>
-                    <span className="festive-banner-icon-emoji">{festive.emoji}</span>
+                    <span className="festive-banner-icon-emoji">
+                      {FestiveIcon && <FestiveIcon width={20} height={20} />}
+                    </span>
                   </span>
                   <span className="festive-banner-copy">
                     <span className="festive-banner-eyebrow">Wishing you well</span>
