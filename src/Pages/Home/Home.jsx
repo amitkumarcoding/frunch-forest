@@ -48,6 +48,7 @@ function Home() {
   );
   const [loading, setLoading] = useState(true);
   const [festive, setFestive] = useState(() => getFestiveGreeting());
+  // const [festive, setFestive] = useState(() => getFestiveGreeting(new Date('2026-01-01')));
   const festiveTheme = festive ? getFestiveTheme(festive.key) : null;
   const festiveVars = festiveTheme
     ? {

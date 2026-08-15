@@ -3,11 +3,57 @@ const API_KEY = import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY;
 const CACHE_KEY = "ff_festivals_cache_v1";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
+// Google's public holiday calendar spells festival names inconsistently
+// (e.g. "Mahatma Gandhi Jayanti", "Vinayaka Chaturthi", "Bakri Id /
+// Eid ul-Adha", "Budhha Purnima"). Match by keyword instead of exact
+// slug so these still resolve to the curated keys in festiveTheme.js.
+const ALIASES = [
+  { match: /new\s*year/i, key: "new-year" },
+  { match: /sankranti/i, key: "makar-sankranti" },
+  { match: /pongal/i, key: "pongal" },
+  { match: /republic\s*day/i, key: "republic-day" },
+  { match: /shivrat/i, key: "maha-shivratri" },
+  { match: /holi/i, key: "holi" },
+  { match: /ugadi|gudi\s*padwa/i, key: "ugadi" },
+  { match: /fitr/i, key: "eid-al-fitr" },
+  { match: /ram\s*navami/i, key: "ram-navami" },
+  { match: /mahavir/i, key: "mahavir-jayanti" },
+  { match: /good\s*friday/i, key: "good-friday" },
+  { match: /hanuman/i, key: "hanuman-jayanti" },
+  { match: /buddh?a?\s*purnima/i, key: "buddha-purnima" },
+  { match: /adha|bakri/i, key: "eid-al-adha" },
+  { match: /muharram/i, key: "muharram" },
+  { match: /onam/i, key: "onam" },
+  { match: /raksha\s*bandhan|rakhi/i, key: "raksha-bandhan" },
+  { match: /janmashtami/i, key: "janmashtami" },
+  { match: /ganesh|vinayak/i, key: "ganesh-chaturthi" },
+  { match: /vishwakarma/i, key: "vishwakarma-puja" },
+  { match: /gandhi/i, key: "gandhi-jayanti" },
+  { match: /navratri/i, key: "navratri" },
+  { match: /dussehra|dasara|vijayadashami/i, key: "dussehra" },
+  { match: /karva\s*chauth|karwa\s*chauth/i, key: "karwa-chauth" },
+  { match: /dhanteras/i, key: "dhanteras" },
+  { match: /diwali|deepavali/i, key: "diwali" },
+  { match: /govardhan/i, key: "govardhan-puja" },
+  { match: /bhai\s*dooj/i, key: "bhai-dooj" },
+  { match: /guru\s*nanak/i, key: "guru-nanak-jayanti" },
+  { match: /children/i, key: "children-s-day" },
+  { match: /teachers/i, key: "teachers-day" },
+  { match: /baisakhi|vaisakhi/i, key: "baisakhi" },
+  { match: /independence\s*day/i, key: "independence-day" },
+  { match: /christmas/i, key: "christmas" },
+];
+
 function slugify(text) {
   return text
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
+}
+
+function resolveKey(summary) {
+  const alias = ALIASES.find((a) => a.match.test(summary));
+  return alias ? alias.key : slugify(summary);
 }
 
 export async function loadFestivalsFromGoogleCalendar() {
@@ -39,7 +85,7 @@ export async function loadFestivalsFromGoogleCalendar() {
       .filter((event) => event.start?.date && event.summary)
       .map((event) => ({
         date: event.start.date,
-        key: slugify(event.summary),
+        key: resolveKey(event.summary),
         text: `Happy ${event.summary}`,
         emoji: "🎉",
       }));
