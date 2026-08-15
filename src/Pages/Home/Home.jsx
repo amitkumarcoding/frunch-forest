@@ -49,7 +49,8 @@ function Home() {
     Object.entries(LOCAL_PRODUCTS).map(([slug, p]) => ({ ...p, slug }))
   );
   const [loading, setLoading] = useState(true);
-  const TEST_DATE = new Date('2026-04-02'); // ← change this line only to test a festival
+  // const TEST_DATE = new Date('2026-08-02'); // ← change this line only to test a festival
+  const TEST_DATE = null
   const [festive, setFestive] = useState(() => getFestiveGreeting(TEST_DATE || undefined));
   const festiveTheme = festive ? getFestiveTheme(festive.key) : null;
   const FestiveIcon = festive ? getFestiveIcon(festive.key) : null;
