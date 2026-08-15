@@ -178,7 +178,16 @@ function Home() {
       const firestoreProducts = await loadProductsFromFirestore();
 
       if (firestoreProducts) {
-        setProducts(Object.entries(firestoreProducts).map(([slug, p]) => ({ ...p, slug })));
+        // Merge per-slug over local defaults so a Firestore doc missing
+        // a field (e.g. image, bullets) falls back to data/products.js
+        // instead of rendering as undefined.
+        setProducts((prev) => {
+          const bySlug = Object.fromEntries(prev.map((p) => [p.slug, p]));
+          Object.entries(firestoreProducts).forEach(([slug, data]) => {
+            bySlug[slug] = { ...bySlug[slug], ...data, slug };
+          });
+          return Object.values(bySlug);
+        });
       }
       setLoading(false);
     }

@@ -16,7 +16,17 @@ export default function ProductDetails() {
   // name, tag, packs) without a code deploy.
   useEffect(() => {
     loadProductsFromFirestore().then((firestoreProducts) => {
-      if (firestoreProducts) setProducts(firestoreProducts);
+      if (!firestoreProducts) return;
+      // Merge per-slug over local defaults instead of a full replace —
+      // a Firestore doc missing a field (e.g. image, bullets) falls
+      // back to data/products.js instead of rendering as undefined.
+      setProducts((prev) => {
+        const next = { ...prev };
+        Object.entries(firestoreProducts).forEach(([slug, data]) => {
+          next[slug] = { ...next[slug], ...data };
+        });
+        return next;
+      });
     });
   }, []);
 
