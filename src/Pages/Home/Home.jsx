@@ -6,13 +6,14 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import SEO from "../../components/SEO/SEO";
-import { getFestiveGreeting } from "../../utils/festiveGreeting";
+import { getFestiveGreeting, DEFAULT_FESTIVALS } from "../../utils/festiveGreeting";
 import { getFestiveTheme } from "../../utils/festiveTheme";
 import { getFestiveIcon } from "../../utils/festiveIcons";
 import { getTimeGreeting } from "../../utils/timeGreeting";
 import { getTimeTheme } from "../../utils/timeTheme";
 import { getTimeIcon } from "../../utils/timeIcons";
 import { loadFestivalsFromGoogleCalendar } from "../../services/googleFestivalCalendar";
+import { loadFestivalOverridesFromFirestore } from "../../services/firebaseFestivals";
 import FestiveParticles from "../../components/FestiveParticles";
 import FestiveWelcomeOverlay from "../../components/FestiveWelcomeOverlay";
 import FestiveGarland from "../../components/FestiveGarland";
@@ -185,10 +186,17 @@ function Home() {
 
   useEffect(() => {
     async function loadFestivals() {
-      const festivals = await loadFestivalsFromGoogleCalendar();
-      if (festivals) {
-        setFestive(getFestiveGreeting(TEST_DATE || new Date(), festivals));
-      }
+      // Google Calendar (or the local fallback list) provides the base
+      // year of festivals; admin-managed Firestore overrides are merged
+      // on top and always win on a shared date — see
+      // firebaseFestivals.js and festiveGreeting.js's priority sort.
+      const [googleFestivals, adminOverrides] = await Promise.all([
+        loadFestivalsFromGoogleCalendar(),
+        loadFestivalOverridesFromFirestore(),
+      ]);
+      const base = googleFestivals && googleFestivals.length ? googleFestivals : DEFAULT_FESTIVALS;
+      const merged = adminOverrides.length ? [...base, ...adminOverrides] : base;
+      setFestive(getFestiveGreeting(TEST_DATE || new Date(), merged));
     }
 
     loadFestivals();

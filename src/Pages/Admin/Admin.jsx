@@ -14,9 +14,14 @@ import {
   doc,
   writeBatch,
   deleteDoc,
+  addDoc,
+  setDoc,
 } from "firebase/firestore";
 import "./Admin.css";
 import SEO from "../../components/SEO/SEO";
+import { FESTIVE_THEMES } from "../../utils/festiveTheme";
+
+const KNOWN_FESTIVAL_KEYS = Object.keys(FESTIVE_THEMES);
 
 // Only these Google accounts may access the admin panel.
 const ALLOWED_ADMINS = [
@@ -54,6 +59,15 @@ const EMPTY_NEW_PRODUCT = {
   packs: '[{"size":"200g","price":249,"mrp":299}]',
 };
 
+const EMPTY_NEW_FESTIVAL = {
+  date: "",
+  key: "",
+  text: "",
+  eyebrow: "",
+  emoji: "🎉",
+  priority: 10,
+};
+
 function packsSummary(packs) {
   return (packs || []).map((pk) => `${pk.size}:₹${pk.price}`).join(", ");
 }
@@ -85,6 +99,15 @@ export default function Admin() {
   const [addOpen, setAddOpen] = useState(false);
   const [newProduct, setNewProduct] = useState(EMPTY_NEW_PRODUCT);
 
+  // ---- Festival calendar (hero greeting overrides) ----
+  const [festivals, setFestivals] = useState([]); // [{id, date, key, text, eyebrow, emoji, priority}]
+  const [festivalDrafts, setFestivalDrafts] = useState({}); // id -> same shape
+  const [festivalsLoading, setFestivalsLoading] = useState(false);
+  const [festivalsError, setFestivalsError] = useState("");
+  const [festivalSavingId, setFestivalSavingId] = useState(null);
+  const [festivalAddOpen, setFestivalAddOpen] = useState(false);
+  const [newFestival, setNewFestival] = useState(EMPTY_NEW_FESTIVAL);
+
   const isAuthorized = !!user && ALLOWED_ADMINS.includes(user.email);
 
   useEffect(() => {
@@ -96,7 +119,10 @@ export default function Admin() {
   }, []);
 
   useEffect(() => {
-    if (isAuthorized) loadProducts();
+    if (isAuthorized) {
+      loadProducts();
+      loadFestivals();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthorized]);
 
@@ -296,6 +322,128 @@ export default function Admin() {
       setNewProduct(EMPTY_NEW_PRODUCT);
       setStatusMessage(`Added ${slug}.`);
       loadProducts();
+    } catch (e) {
+      setStatusMessage(`Add failed: ${e.message}`, false);
+    }
+  }
+
+  // ---- Festival calendar (hero greeting overrides) ----
+  // These live in Firestore ("festivals" collection) and are merged on
+  // top of the Google Calendar / local fallback list in Home.jsx — see
+  // firebaseFestivals.js. `key` should match a festiveTheme.js /
+  // festiveIcons.jsx entry to pick up that occasion's colours and icon;
+  // any other value still works, it just falls back to the default
+  // gold/forest theme and a sparkle icon.
+  async function loadFestivals() {
+    setFestivalsLoading(true);
+    setFestivalsError("");
+    try {
+      const snap = await getDocs(collection(db, "festivals"));
+      const list = [];
+      const drafts = {};
+      snap.forEach((docSnap) => {
+        const data = docSnap.data();
+        const row = {
+          id: docSnap.id,
+          date: data.date || "",
+          key: data.key || "",
+          text: data.text || "",
+          eyebrow: data.eyebrow || "",
+          emoji: data.emoji || "🎉",
+          priority: typeof data.priority === "number" ? data.priority : 10,
+        };
+        list.push(row);
+        drafts[docSnap.id] = row;
+      });
+      list.sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+      setFestivals(list);
+      setFestivalDrafts(drafts);
+    } catch (e) {
+      setFestivalsError(`Error loading festival calendar: ${e.message}`);
+    } finally {
+      setFestivalsLoading(false);
+    }
+  }
+
+  function updateFestivalDraft(id, patch) {
+    setFestivalDrafts((prev) => ({ ...prev, [id]: { ...prev[id], ...patch } }));
+  }
+
+  function festivalRowDirty(id) {
+    const original = festivals.find((f) => f.id === id);
+    const draft = festivalDrafts[id];
+    if (!original || !draft) return false;
+    return ["date", "key", "text", "eyebrow", "emoji", "priority"].some(
+      (field) => String(original[field]) !== String(draft[field])
+    );
+  }
+
+  async function handleSaveFestivalRow(id) {
+    const draft = festivalDrafts[id];
+    if (!draft) return;
+    if (!draft.date || !draft.key.trim() || !draft.text.trim()) {
+      return window.alert("Date, key and text are required.");
+    }
+    setFestivalSavingId(id);
+    try {
+      const cleaned = {
+        date: draft.date,
+        key: draft.key.trim(),
+        text: draft.text.trim(),
+        eyebrow: draft.eyebrow.trim(),
+        emoji: draft.emoji.trim() || "🎉",
+        priority: Number(draft.priority) || 10,
+      };
+      await setDoc(doc(db, "festivals", id), cleaned);
+      setFestivals((prev) => prev.map((f) => (f.id === id ? { id, ...cleaned } : f)));
+      setFestivalDrafts((prev) => ({ ...prev, [id]: { id, ...cleaned } }));
+      setStatusMessage("Saved festival override.");
+    } catch (e) {
+      setStatusMessage(`Save failed: ${e.message}`, false);
+    } finally {
+      setFestivalSavingId(null);
+    }
+  }
+
+  async function handleDeleteFestival(id, label) {
+    if (!window.confirm(`Delete override "${label}"? This cannot be undone — the date falls back to Google Calendar / the default list.`)) return;
+    try {
+      await deleteDoc(doc(db, "festivals", id));
+      setFestivals((prev) => prev.filter((f) => f.id !== id));
+      setFestivalDrafts((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      setStatusMessage("Deleted festival override.");
+    } catch (e) {
+      setStatusMessage(`Delete failed: ${e.message}`, false);
+    }
+  }
+
+  function updateNewFestival(patch) {
+    setNewFestival((prev) => ({ ...prev, ...patch }));
+  }
+
+  async function handleAddFestival() {
+    const { date, key, text } = newFestival;
+    if (!date || !key.trim() || !text.trim()) {
+      return window.alert("Date, key and text are required.");
+    }
+    if (!window.confirm(`Add festival override for ${date}?`)) return;
+    try {
+      await addDoc(collection(db, "festivals"), {
+        date,
+        key: key.trim(),
+        text: text.trim(),
+        eyebrow: newFestival.eyebrow.trim(),
+        emoji: newFestival.emoji.trim() || "🎉",
+        priority: Number(newFestival.priority) || 10,
+      });
+      setFestivalAddOpen(false);
+      setNewFestival(EMPTY_NEW_FESTIVAL);
+      setStatusMessage("Festival override added.");
+      loadFestivals();
     } catch (e) {
       setStatusMessage(`Add failed: ${e.message}`, false);
     }
@@ -501,6 +649,188 @@ export default function Admin() {
                             Edit packs
                           </button>
                           <button type="button" className="btn-danger" onClick={() => handleDeleteRow(p.slug)}>
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="section-header">
+            <div>
+              <h2>Festival calendar</h2>
+              <p className="hint">
+                Overrides which festival (and hero theme) shows on a given date — takes priority over Google Calendar and the built-in default list. Add one whenever a festival's date changes or you want to schedule a one-off occasion ahead of time.
+              </p>
+            </div>
+            <button type="button" className="btn-gold" onClick={() => setFestivalAddOpen((v) => !v)}>
+              + Add override
+            </button>
+          </div>
+
+          <div id="addFestivalBox" className={festivalAddOpen ? "open" : ""}>
+            <div className="grid2">
+              <label className="field-inline">
+                <span className="field-label">Date</span>
+                <input
+                  type="date"
+                  value={newFestival.date}
+                  onChange={(e) => updateNewFestival({ date: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Key (matches theme/icon)</span>
+                <input
+                  list="festival-keys"
+                  placeholder="e.g. diwali"
+                  value={newFestival.key}
+                  onChange={(e) => updateNewFestival({ key: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Banner text</span>
+                <input
+                  placeholder="Happy Diwali"
+                  value={newFestival.text}
+                  onChange={(e) => updateNewFestival({ text: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Eyebrow</span>
+                <input
+                  placeholder="Celebrating the festival of lights"
+                  value={newFestival.eyebrow}
+                  onChange={(e) => updateNewFestival({ eyebrow: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Emoji</span>
+                <input
+                  placeholder="🪔"
+                  value={newFestival.emoji}
+                  onChange={(e) => updateNewFestival({ emoji: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Priority (higher wins on a shared date)</span>
+                <input
+                  type="number"
+                  value={newFestival.priority}
+                  onChange={(e) => updateNewFestival({ priority: e.target.value })}
+                />
+              </label>
+            </div>
+            <div className="row-actions" style={{ marginTop: "10px" }}>
+              <button type="button" className="btn-gold" onClick={handleAddFestival}>
+                Save override
+              </button>
+              <button type="button" className="btn-outline" onClick={() => setFestivalAddOpen(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+
+          <datalist id="festival-keys">
+            {KNOWN_FESTIVAL_KEYS.map((k) => (
+              <option key={k} value={k} />
+            ))}
+          </datalist>
+
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Key</th>
+                  <th>Banner text</th>
+                  <th>Eyebrow</th>
+                  <th>Emoji</th>
+                  <th>Priority</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {festivalsLoading && (
+                  <tr>
+                    <td colSpan={7}>Loading…</td>
+                  </tr>
+                )}
+                {!festivalsLoading && festivalsError && (
+                  <tr>
+                    <td colSpan={7}>{festivalsError}</td>
+                  </tr>
+                )}
+                {!festivalsLoading && !festivalsError && festivals.length === 0 && (
+                  <tr>
+                    <td colSpan={7}>No overrides yet — dates fall back to Google Calendar / the default list.</td>
+                  </tr>
+                )}
+                {!festivalsLoading &&
+                  !festivalsError &&
+                  festivals.map((f) => {
+                    const draft = festivalDrafts[f.id] || f;
+                    const dirty = festivalRowDirty(f.id);
+                    return (
+                      <tr key={f.id} className={dirty ? "dirty-row" : ""}>
+                        <td data-label="Date">
+                          {dirty && <span className="dirty-dot" title="Unsaved changes" />}
+                          <input
+                            type="date"
+                            value={draft.date}
+                            onChange={(e) => updateFestivalDraft(f.id, { date: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Key">
+                          <input
+                            list="festival-keys"
+                            value={draft.key}
+                            onChange={(e) => updateFestivalDraft(f.id, { key: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Banner text">
+                          <input
+                            value={draft.text}
+                            onChange={(e) => updateFestivalDraft(f.id, { text: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Eyebrow">
+                          <input
+                            value={draft.eyebrow}
+                            onChange={(e) => updateFestivalDraft(f.id, { eyebrow: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Emoji">
+                          <input
+                            style={{ width: "56px" }}
+                            value={draft.emoji}
+                            onChange={(e) => updateFestivalDraft(f.id, { emoji: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Priority">
+                          <input
+                            type="number"
+                            style={{ width: "64px" }}
+                            value={draft.priority}
+                            onChange={(e) => updateFestivalDraft(f.id, { priority: e.target.value })}
+                          />
+                        </td>
+                        <td className="row-actions">
+                          <button
+                            type="button"
+                            className="btn-gold"
+                            disabled={!dirty || festivalSavingId === f.id}
+                            onClick={() => handleSaveFestivalRow(f.id)}
+                          >
+                            {festivalSavingId === f.id ? "Saving…" : "Save"}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-danger"
+                            onClick={() => handleDeleteFestival(f.id, draft.text || f.id)}
+                          >
                             Delete
                           </button>
                         </td>

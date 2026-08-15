@@ -101,7 +101,14 @@
 
 .admin-page #addBox{display:none;background:var(--card);padding:18px;border-radius:12px;margin-bottom:18px;border:1px solid var(--card-line)}
 .admin-page #addBox.open{display:block}
+.admin-page #addFestivalBox{display:none;background:var(--card);padding:18px;border-radius:12px;margin-bottom:14px;border:1px solid var(--card-line)}
+.admin-page #addFestivalBox.open{display:block}
 .admin-page .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.admin-page .field-inline{display:flex;flex-direction:column;gap:4px}
+.admin-page .field-inline .field-label{margin:0}
+.admin-page .section-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:36px 0 14px}
+.admin-page .section-header h2{margin:0 0 4px;font-size:16px;color:var(--gold)}
+.admin-page .section-header .hint{max-width:520px}
 .admin-page .msg{font-size:13px;margin:0;min-height:16px;font-weight:600}
 .admin-page .msg.ok{color:var(--success)}
 .admin-page .msg.err{color:#ff8a80}

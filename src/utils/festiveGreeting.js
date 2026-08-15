@@ -3,7 +3,12 @@
 // updated annually (Google Calendar is the source of truth otherwise).
 // `priority` breaks ties when two entries land on the same date.
 // `eyebrow` is the small line above the greeting in the festive banner.
-const DEFAULT_FESTIVALS = [
+//
+// Exported so Home.jsx can use it as the base layer when merging in
+// admin-managed overrides from Firestore (see firebaseFestivals.js) —
+// those always carry a higher priority so they win when both cover the
+// same date.
+export const DEFAULT_FESTIVALS = [
   { date: "2026-01-01", key: "new-year", text: "Happy New Year", eyebrow: "Welcome 2026", emoji: "🎊", priority: 5 },
   { date: "2026-01-14", key: "makar-sankranti", text: "Happy Makar Sankranti", eyebrow: "Celebrating the harvest", emoji: "🪁", priority: 5 },
   { date: "2026-01-15", key: "pongal", text: "Happy Pongal", eyebrow: "Celebrating the harvest", emoji: "🌾", priority: 5 },
