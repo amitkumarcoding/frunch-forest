@@ -205,6 +205,30 @@
     -webkit-mask-image:linear-gradient(to bottom, black 55%, transparent 100%);
     mask-image:linear-gradient(to bottom, black 55%, transparent 100%);
   }
+  .hero-festive-backdrop::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:radial-gradient(rgba(255,255,255,0.5) 1px, transparent 1.5px);
+    background-size:26px 26px;
+    opacity:0.35;
+    mix-blend-mode:overlay;
+  }
+  .hero-festive-backdrop::after{
+    content:"";
+    position:absolute;
+    inset:-20%;
+    background:linear-gradient(100deg, transparent 35%, rgba(255,255,255,0.35) 48%, transparent 60%);
+    animation:festiveBackdropSheen 7s ease-in-out infinite;
+  }
+  @keyframes festiveBackdropSheen{
+    0%{ transform:translateX(-30%); }
+    50%{ transform:translateX(30%); }
+    100%{ transform:translateX(-30%); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hero-festive-backdrop::after{ animation:none; display:none; }
+  }
   .hero-festive-backdrop--glow{
     background:
       radial-gradient(120% 140% at 18% 0%, var(--tc-1-a), transparent 62%),
@@ -248,9 +272,10 @@
 
   .fp-spark{
     position:absolute;
-    font-size:0.85rem;
+    font-size:0.95rem;
     color:var(--tc-1);
     opacity:0;
+    text-shadow:0 0 8px currentColor;
     animation:fsTwinkle 3.4s ease-in-out infinite;
   }
   @keyframes fsTwinkle{
@@ -293,14 +318,20 @@
     margin-bottom:24px;
     padding:8px 16px 8px 8px;
     border-radius:100px;
-    background:linear-gradient(180deg, rgba(255,253,247,0.88), rgba(243,236,224,0.62));
-    border:1px solid rgba(201,151,59,0.38);
-    box-shadow:0 10px 26px -14px rgba(19,42,30,0.35), inset 0 1px 0 rgba(255,255,255,0.7);
+    background:
+      linear-gradient(180deg, rgba(255,253,247,0.9), rgba(243,236,224,0.66)) padding-box,
+      conic-gradient(from var(--foil-angle, 0deg), var(--gold-2), var(--gold-1), #fff, var(--gold-2)) border-box;
+    border:1px solid transparent;
+    box-shadow:0 14px 32px -16px rgba(19,42,30,0.4), inset 0 1px 0 rgba(255,255,255,0.75);
     backdrop-filter:blur(10px);
     -webkit-backdrop-filter:blur(10px);
     overflow:hidden;
     max-width:100%;
+    animation:festiveFoilRotate 6s linear infinite;
   }
+  @property --foil-angle{ syntax:'<angle>'; initial-value:0deg; inherits:false; }
+  @keyframes festiveFoilRotate{ to{ --foil-angle:360deg; } }
+  @media (prefers-reduced-motion: reduce){ .festive-banner{ animation:none; } }
   .festive-banner::before{
     /* slow gold sheen sweeping across the glass */
     content:"";
