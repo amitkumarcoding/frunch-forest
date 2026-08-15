@@ -68,6 +68,19 @@ const EMPTY_NEW_FESTIVAL = {
   priority: 10,
 };
 
+const EMPTY_NEW_OFFER = {
+  title: "",
+  description: "",
+  discount: "",
+  code: "",
+  image: "",
+  link: "",
+  active: true,
+  startDate: "",
+  endDate: "",
+  priority: 10,
+};
+
 function packsSummary(packs) {
   return (packs || []).map((pk) => `${pk.size}:₹${pk.price}`).join(", ");
 }
@@ -108,6 +121,15 @@ export default function Admin() {
   const [festivalAddOpen, setFestivalAddOpen] = useState(false);
   const [newFestival, setNewFestival] = useState(EMPTY_NEW_FESTIVAL);
 
+  // ---- Festival offers & discounts (Home page promo cards) ----
+  const [offers, setOffers] = useState([]); // [{id, title, description, discount, code, image, link, active, startDate, endDate, priority}]
+  const [offerDrafts, setOfferDrafts] = useState({}); // id -> same shape
+  const [offersLoading, setOffersLoading] = useState(false);
+  const [offersError, setOffersError] = useState("");
+  const [offerSavingId, setOfferSavingId] = useState(null);
+  const [offerAddOpen, setOfferAddOpen] = useState(false);
+  const [newOffer, setNewOffer] = useState(EMPTY_NEW_OFFER);
+
   const isAuthorized = !!user && ALLOWED_ADMINS.includes(user.email);
 
   useEffect(() => {
@@ -122,6 +144,7 @@ export default function Admin() {
     if (isAuthorized) {
       loadProducts();
       loadFestivals();
+      loadOffers();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthorized]);
@@ -444,6 +467,142 @@ export default function Admin() {
       setNewFestival(EMPTY_NEW_FESTIVAL);
       setStatusMessage("Festival override added.");
       loadFestivals();
+    } catch (e) {
+      setStatusMessage(`Add failed: ${e.message}`, false);
+    }
+  }
+
+  // ---- Festival offers & discounts ----
+  // Live in Firestore ("offers" collection) and are rendered as promo
+  // cards on the Home page — see firebaseOffers.js / FestivalOffers.jsx.
+  // `active` hides an offer without deleting it; `startDate`/`endDate`
+  // (optional) limit when it shows.
+  async function loadOffers() {
+    setOffersLoading(true);
+    setOffersError("");
+    try {
+      const snap = await getDocs(collection(db, "offers"));
+      const list = [];
+      const drafts = {};
+      snap.forEach((docSnap) => {
+        const data = docSnap.data();
+        const row = {
+          id: docSnap.id,
+          title: data.title || "",
+          description: data.description || "",
+          discount: data.discount || "",
+          code: data.code || "",
+          image: data.image || "",
+          link: data.link || "",
+          active: data.active !== false,
+          startDate: data.startDate || "",
+          endDate: data.endDate || "",
+          priority: typeof data.priority === "number" ? data.priority : 10,
+        };
+        list.push(row);
+        drafts[docSnap.id] = row;
+      });
+      list.sort((a, b) => b.priority - a.priority);
+      setOffers(list);
+      setOfferDrafts(drafts);
+    } catch (e) {
+      setOffersError(`Error loading offers: ${e.message}`);
+    } finally {
+      setOffersLoading(false);
+    }
+  }
+
+  function updateOfferDraft(id, patch) {
+    setOfferDrafts((prev) => ({ ...prev, [id]: { ...prev[id], ...patch } }));
+  }
+
+  function offerRowDirty(id) {
+    const original = offers.find((o) => o.id === id);
+    const draft = offerDrafts[id];
+    if (!original || !draft) return false;
+    return [
+      "title",
+      "description",
+      "discount",
+      "code",
+      "image",
+      "link",
+      "active",
+      "startDate",
+      "endDate",
+      "priority",
+    ].some((field) => String(original[field]) !== String(draft[field]));
+  }
+
+  async function handleSaveOfferRow(id) {
+    const draft = offerDrafts[id];
+    if (!draft) return;
+    if (!draft.title.trim()) return window.alert("Title is required.");
+    setOfferSavingId(id);
+    try {
+      const cleaned = {
+        title: draft.title.trim(),
+        description: draft.description.trim(),
+        discount: draft.discount.trim(),
+        code: draft.code.trim(),
+        image: draft.image.trim(),
+        link: draft.link.trim(),
+        active: !!draft.active,
+        startDate: draft.startDate,
+        endDate: draft.endDate,
+        priority: Number(draft.priority) || 10,
+      };
+      await setDoc(doc(db, "offers", id), cleaned);
+      setOffers((prev) => prev.map((o) => (o.id === id ? { id, ...cleaned } : o)));
+      setOfferDrafts((prev) => ({ ...prev, [id]: { id, ...cleaned } }));
+      setStatusMessage("Saved offer.");
+    } catch (e) {
+      setStatusMessage(`Save failed: ${e.message}`, false);
+    } finally {
+      setOfferSavingId(null);
+    }
+  }
+
+  async function handleDeleteOffer(id, label) {
+    if (!window.confirm(`Delete offer "${label}"? This cannot be undone.`)) return;
+    try {
+      await deleteDoc(doc(db, "offers", id));
+      setOffers((prev) => prev.filter((o) => o.id !== id));
+      setOfferDrafts((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      setStatusMessage("Deleted offer.");
+    } catch (e) {
+      setStatusMessage(`Delete failed: ${e.message}`, false);
+    }
+  }
+
+  function updateNewOffer(patch) {
+    setNewOffer((prev) => ({ ...prev, ...patch }));
+  }
+
+  async function handleAddOffer() {
+    if (!newOffer.title.trim()) return window.alert("Title is required.");
+    if (!window.confirm(`Add offer "${newOffer.title.trim()}"?`)) return;
+    try {
+      await addDoc(collection(db, "offers"), {
+        title: newOffer.title.trim(),
+        description: newOffer.description.trim(),
+        discount: newOffer.discount.trim(),
+        code: newOffer.code.trim(),
+        image: newOffer.image.trim(),
+        link: newOffer.link.trim(),
+        active: !!newOffer.active,
+        startDate: newOffer.startDate,
+        endDate: newOffer.endDate,
+        priority: Number(newOffer.priority) || 10,
+      });
+      setOfferAddOpen(false);
+      setNewOffer(EMPTY_NEW_OFFER);
+      setStatusMessage("Offer added.");
+      loadOffers();
     } catch (e) {
       setStatusMessage(`Add failed: ${e.message}`, false);
     }
@@ -830,6 +989,220 @@ export default function Admin() {
                             type="button"
                             className="btn-danger"
                             onClick={() => handleDeleteFestival(f.id, draft.text || f.id)}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="section-header">
+            <div>
+              <h2>Festival offers &amp; discounts</h2>
+              <p className="hint">
+                Promo cards shown on the Home page. Uncheck "Active" to hide an offer without deleting it; start/end dates are optional.
+              </p>
+            </div>
+            <button type="button" className="btn-gold" onClick={() => setOfferAddOpen((v) => !v)}>
+              + Add offer
+            </button>
+          </div>
+
+          <div id="addOfferBox" className={offerAddOpen ? "open" : ""}>
+            <div className="grid2">
+              <label className="field-inline">
+                <span className="field-label">Title</span>
+                <input
+                  placeholder="Diwali Dhamaka"
+                  value={newOffer.title}
+                  onChange={(e) => updateNewOffer({ title: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Discount badge</span>
+                <input
+                  placeholder="20% OFF"
+                  value={newOffer.discount}
+                  onChange={(e) => updateNewOffer({ discount: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Description</span>
+                <input
+                  placeholder="Flat 20% off on all gift boxes"
+                  value={newOffer.description}
+                  onChange={(e) => updateNewOffer({ description: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Coupon code</span>
+                <input
+                  placeholder="DIWALI20"
+                  value={newOffer.code}
+                  onChange={(e) => updateNewOffer({ code: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Image URL</span>
+                <input
+                  placeholder="./image/offers/diwali.jpg"
+                  value={newOffer.image}
+                  onChange={(e) => updateNewOffer({ image: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Link</span>
+                <input
+                  placeholder="#products"
+                  value={newOffer.link}
+                  onChange={(e) => updateNewOffer({ link: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Start date (optional)</span>
+                <input
+                  type="date"
+                  value={newOffer.startDate}
+                  onChange={(e) => updateNewOffer({ startDate: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">End date (optional)</span>
+                <input
+                  type="date"
+                  value={newOffer.endDate}
+                  onChange={(e) => updateNewOffer({ endDate: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Priority (higher shows first)</span>
+                <input
+                  type="number"
+                  value={newOffer.priority}
+                  onChange={(e) => updateNewOffer({ priority: e.target.value })}
+                />
+              </label>
+              <label className="check-inline">
+                <input
+                  type="checkbox"
+                  style={{ width: "auto" }}
+                  checked={newOffer.active}
+                  onChange={(e) => updateNewOffer({ active: e.target.checked })}
+                />{" "}
+                Active
+              </label>
+            </div>
+            <div className="row-actions" style={{ marginTop: "10px" }}>
+              <button type="button" className="btn-gold" onClick={handleAddOffer}>
+                Save offer
+              </button>
+              <button type="button" className="btn-outline" onClick={() => setOfferAddOpen(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Discount</th>
+                  <th>Code</th>
+                  <th>Window</th>
+                  <th>Active</th>
+                  <th>Priority</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {offersLoading && (
+                  <tr>
+                    <td colSpan={7}>Loading…</td>
+                  </tr>
+                )}
+                {!offersLoading && offersError && (
+                  <tr>
+                    <td colSpan={7}>{offersError}</td>
+                  </tr>
+                )}
+                {!offersLoading && !offersError && offers.length === 0 && (
+                  <tr>
+                    <td colSpan={7}>No offers yet — add one to show a promo card on the Home page.</td>
+                  </tr>
+                )}
+                {!offersLoading &&
+                  !offersError &&
+                  offers.map((o) => {
+                    const draft = offerDrafts[o.id] || o;
+                    const dirty = offerRowDirty(o.id);
+                    return (
+                      <tr key={o.id} className={dirty ? "dirty-row" : ""}>
+                        <td data-label="Title">
+                          {dirty && <span className="dirty-dot" title="Unsaved changes" />}
+                          <input
+                            value={draft.title}
+                            onChange={(e) => updateOfferDraft(o.id, { title: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Discount">
+                          <input
+                            value={draft.discount}
+                            onChange={(e) => updateOfferDraft(o.id, { discount: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Code">
+                          <input
+                            value={draft.code}
+                            onChange={(e) => updateOfferDraft(o.id, { code: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Window">
+                          <div style={{ display: "flex", gap: "4px" }}>
+                            <input
+                              type="date"
+                              value={draft.startDate}
+                              onChange={(e) => updateOfferDraft(o.id, { startDate: e.target.value })}
+                            />
+                            <input
+                              type="date"
+                              value={draft.endDate}
+                              onChange={(e) => updateOfferDraft(o.id, { endDate: e.target.value })}
+                            />
+                          </div>
+                        </td>
+                        <td data-label="Active">
+                          <input
+                            type="checkbox"
+                            checked={!!draft.active}
+                            onChange={(e) => updateOfferDraft(o.id, { active: e.target.checked })}
+                          />
+                        </td>
+                        <td data-label="Priority">
+                          <input
+                            type="number"
+                            style={{ width: "64px" }}
+                            value={draft.priority}
+                            onChange={(e) => updateOfferDraft(o.id, { priority: e.target.value })}
+                          />
+                        </td>
+                        <td className="row-actions">
+                          <button
+                            type="button"
+                            className="btn-gold"
+                            disabled={!dirty || offerSavingId === o.id}
+                            onClick={() => handleSaveOfferRow(o.id)}
+                          >
+                            {offerSavingId === o.id ? "Saving…" : "Save"}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-danger"
+                            onClick={() => handleDeleteOffer(o.id, draft.title || o.id)}
                           >
                             Delete
                           </button>

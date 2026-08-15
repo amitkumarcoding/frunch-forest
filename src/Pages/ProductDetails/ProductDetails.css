@@ -117,6 +117,27 @@ h1.product-name{ font-size:clamp(2.3rem, 4.6vw, 3.3rem); color:var(--forest-dark
 .related-card h3{ font-size:1.1rem; color:var(--forest-dark); margin-bottom:2px; }
 .related-card .rc-hindi{ font-family:'Fraunces', serif; font-style:italic; font-size:0.82rem; color:rgba(34,30,23,0.55); }
 
+/* ---------- out of stock states ---------- */
+.best-badge.out-of-stock-badge{
+  background:linear-gradient(120deg, #7a2f2f, #a94442 55%, #7a2f2f);
+  color:#fff;
+}
+.detail-pack-sizes span.is-disabled{
+  opacity:0.5; text-decoration:line-through;
+}
+a.btn-primary.is-disabled, button.btn-primary.is-disabled{
+  opacity:0.5; cursor:not-allowed; pointer-events:none;
+  box-shadow:none; transform:none;
+}
+.related-card.out-of-stock{ opacity:0.7; }
+.related-card.out-of-stock .rc-photo img{ filter:grayscale(0.5); }
+.rc-out-of-stock{
+  display:inline-block; margin-top:6px;
+  font-family:'JetBrains Mono', monospace; font-size:0.65rem;
+  letter-spacing:0.06em; text-transform:uppercase;
+  color:#a94442;
+}
+
 .product-search-wrap{
   margin-bottom:36px;
   background:rgba(243,236,224,0.04);

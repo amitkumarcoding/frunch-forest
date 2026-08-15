@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { PRODUCTS } from "../../data/products";
+import { PRODUCTS as LOCAL_PRODUCTS } from "../../data/products";
+import { loadProductsFromFirestore } from "../../services/firebaseProducts";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import SEO from "../../components/SEO/SEO";
@@ -8,7 +9,16 @@ import "./ProductDetails.css"
 
 export default function ProductDetails() {
   const { slug } = useParams();
-  const product = PRODUCTS[slug];
+  const [products, setProducts] = useState(LOCAL_PRODUCTS);
+  const product = products[slug];
+
+  // Same source as Home.jsx — picks up admin-managed fields (inStock,
+  // name, tag, packs) without a code deploy.
+  useEffect(() => {
+    loadProductsFromFirestore().then((firestoreProducts) => {
+      if (firestoreProducts) setProducts(firestoreProducts);
+    });
+  }, []);
 
   // scroll reveal (same pattern as About.jsx)
   useEffect(() => {
@@ -38,7 +48,7 @@ export default function ProductDetails() {
     return () => io.disconnect();
   }, [product]);
 
-  const related = Object.entries(PRODUCTS)
+  const related = Object.entries(products)
     .filter(([key]) => key !== slug)
     .slice(0, 3);
 
@@ -98,9 +108,11 @@ export default function ProductDetails() {
             ) : (
               <div className="detail-grid">
                 <div className="photo-frame reveal">
-                  {product.bestSeller && (
+                  {!product.inStock ? (
+                    <div className="best-badge out-of-stock-badge">Out of Stock</div>
+                  ) : product.bestSeller ? (
                     <div className="best-badge">★ Best seller</div>
-                  )}
+                  ) : null}
                   <img src={product.image} alt={product.name} />
                 </div>
                 <div className="reveal">
@@ -118,13 +130,21 @@ export default function ProductDetails() {
 
                   <div className="section-label">Available pack sizes</div>
                   <div className="detail-pack-sizes">
-                    {product.packs.map((p) => <span key={p.size}>{p.size}</span>)}
+                    {product.packs.map((p) => (
+                      <span key={p.size} className={!product.inStock ? "is-disabled" : ""}>{p.size}</span>
+                    ))}
                   </div>
 
                   <div className="detail-cta-row">
-                    <a className="btn-primary" href={`mailto:frunchforest@gmail.com?subject=Order enquiry: ${encodeURIComponent(product.name)}`}>
-                      Enquire to order →
-                    </a>
+                    {product.inStock ? (
+                      <a className="btn-primary" href={`mailto:frunchforest@gmail.com?subject=Order enquiry: ${encodeURIComponent(product.name)}`}>
+                        Enquire to order →
+                      </a>
+                    ) : (
+                      <button type="button" className="btn-primary is-disabled" disabled>
+                        Out of Stock
+                      </button>
+                    )}
                     <Link className="btn-ghost" to="/#products">View full range</Link>
                   </div>
 
@@ -147,12 +167,13 @@ export default function ProductDetails() {
               </div>
               <div className="related-grid">
                 {related.map(([key, p]) => (
-                  <Link key={key} className="related-card" to={`/products/${key}`}>
+                  <Link key={key} className={`related-card${!p.inStock ? ' out-of-stock' : ''}`} to={`/products/${key}`}>
                     <div className="rc-photo"><img src={p.image} alt={p.name} /></div>
                     <div className="rc-body">
                       <span className="rc-tag">{p.tag}</span>
                       <h3>{p.name}</h3>
                       <span className="rc-hindi">{p.hindi}</span>
+                      {!p.inStock && <span className="rc-out-of-stock">Out of Stock</span>}
                     </div>
                   </Link>
                 ))}

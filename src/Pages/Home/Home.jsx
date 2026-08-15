@@ -14,6 +14,8 @@ import { getTimeTheme } from "../../utils/timeTheme";
 import { getTimeIcon } from "../../utils/timeIcons";
 import { loadFestivalsFromGoogleCalendar } from "../../services/googleFestivalCalendar";
 import { loadFestivalOverridesFromFirestore } from "../../services/firebaseFestivals";
+import { loadOffersFromFirestore } from "../../services/firebaseOffers";
+import FestivalOffers from "../../components/FestivalOffers/FestivalOffers";
 import FestiveParticles from "../../components/FestiveParticles";
 import FestiveWelcomeOverlay from "../../components/FestiveWelcomeOverlay";
 import FestiveGarland from "../../components/FestiveGarland";
@@ -200,6 +202,11 @@ function Home() {
     }
 
     loadFestivals();
+  }, []);
+
+  const [offers, setOffers] = useState([]);
+  useEffect(() => {
+    loadOffersFromFirestore().then(setOffers);
   }, []);
 
   // Keep the original site's preloader timing, but let React control it.
@@ -474,6 +481,7 @@ function Home() {
             </div>
           </div>
         </section>
+        <FestivalOffers offers={offers} />
         <section id="products">
           <span className="sec-line"></span>
           <div className="wrap">
