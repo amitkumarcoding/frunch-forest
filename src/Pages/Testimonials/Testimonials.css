@@ -211,6 +211,7 @@ img {max-width:100%; display:block;}
   }
 
 .product-card:hover {
+    transform:translateY(-6px);
     background:rgba(243,236,224,0.09);
     border-color:rgba(201,151,59,0.5);
     box-shadow:0 26px 44px -22px rgba(0,0,0,0.55);
@@ -242,6 +243,7 @@ img {max-width:100%; display:block;}
     content:"";
     position:absolute; inset:0;
     background:linear-gradient(0deg, rgba(19,42,30,0.9) 0%, rgba(19,42,30,0) 55%);
+    pointer-events:none;
   }
 
 .product-card .card-body { padding:22px 26px 26px; }

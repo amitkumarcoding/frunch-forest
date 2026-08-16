@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { PRODUCTS as LOCAL_PRODUCTS } from "../../data/products";
 import { loadProductsFromFirestore } from "../../services/firebaseProducts";
+import { isOutOfStock } from "../../utils/stock";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import SEO from "../../components/SEO/SEO";
@@ -11,6 +12,7 @@ export default function ProductDetails() {
   const { slug } = useParams();
   const [products, setProducts] = useState(LOCAL_PRODUCTS);
   const product = products[slug];
+  const outOfStock = product ? isOutOfStock(product) : true;
 
   // Same source as Home.jsx — picks up admin-managed fields (inStock,
   // name, tag, packs) without a code deploy.
@@ -93,9 +95,9 @@ export default function ProductDetails() {
                       "@type": "Offer",
                       priceCurrency: "INR",
                       price: product.packs[0].price,
-                      availability: product.inStock
-                        ? "https://schema.org/InStock"
-                        : "https://schema.org/OutOfStock",
+                      availability: outOfStock
+                        ? "https://schema.org/OutOfStock"
+                        : "https://schema.org/InStock",
                       url: `https://frunchforest.com/products/${slug}`,
                     }
                   : undefined,
@@ -123,7 +125,7 @@ export default function ProductDetails() {
             ) : (
               <div className="detail-grid">
                 <div className="photo-frame reveal">
-                  {!product.inStock ? (
+                  {outOfStock ? (
                     <div className="best-badge out-of-stock-badge">Out of Stock</div>
                   ) : product.bestSeller ? (
                     <div className="best-badge">★ Best seller</div>
@@ -146,19 +148,19 @@ export default function ProductDetails() {
                   <div className="section-label">Available pack sizes</div>
                   <div className="detail-pack-sizes">
                     {product.packs.map((p) => (
-                      <span key={p.size} className={!product.inStock ? "is-disabled" : ""}>{p.size}</span>
+                      <span key={p.size} className={outOfStock ? "is-disabled" : ""}>{p.size}</span>
                     ))}
                   </div>
 
                   <div className="detail-cta-row">
-                    {product.inStock ? (
-                      <a className="btn-primary" href={`mailto:frunchforest@gmail.com?subject=Order enquiry: ${encodeURIComponent(product.name)}`}>
-                        Enquire to order →
-                      </a>
-                    ) : (
+                    {outOfStock ? (
                       <button type="button" className="btn-primary is-disabled" disabled>
                         Out of Stock
                       </button>
+                    ) : (
+                      <a className="btn-primary" href={`mailto:frunchforest@gmail.com?subject=Order enquiry: ${encodeURIComponent(product.name)}`}>
+                        Enquire to order →
+                      </a>
                     )}
                     <Link className="btn-ghost" to="/#products">View full range</Link>
                   </div>
@@ -181,17 +183,20 @@ export default function ProductDetails() {
                 <h2>You may also like</h2>
               </div>
               <div className="related-grid">
-                {related.map(([key, p]) => (
-                  <Link key={key} className={`related-card${!p.inStock ? ' out-of-stock' : ''}`} to={`/products/${key}`}>
-                    <div className="rc-photo"><img src={p.image} alt={p.name} /></div>
-                    <div className="rc-body">
-                      <span className="rc-tag">{p.tag}</span>
-                      <h3>{p.name}</h3>
-                      <span className="rc-hindi">{p.hindi}</span>
-                      {!p.inStock && <span className="rc-out-of-stock">Out of Stock</span>}
-                    </div>
-                  </Link>
-                ))}
+                {related.map(([key, p]) => {
+                  const rOutOfStock = isOutOfStock(p);
+                  return (
+                    <Link key={key} className={`related-card${rOutOfStock ? ' out-of-stock' : ''}`} to={`/products/${key}`}>
+                      <div className="rc-photo"><img src={p.image} alt={p.name} /></div>
+                      <div className="rc-body">
+                        <span className="rc-tag">{p.tag}</span>
+                        <h3>{p.name}</h3>
+                        <span className="rc-hindi">{p.hindi}</span>
+                        {rOutOfStock && <span className="rc-out-of-stock">Out of Stock</span>}
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>

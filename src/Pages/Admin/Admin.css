@@ -98,6 +98,8 @@
 .admin-page .row-actions{display:flex;gap:6px}
 .admin-page .slug-cell{font-family:monospace;font-size:12px;color:var(--accent);display:flex;align-items:center;gap:6px}
 .admin-page .dirty-dot{width:7px;height:7px;border-radius:50%;background:var(--changed);flex:none;box-shadow:0 0 0 3px rgba(232,184,75,0.2)}
+.admin-page .status-in{color:#2e7d32;font-weight:600;font-size:0.85rem}
+.admin-page .status-out{color:#c0392b;font-weight:600;font-size:0.85rem}
 
 .admin-page #addBox{display:none;background:var(--card);padding:18px;border-radius:12px;margin-bottom:18px;border:1px solid var(--card-line)}
 .admin-page #addBox.open{display:block}

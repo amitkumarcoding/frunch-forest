@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { isOutOfStock } from "../../utils/stock";
 import "./ProductCard.css";
 
 const BADGE_LABELS = {
@@ -25,6 +26,7 @@ export default function ProductCard({
   );
   const [showNutrients, setShowNutrients] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const outOfStock = isOutOfStock(product);
   const pack = product.packs[packIdx];
   const discount = Math.round(((pack.mrp - pack.price) / pack.mrp) * 100);
   const perUnit = (pack.price / parseInt(pack.size)) * 100;
@@ -36,7 +38,7 @@ export default function ProductCard({
   function handleBuyNow(e) {
     e.preventDefault();
     e.stopPropagation();
-    if (!product.inStock) return;
+    if (outOfStock) return;
     const detailsUrl = `${window.location.origin}/products/${product.slug}`;
     const message = encodeURIComponent(
       `Hi Frunch Forest, I'd like to buy:\n${product.name} (${pack.size}) - ₹${pack.price}\n${detailsUrl}`
@@ -45,7 +47,7 @@ export default function ProductCard({
   }
 
   return (
-    <div className={`product-card${product.bestSeller ? ' featured' : ''}${!product.inStock ? ' out-of-stock' : ''}`}>
+    <div className={`product-card${product.bestSeller ? ' featured' : ''}${outOfStock ? ' out-of-stock' : ''}`}>
       <div className="card-photo">
         {badges.length > 0 && (
           <div className="card-badges">
@@ -118,8 +120,8 @@ export default function ProductCard({
         <div className="card-price">
           <span className="price-now">₹{pack.price}</span>
           <span className="price-mrp">₹{pack.mrp}</span>
-          <span className={`discount-badge${!product.inStock ? ' out-of-stock-badge' : ''}`}>
-            {product.inStock ? `${discount}% OFF` : 'Out of Stock'}
+          <span className={`discount-badge${outOfStock ? ' out-of-stock-badge' : ''}`}>
+            {outOfStock ? 'Out of Stock' : `${discount}% OFF`}
           </span>
         </div>
         <p className="tax-note">Inclusive of all taxes</p>
@@ -130,7 +132,7 @@ export default function ProductCard({
               key={p.size}
               type="button"
               className={`pack-size-btn${i === packIdx ? ' active' : ''}${p.bestValue ? ' best-value' : ''}`}
-              disabled={!product.inStock}
+              disabled={outOfStock}
               onClick={() => setPackIdx(i)}
             >
               {p.bestValue && <span className="best-value-tag">Best value</span>}
@@ -143,14 +145,14 @@ export default function ProductCard({
         <div className="card-actions">
           <button
             type="button"
-            className={`card-buy-now-btn${!product.inStock ? ' is-disabled' : ''}`}
-            disabled={!product.inStock}
+            className={`card-buy-now-btn${outOfStock ? ' is-disabled' : ''}`}
+            disabled={outOfStock}
             onClick={handleBuyNow}
           >
-            {product.inStock && (
+            {!outOfStock && (
               <img src="https://cdn.simpleicons.org/whatsapp/132A1E" alt="" width="16" height="16" />
             )}
-            {product.inStock ? 'Buy Now' : 'Out of Stock'}
+            {outOfStock ? 'Out of Stock' : 'Buy Now'}
           </button>
           <Link className="card-details-btn" to={`/products/${product.slug}`}>View details →</Link>
         </div>

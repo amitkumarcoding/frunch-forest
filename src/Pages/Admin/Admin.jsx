@@ -21,6 +21,7 @@ import "./Admin.css";
 import SEO from "../../components/SEO/SEO";
 import { FESTIVE_THEMES } from "../../utils/festiveTheme";
 import { ALLOWED_ADMINS } from "../../utils/admins";
+import { isOutOfStock } from "../../utils/stock";
 
 const KNOWN_FESTIVAL_KEYS = Object.keys(FESTIVE_THEMES);
 
@@ -48,6 +49,7 @@ const EMPTY_NEW_PRODUCT = {
   tag: "",
   image: "",
   bestSeller: false,
+  stock: "",
   nutrition: '[{"label":"Protein","value":"18g"}]',
   bullets: '["Feature one","Feature two"]',
   packs: '[{"size":"200g","price":249,"mrp":299}]',
@@ -84,6 +86,7 @@ function toOriginalDraft(data) {
     name: data.name || "",
     tag: data.tag || "",
     inStock: data.inStock !== false,
+    stock: typeof data.stock === "number" ? String(data.stock) : "",
     packs: data.packs || [],
   };
 }
@@ -206,7 +209,7 @@ export default function Admin() {
   }
 
   function isRowDirty(slug) {
-    return ["name", "tag", "inStock", "packs"].some((f) => fieldChanged(slug, f));
+    return ["name", "tag", "inStock", "stock", "packs"].some((f) => fieldChanged(slug, f));
   }
 
   const dirtySlugs = useMemo(
@@ -241,6 +244,7 @@ export default function Admin() {
           name: draft.name,
           tag: draft.tag,
           inStock: draft.inStock,
+          stock: draft.stock === "" ? null : Number(draft.stock),
           packs: draft.packs,
         };
         delete updated.slug;
@@ -323,6 +327,7 @@ export default function Admin() {
       tag: newProduct.tag,
       image: newProduct.image,
       bestSeller: newProduct.bestSeller,
+      stock: newProduct.stock === "" ? null : Number(newProduct.stock),
       nutrition,
       bullets,
       packs,
@@ -698,6 +703,12 @@ export default function Admin() {
                 value={newProduct.image}
                 onChange={(e) => updateNewProduct({ image: e.target.value })}
               />
+              <input
+                type="number"
+                placeholder="Stock qty (blank = untracked)"
+                value={newProduct.stock}
+                onChange={(e) => updateNewProduct({ stock: e.target.value })}
+              />
               <label className="check-inline">
                 <input
                   type="checkbox"
@@ -741,19 +752,21 @@ export default function Admin() {
                   <th>Name</th>
                   <th>Tag</th>
                   <th>Packs (size:price)</th>
+                  <th>Stock</th>
                   <th>In stock</th>
+                  <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {productsLoading && (
                   <tr>
-                    <td colSpan={6}>Loading…</td>
+                    <td colSpan={8}>Loading…</td>
                   </tr>
                 )}
                 {!productsLoading && productsError && (
                   <tr>
-                    <td colSpan={6}>{productsError}</td>
+                    <td colSpan={8}>{productsError}</td>
                   </tr>
                 )}
                 {!productsLoading &&
@@ -789,6 +802,16 @@ export default function Admin() {
                             readOnly
                           />
                         </td>
+                        <td data-label="Stock">
+                          <input
+                            className={fieldChanged(p.slug, "stock") ? "changed" : ""}
+                            type="number"
+                            style={{ width: "80px" }}
+                            placeholder="—"
+                            value={draft.stock ?? ""}
+                            onChange={(e) => updateDraft(p.slug, { stock: e.target.value })}
+                          />
+                        </td>
                         <td data-label="In stock">
                           <input
                             className={fieldChanged(p.slug, "inStock") ? "changed" : ""}
@@ -796,6 +819,11 @@ export default function Admin() {
                             checked={!!draft.inStock}
                             onChange={(e) => updateDraft(p.slug, { inStock: e.target.checked })}
                           />
+                        </td>
+                        <td data-label="Status">
+                          {isOutOfStock({ inStock: draft.inStock, stock: draft.stock === "" ? null : Number(draft.stock) })
+                            ? <span className="status-out">Out of stock</span>
+                            : <span className="status-in">In stock</span>}
                         </td>
                         <td className="row-actions">
                           <button type="button" className="btn-outline" onClick={() => handleEditPacks(p.slug)}>
