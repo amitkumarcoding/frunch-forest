@@ -14,12 +14,15 @@ import ShippingPolicy from "./Pages/ShippingPolicy/ShippingPolicy.jsx";
 import TermsAndConditions from "./Pages/TermsAndConditions/TermsAndConditions.jsx";
 import Testimonials from "./Pages/Testimonials/Testimonials.jsx";
 import Admin from "./Pages/Admin/Admin.jsx";
-
+import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <SpeedInsights />
+      <Analytics />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
