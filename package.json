@@ -16,6 +16,7 @@
     "@tsparticles/preset-stars": "^4.3.2",
     "@tsparticles/react": "^4.3.2",
     "@tsparticles/slim": "^4.3.2",
+    "@vercel/analytics": "^2.0.1",
     "firebase": "^12.17.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

@@ -2,6 +2,7 @@ import { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToHash from "./components/ScrollToHash.jsx";
 import Home from "./Pages/Home/Home.jsx";
+import { Analytics } from '@vercel/analytics/react';
 
 const NotFound = lazy(() => import("./Pages/NotFound/NotFound.jsx"));
 const About = lazy(() => import("./Pages/About/About.jsx"));
@@ -22,6 +23,8 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollToHash />
+      {/* Vercel Analytics */}
+      <Analytics />
       <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={<Home />} />
