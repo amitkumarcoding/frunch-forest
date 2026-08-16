@@ -58,6 +58,29 @@ const EMPTY_NEW_OFFER = {
   priority: 10,
 };
 
+const EMPTY_NEW_BLOG_POST = {
+  no: "",
+  label: "",
+  title: "",
+  lede: "",
+  sources: "",
+  note: "",
+  order: 10,
+};
+
+function toBlogDraft(id, data) {
+  return {
+    id,
+    no: data.no || "",
+    label: data.label || "",
+    title: data.title || "",
+    lede: data.lede || "",
+    sources: Array.isArray(data.sources) ? data.sources.join(", ") : (data.sources || ""),
+    note: data.note || "",
+    order: typeof data.order === "number" ? data.order : 10,
+  };
+}
+
 function packsSummary(packs) {
   return (packs || []).map((pk) => `${pk.size}:₹${pk.price}`).join(", ");
 }
@@ -108,6 +131,15 @@ export default function Admin() {
   const [offerAddOpen, setOfferAddOpen] = useState(false);
   const [newOffer, setNewOffer] = useState(EMPTY_NEW_OFFER);
 
+  // ---- Blog / Field notes (Nutrient Almanac specimen cards) ----
+  const [blogPosts, setBlogPosts] = useState([]); // [{id, no, label, title, lede, sources, note, order}]
+  const [blogDrafts, setBlogDrafts] = useState({}); // id -> same shape (sources as comma string)
+  const [blogLoading, setBlogLoading] = useState(false);
+  const [blogError, setBlogError] = useState("");
+  const [blogSavingId, setBlogSavingId] = useState(null);
+  const [blogAddOpen, setBlogAddOpen] = useState(false);
+  const [newBlogPost, setNewBlogPost] = useState(EMPTY_NEW_BLOG_POST);
+
   const isAuthorized = !!user && ALLOWED_ADMINS.includes(user.email);
 
   useEffect(() => {
@@ -123,6 +155,7 @@ export default function Admin() {
       loadProducts();
       loadFestivals();
       loadOffers();
+      loadBlogPosts();
     }
   }, [isAuthorized]);
 
@@ -582,6 +615,116 @@ export default function Admin() {
       setNewOffer(EMPTY_NEW_OFFER);
       setStatusMessage("Offer added.");
       loadOffers();
+    } catch (e) {
+      setStatusMessage(`Add failed: ${e.message}`, false);
+    }
+  }
+
+  // ---- Blog / Field notes ----
+  // Live in Firestore ("blogPosts" collection) and render as the
+  // specimen cards on the Blog page — see firebaseBlog.js / Blog.jsx.
+  // `sources` is edited here as a comma-separated string and stored as
+  // an array; names matching SOURCE_SLUGS in Blog.jsx link straight to
+  // that product. `order` controls display order (ascending).
+  async function loadBlogPosts() {
+    setBlogLoading(true);
+    setBlogError("");
+    try {
+      const snap = await getDocs(collection(db, "blogPosts"));
+      const list = [];
+      const drafts = {};
+      snap.forEach((docSnap) => {
+        const row = toBlogDraft(docSnap.id, docSnap.data());
+        list.push(row);
+        drafts[docSnap.id] = row;
+      });
+      list.sort((a, b) => a.order - b.order || a.no.localeCompare(b.no));
+      setBlogPosts(list);
+      setBlogDrafts(drafts);
+    } catch (e) {
+      setBlogError(`Error loading blog posts: ${e.message}`);
+    } finally {
+      setBlogLoading(false);
+    }
+  }
+
+  function updateBlogDraft(id, patch) {
+    setBlogDrafts((prev) => ({ ...prev, [id]: { ...prev[id], ...patch } }));
+  }
+
+  function blogRowDirty(id) {
+    const original = blogPosts.find((b) => b.id === id);
+    const draft = blogDrafts[id];
+    if (!original || !draft) return false;
+    return ["no", "label", "title", "lede", "sources", "note", "order"].some(
+      (field) => String(original[field]) !== String(draft[field])
+    );
+  }
+
+  async function handleSaveBlogRow(id) {
+    const draft = blogDrafts[id];
+    if (!draft) return;
+    if (!draft.title.trim()) return window.alert("Title is required.");
+    setBlogSavingId(id);
+    try {
+      const cleaned = {
+        no: draft.no.trim(),
+        label: draft.label.trim(),
+        title: draft.title.trim(),
+        lede: draft.lede.trim(),
+        sources: draft.sources.split(",").map((s) => s.trim()).filter(Boolean),
+        note: draft.note.trim(),
+        order: Number(draft.order) || 10,
+      };
+      await setDoc(doc(db, "blogPosts", id), cleaned);
+      const row = toBlogDraft(id, cleaned);
+      setBlogPosts((prev) => prev.map((b) => (b.id === id ? row : b)));
+      setBlogDrafts((prev) => ({ ...prev, [id]: row }));
+      setStatusMessage("Saved blog post.");
+    } catch (e) {
+      setStatusMessage(`Save failed: ${e.message}`, false);
+    } finally {
+      setBlogSavingId(null);
+    }
+  }
+
+  async function handleDeleteBlogPost(id, label) {
+    if (!window.confirm(`Delete blog post "${label}"? This cannot be undone.`)) return;
+    try {
+      await deleteDoc(doc(db, "blogPosts", id));
+      setBlogPosts((prev) => prev.filter((b) => b.id !== id));
+      setBlogDrafts((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      setStatusMessage("Deleted blog post.");
+    } catch (e) {
+      setStatusMessage(`Delete failed: ${e.message}`, false);
+    }
+  }
+
+  function updateNewBlogPost(patch) {
+    setNewBlogPost((prev) => ({ ...prev, ...patch }));
+  }
+
+  async function handleAddBlogPost() {
+    if (!newBlogPost.title.trim()) return window.alert("Title is required.");
+    if (!window.confirm(`Add blog post "${newBlogPost.title.trim()}"?`)) return;
+    try {
+      await addDoc(collection(db, "blogPosts"), {
+        no: newBlogPost.no.trim(),
+        label: newBlogPost.label.trim(),
+        title: newBlogPost.title.trim(),
+        lede: newBlogPost.lede.trim(),
+        sources: newBlogPost.sources.split(",").map((s) => s.trim()).filter(Boolean),
+        note: newBlogPost.note.trim(),
+        order: Number(newBlogPost.order) || 10,
+      });
+      setBlogAddOpen(false);
+      setNewBlogPost(EMPTY_NEW_BLOG_POST);
+      setStatusMessage("Blog post added.");
+      loadBlogPosts();
     } catch (e) {
       setStatusMessage(`Add failed: ${e.message}`, false);
     }
@@ -1205,6 +1348,192 @@ export default function Admin() {
                             type="button"
                             className="btn-danger"
                             onClick={() => handleDeleteOffer(o.id, draft.title || o.id)}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="section-header">
+            <div>
+              <h2>Blog / Field notes</h2>
+              <p className="hint">
+                The specimen cards on the Blog (Nutrient Almanac) page. "Sources" is a comma-separated list of product names — a name matching a real product (e.g. Almonds, Cashews, Walnuts, Raisins) links straight to it. Lower "Order" values show first.
+              </p>
+            </div>
+            <button type="button" className="btn-gold" onClick={() => setBlogAddOpen((v) => !v)}>
+              + Add post
+            </button>
+          </div>
+
+          <div id="addBlogBox" className={blogAddOpen ? "open" : ""}>
+            <div className="grid2">
+              <label className="field-inline">
+                <span className="field-label">No. (display label)</span>
+                <input
+                  placeholder="NO. 07"
+                  value={newBlogPost.no}
+                  onChange={(e) => updateNewBlogPost({ no: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Tag label</span>
+                <input
+                  placeholder="VITAMIN E"
+                  value={newBlogPost.label}
+                  onChange={(e) => updateNewBlogPost({ label: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Title</span>
+                <input
+                  placeholder="Vitamin E"
+                  value={newBlogPost.title}
+                  onChange={(e) => updateNewBlogPost({ title: e.target.value })}
+                />
+              </label>
+              <label className="field-inline">
+                <span className="field-label">Order (lower shows first)</span>
+                <input
+                  type="number"
+                  value={newBlogPost.order}
+                  onChange={(e) => updateNewBlogPost({ order: e.target.value })}
+                />
+              </label>
+              <label className="field-inline" style={{ gridColumn: "1 / -1" }}>
+                <span className="field-label">Lede (one-line hook)</span>
+                <input
+                  placeholder="A quiet antioxidant that protects cell membranes."
+                  value={newBlogPost.lede}
+                  onChange={(e) => updateNewBlogPost({ lede: e.target.value })}
+                />
+              </label>
+              <label className="field-inline" style={{ gridColumn: "1 / -1" }}>
+                <span className="field-label">Sources (comma-separated)</span>
+                <input
+                  placeholder="Almonds, Pistachios"
+                  value={newBlogPost.sources}
+                  onChange={(e) => updateNewBlogPost({ sources: e.target.value })}
+                />
+              </label>
+            </div>
+            <p className="field-label">Field note (full paragraph)</p>
+            <textarea
+              value={newBlogPost.note}
+              onChange={(e) => updateNewBlogPost({ note: e.target.value })}
+            />
+            <div className="row-actions" style={{ marginTop: "10px" }}>
+              <button type="button" className="btn-gold" onClick={handleAddBlogPost}>
+                Save post
+              </button>
+              <button type="button" className="btn-outline" onClick={() => setBlogAddOpen(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>Label</th>
+                  <th>Title</th>
+                  <th>Lede</th>
+                  <th>Sources</th>
+                  <th>Note</th>
+                  <th>Order</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {blogLoading && (
+                  <tr>
+                    <td colSpan={8}>Loading…</td>
+                  </tr>
+                )}
+                {!blogLoading && blogError && (
+                  <tr>
+                    <td colSpan={8}>{blogError}</td>
+                  </tr>
+                )}
+                {!blogLoading && !blogError && blogPosts.length === 0 && (
+                  <tr>
+                    <td colSpan={8}>No blog posts yet — the Blog page falls back to its built-in specimen list until you add one.</td>
+                  </tr>
+                )}
+                {!blogLoading &&
+                  !blogError &&
+                  blogPosts.map((b) => {
+                    const draft = blogDrafts[b.id] || b;
+                    const dirty = blogRowDirty(b.id);
+                    return (
+                      <tr key={b.id} className={dirty ? "dirty-row" : ""}>
+                        <td data-label="No.">
+                          {dirty && <span className="dirty-dot" title="Unsaved changes" />}
+                          <input
+                            style={{ width: "84px" }}
+                            value={draft.no}
+                            onChange={(e) => updateBlogDraft(b.id, { no: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Label">
+                          <input
+                            value={draft.label}
+                            onChange={(e) => updateBlogDraft(b.id, { label: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Title">
+                          <input
+                            value={draft.title}
+                            onChange={(e) => updateBlogDraft(b.id, { title: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Lede">
+                          <input
+                            value={draft.lede}
+                            onChange={(e) => updateBlogDraft(b.id, { lede: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Sources">
+                          <input
+                            placeholder="Almonds, Cashews"
+                            value={draft.sources}
+                            onChange={(e) => updateBlogDraft(b.id, { sources: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Note">
+                          <input
+                            value={draft.note}
+                            onChange={(e) => updateBlogDraft(b.id, { note: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Order">
+                          <input
+                            type="number"
+                            style={{ width: "64px" }}
+                            value={draft.order}
+                            onChange={(e) => updateBlogDraft(b.id, { order: e.target.value })}
+                          />
+                        </td>
+                        <td className="row-actions">
+                          <button
+                            type="button"
+                            className="btn-gold"
+                            disabled={!dirty || blogSavingId === b.id}
+                            onClick={() => handleSaveBlogRow(b.id)}
+                          >
+                            {blogSavingId === b.id ? "Saving…" : "Save"}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-danger"
+                            onClick={() => handleDeleteBlogPost(b.id, draft.title || b.id)}
                           >
                             Delete
                           </button>

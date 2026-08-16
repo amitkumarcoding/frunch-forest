@@ -3,9 +3,14 @@ import { Link } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import SEO from "../../components/SEO/SEO";
+import { loadBlogPostsFromFirestore } from "../../services/firebaseBlog";
 import "./Blog.css"
 
-const SPECIMENS = [
+// Fallback shown while Firestore loads, and used as-is if the
+// "blogPosts" collection is empty or unreachable — see firebaseBlog.js.
+// The Admin console's "Blog / Field notes" section manages the live
+// version of this list.
+const DEFAULT_SPECIMENS = [
   {
     no: "NO. 01", label: "PROTEIN", title: "Protein",
     lede: "The building block your body uses to repair muscle and stay full for longer.",
@@ -57,34 +62,46 @@ const SOURCE_SLUGS = {
   Dates: "dates",
 };
 
-function SpecimenCard({ specimen }) {
-  const [open, setOpen] = useState(false);
+function SpecimenDetail({ specimen }) {
   return (
-    <div className={`specimen-card reveal${open ? ' open' : ''}`} onClick={() => setOpen((v) => !v)}>
+    <div className="almanac-detail" key={specimen.id || specimen.no}>
       <div className="specimen-tag"><span className="no">{specimen.no}</span><span>{specimen.label}</span></div>
       <h3>{specimen.title}</h3>
       <p className="lede">{specimen.lede}</p>
       <div className="specimen-sources">
         {specimen.sources.map((s) =>
           SOURCE_SLUGS[s] ? (
-            <Link key={s} to={`/products/${SOURCE_SLUGS[s]}`} onClick={(e) => e.stopPropagation()}>{s}</Link>
+            <Link key={s} to={`/products/${SOURCE_SLUGS[s]}`}>{s}</Link>
           ) : (
             <span key={s}>{s}</span>
           )
         )}
       </div>
-      <div className="specimen-toggle">
-        Read the field note
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-      </div>
-      <div className="specimen-note" onClick={(e) => e.stopPropagation()}>
-        <p>{specimen.note}</p>
-      </div>
+      <p className="detail-note">{specimen.note}</p>
     </div>
   );
 }
 
 export default function Blog() {
+  const [specimens, setSpecimens] = useState(DEFAULT_SPECIMENS);
+  const [loading, setLoading] = useState(true);
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadBlogPostsFromFirestore().then((posts) => {
+      if (cancelled) return;
+      if (posts && posts.length) {
+        setSpecimens(posts);
+        setActiveIdx(0);
+      }
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
@@ -93,10 +110,12 @@ export default function Blog() {
           io.unobserve(e.target);
         }
       });
-    }, { threshold: 0.15 });
+    }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
     document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, []);
+  }, [specimens]);
+
+  const active = specimens[activeIdx] || specimens[0];
 
   return (
     <>
@@ -139,11 +158,11 @@ export default function Blog() {
         <div className="almanac-note reveal">
           <div>
             <span className="k">How to read this page</span>
-            <p>Each specimen card below covers one nutrient found in our dry fruits — what it does in the body, and which of our products carry it. Tap a card to open its full note. We're also building a premium spice range — see our <Link to="/#coming">upcoming spices</Link> for what's coming next.</p>
+            <p>Each specimen below covers one nutrient found in our dry fruits — what it does in the body, and which of our products carry it. Pick a specimen from the index to read its full note. We're also building a premium spice range — see our <Link to="/#coming">upcoming spices</Link> for what's coming next.</p>
           </div>
           <div className="almanac-legend">
-            <span>06 SPECIMENS</span>
-            <span>5 SOURCE FRUITS</span>
+            <span>{String(specimens.length).padStart(2, "0")} SPECIMENS</span>
+            <span>{new Set(specimens.flatMap((s) => s.sources)).size} SOURCE FRUITS</span>
             <span>UPDATED 2026</span>
           </div>
         </div>
@@ -151,10 +170,28 @@ export default function Blog() {
         <section className="specimens">
           <div className="specimens-head reveal">
             <span>Specimen Index</span>
-            <h2>Six nutrients worth knowing</h2>
+            <h2>{specimens.length} nutrient{specimens.length === 1 ? "" : "s"} worth knowing</h2>
           </div>
-          <div className="specimen-grid">
-            {SPECIMENS.map((s) => <SpecimenCard key={s.no} specimen={s} />)}
+          <div className={`almanac-browser reveal${loading ? " loading" : ""}`}>
+            <div className="almanac-index">
+              {specimens.map((s, i) => (
+                <button
+                  key={s.id || s.no}
+                  type="button"
+                  className={`index-item${i === activeIdx ? " active" : ""}`}
+                  onClick={() => setActiveIdx(i)}
+                  aria-pressed={i === activeIdx}
+                >
+                  <span className="idx-no">{s.no}</span>
+                  <span className="idx-copy">
+                    <span className="idx-title">{s.title}</span>
+                    <span className="idx-label">{s.label}</span>
+                  </span>
+                  <svg className="idx-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 6 15 12 9 18"></polyline></svg>
+                </button>
+              ))}
+            </div>
+            {active && <SpecimenDetail specimen={active} />}
           </div>
         </section>
 
