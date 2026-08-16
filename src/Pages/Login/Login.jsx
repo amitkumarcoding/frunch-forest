@@ -40,7 +40,7 @@ export default function LoginPage() {
       setStatusType("ok");
       setStatus("Login successful — redirecting…");
       setTimeout(() => {
-        window.location.href = "account";
+        window.location.href = "/account";
       }, 700);
     } catch (err) {
       setSubmitting(false);
@@ -71,7 +71,7 @@ export default function LoginPage() {
   function handleGoogleAdmin() {
     setStatusType("ok");
     setStatus("Opening Gmail sign-in…");
-    window.location.href = "admin";
+    window.location.href = "/admin";
   }
 
   return (
@@ -86,9 +86,9 @@ export default function LoginPage() {
 
       <header id="siteHeader" className={scrolled ? "scrolled" : ""}>
         <div className="nav">
-          <a className="nav-brand" href="./" aria-label="Frunch Forest — home">
+          <a className="nav-brand" href="/" aria-label="Frunch Forest — home">
             <span className="brand-mark">
-              <img src="./image/logo.png" alt="" width={80} height={80} />
+              <img src="/image/logo.png" alt="" width={80} height={80} />
             </span>
             <span className="brand-lockup">
               <span className="brand-name">Frunch Forest</span>
@@ -96,14 +96,14 @@ export default function LoginPage() {
             </span>
           </a>
           <nav className="nav-links">
-            <a href="./">Home</a>
-            <a href="./products">Products</a>
-            <a href="./index.html#why">Why Us</a>
-            <a href="./index.html#faq">FAQ</a>
-            <a href="./index.html#contact">Contact</a>
+            <a href="/">Home</a>
+            <a href="/products">Products</a>
+            <a href="/#why">Why Us</a>
+            <a href="/#faq">FAQ</a>
+            <a href="/#contact">Contact</a>
           </nav>
           <div className="nav-actions">
-            <a className="nav-cta" href="./register">Create account</a>
+            <a className="nav-cta" href="/register">Create account</a>
           </div>
         </div>
       </header>
@@ -119,7 +119,7 @@ export default function LoginPage() {
             <div className="auth-card">
               <div className="auth-visual">
                 <div className="auth-brand">
-                  <img src="./image/logo.png" alt="" />
+                  <img src="/image/logo.png" alt="" />
                   <span>Frunch Forest</span>
                 </div>
                 <div>
@@ -243,7 +243,7 @@ export default function LoginPage() {
                   <div>
                     <div className="af-divider">or</div>
                     <p className="af-switch">
-                      New to Frunch Forest? <a href="./register">Create an account</a>
+                      New to Frunch Forest? <a href="/register">Create an account</a>
                     </p>
                   </div>
                 )}

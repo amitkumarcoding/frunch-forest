@@ -28,7 +28,13 @@ export async function loadOffersFromFirestore() {
     const snapshot = await getDocs(collection(db, 'offers'));
     if (snapshot.empty) return [];
 
-    const today = new Date().toISOString().slice(0, 10);
+    // Local calendar date, not UTC — toISOString() converts to UTC first,
+    // which for IST (UTC+5:30) keeps yesterday's date showing for the
+    // first ~5.5 hours of today. Offer windows are IST calendar days,
+    // so match on the browser's local date instead (see festiveGreeting.js
+    // for the same fix applied to festival dates).
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
     return snapshot.docs
       .map((docSnap) => {

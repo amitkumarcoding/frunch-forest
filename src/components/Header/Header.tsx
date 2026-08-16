@@ -206,7 +206,7 @@ function Header() {
           <Link className="btn-download" to={authHref} onClick={closeMenu}>
             {authLabel}
           </Link>
-          <a className="btn-primary" href="#contact" onClick={closeMenu}>
+          <a className="btn-primary" href="/#contact" onClick={closeMenu}>
             Get in touch →
           </a>
         </div>

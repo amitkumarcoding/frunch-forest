@@ -3,16 +3,10 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import "./Account.css";
 import { auth, db } from "../../services/firebase";
+import { ALLOWED_ADMINS } from "../../utils/admins";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import SEO from "../../components/SEO/SEO";
-
-// Same authorized accounts as admin — keep these two lists in sync.
-const ALLOWED_ADMINS = [
-    "frunchforest@gmail.com",
-    "amitaquarius13@gmail.com",
-    "bhardwajakash78@gmail.com",
-];
 
 export default function Account() {
     const [loading, setLoading] = useState(true);
