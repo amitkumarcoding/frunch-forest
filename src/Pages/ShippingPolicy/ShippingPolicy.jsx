@@ -19,12 +19,13 @@ const SCROLL_TOP_THRESHOLD = 480;
 export default function ShippingPolicy() {
   const waButtonRef = useRef(null);
   const [scrollTopVisible, setScrollTopVisible] = useState(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
 
   // Respect prefers-reduced-motion
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReduceMotion(mq.matches);
     const handler = (e) => setReduceMotion(e.matches);
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
@@ -86,7 +87,7 @@ export default function ShippingPolicy() {
       if (saved && typeof saved.left === 'number' && typeof saved.top === 'number') {
         requestAnimationFrame(() => applyPosition(saved.left, saved.top));
       }
-    } catch (e) {
+    } catch {
       // ignore malformed storage
     }
 
@@ -120,7 +121,7 @@ export default function ShippingPolicy() {
         const rect = btn.getBoundingClientRect();
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify({ left: rect.left, top: rect.top }));
-        } catch (err) {
+        } catch {
           // ignore storage errors (e.g. private browsing)
         }
       }

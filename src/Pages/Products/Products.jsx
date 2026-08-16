@@ -49,7 +49,9 @@ export default function Products() {
   useEffect(() => {
     try {
       localStorage.setItem(FAV_KEY, JSON.stringify(favourites));
-    } catch {}
+    } catch {
+      // localStorage can throw in private browsing / when quota is exceeded — favourites just won't persist, non-fatal
+    }
   }, [favourites]);
 
   // scroll reveal

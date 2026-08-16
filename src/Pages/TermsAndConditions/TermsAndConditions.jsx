@@ -11,12 +11,13 @@ export default function TermsAndConditions() {
   const mainRef = useRef(null);
   const waButtonRef = useRef(null);
   const [scrollTopVisible, setScrollTopVisible] = useState(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
 
   // Respect prefers-reduced-motion
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReduceMotion(mq.matches);
     const handler = (e) => setReduceMotion(e.matches);
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
@@ -75,7 +76,7 @@ export default function TermsAndConditions() {
       if (saved && typeof saved.left === 'number' && typeof saved.top === 'number') {
         requestAnimationFrame(() => applyPosition(saved.left, saved.top));
       }
-    } catch (e) {
+    } catch {
       // ignore malformed storage
     }
 
@@ -109,7 +110,7 @@ export default function TermsAndConditions() {
         const rect = btn.getBoundingClientRect();
         try {
           localStorage.setItem(WA_STORAGE_KEY, JSON.stringify({ left: rect.left, top: rect.top }));
-        } catch (err) {
+        } catch {
           // ignore storage errors (e.g. private browsing)
         }
       }

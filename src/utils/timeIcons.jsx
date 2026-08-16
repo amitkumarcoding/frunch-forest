@@ -1,7 +1,6 @@
 // One small line-art SVG per time-of-day slot — the non-festival
 // counterpart to festiveIcons.jsx. Same stroke weight/style so the hero
 // banner/emblem look identical whichever system is driving them.
-import React from "react";
 
 const base = {
   viewBox: "0 0 24 24",
@@ -63,6 +62,7 @@ const ICON_BY_KEY = {
   night: MoonStarsIcon,
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function getTimeIcon(key) {
   return ICON_BY_KEY[key] || SunIcon;
 }

@@ -33,7 +33,7 @@ function useIsMobile() {
 
 const scaleCount = (n, isMobile) => Math.round(n * (isMobile ? 0.55 : 1));
 
-function sharedFor(isMobile) {
+function sharedFor() {
   return {
     fullScreen: { enable: false }, // confine to the parent container, not the viewport
     fpsLimit: 60,
@@ -45,7 +45,7 @@ function sharedFor(isMobile) {
 function diyaLayer(colors, isMobile) {
   const [c1, , c3] = colors;
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     particles: {
       number: { value: scaleCount(22, isMobile) },
       color: { value: [c1, c3, "#fff3d6"] },
@@ -70,7 +70,7 @@ function crackerLayer(colors, isMobile) {
   // Sparse, slow firework bursts layered above the diyas — a handful of
   // shells, not a nonstop show, so it stays a backdrop, not the headline.
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     preset: "fireworks",
     particles: { color: { value: colors } },
     sounds: { enable: false },
@@ -85,7 +85,7 @@ function pichkariLayer(colors, isMobile) {
   // Two upward colour sprays from the lower corners (like a pichkari squirt)
   // plus a soft ambient colour-blotch backdrop.
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     particles: {
       number: { value: 0 },
       color: { value: colors },
@@ -116,7 +116,7 @@ function pichkariLayer(colors, isMobile) {
 function splashLayer(colors, isMobile) {
   const [c1, c2, c3] = colors;
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     particles: {
       number: { value: scaleCount(34, isMobile) },
       color: { value: [c1, c2, c3] },
@@ -132,7 +132,7 @@ function splashLayer(colors, isMobile) {
 function topDustLayer(colors, isMobile) {
   const [c1] = colors;
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     particles: {
       number: { value: scaleCount(6, isMobile) },
       color: { value: c1 },
@@ -148,7 +148,7 @@ function topDustLayer(colors, isMobile) {
 function bottomDustLayer(colors, isMobile) {
   const [, , c3] = colors;
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     particles: {
       number: { value: scaleCount(6, isMobile) },
       color: { value: c3 },
@@ -163,7 +163,7 @@ function bottomDustLayer(colors, isMobile) {
 
 function snowLayer(isMobile) {
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     preset: "snow",
     particles: {
       color: { value: "#ffffff" },
@@ -181,7 +181,7 @@ function snowLayer(isMobile) {
 function confettiLayer(colors, isMobile) {
   const [c1, c2, c3] = colors;
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     preset: "confetti",
     particles: {
       color: { value: [c1, c2, c3, "#ffffff"] },
@@ -192,14 +192,14 @@ function confettiLayer(colors, isMobile) {
       tilt: { enable: true, animation: { enable: true, speed: { min: 8, max: 20 } } },
       move: { speed: { min: 3, max: 7 }, gravity: { enable: true, acceleration: 6 } },
     },
-    emitters: { life: { duration: 0 }, rate: { quantity: 2, delay: 0.35 } },
+    emitters: { life: { duration: 0 }, rate: { quantity: scaleCount(2, isMobile), delay: 0.35 } },
   };
 }
 
 function glowLayer(colors, isMobile) {
   const [c1, c2, c3] = colors;
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     preset: "stars",
     particles: {
       color: { value: [c1, c2, c3, "#ffffff"] },
@@ -217,7 +217,7 @@ function glowLayer(colors, isMobile) {
 function coinsLayer(colors, isMobile) {
   const [c1, c2] = colors;
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     particles: {
       number: { value: scaleCount(16, isMobile) },
       color: { value: [c1, c2, "#fff3d6"] },
@@ -242,7 +242,7 @@ function coinsLayer(colors, isMobile) {
 function threadsLayer(colors, isMobile) {
   const [c1, , c3] = colors;
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     particles: {
       number: { value: scaleCount(26, isMobile) },
       color: { value: [c1, c3, "#fff3d6"] },
@@ -269,7 +269,7 @@ function threadsLayer(colors, isMobile) {
 function moonGlowLayer(colors, isMobile) {
   const [, , c3] = colors;
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     preset: "stars",
     particles: {
       color: { value: ["#EDE3C8", "#ffffff", c3] },
@@ -290,7 +290,7 @@ function moonGlowLayer(colors, isMobile) {
 function blessingSparkleLayer(colors, isMobile) {
   const [c1, c2, c3] = colors;
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     particles: {
       number: { value: scaleCount(14, isMobile) },
       color: { value: [c1, c2, c3] },
@@ -310,7 +310,7 @@ function blessingSparkleLayer(colors, isMobile) {
 function arrowsLayer(colors, isMobile) {
   const [c1, c2] = colors;
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     particles: {
       number: { value: 0 },
       color: { value: [c1, c2, "#fff3d6"] },
@@ -342,7 +342,7 @@ function arrowsLayer(colors, isMobile) {
 function ornamentTwinkleLayer(colors, isMobile) {
   const [c1, c2, c3] = colors;
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     particles: {
       number: { value: scaleCount(18, isMobile) },
       color: { value: [c1, c2, c3, "#F1D48A"] },
@@ -361,7 +361,7 @@ function ornamentTwinkleLayer(colors, isMobile) {
 function balloonsLayer(colors, isMobile) {
   const [c1, c2, c3] = colors;
   return {
-    ...sharedFor(isMobile),
+    ...sharedFor(),
     particles: {
       number: { value: scaleCount(12, isMobile) },
       color: { value: [c1, c2, c3, "#ffffff"] },

@@ -22,6 +22,7 @@ export default function FestiveWelcomeOverlay({ festive, theme, Icon }) {
 
     const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     sessionStorage.setItem(seenKey, "1");
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- gated on sessionStorage (external system) read/write above, not a value derivable during render
     setVisible(true);
 
     if (reduceMotion) return;

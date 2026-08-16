@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
 import { PRODUCTS as LOCAL_PRODUCTS } from "../../data/products";
-import { loadProductsFromFirestore } from "../../services/firebaseProducts";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import ProductCard from "../../components/ProductCard/ProductCard";
@@ -14,8 +13,6 @@ import { getTimeGreeting } from "../../utils/timeGreeting";
 import { getTimeTheme } from "../../utils/timeTheme";
 import { getTimeIcon } from "../../utils/timeIcons";
 import { loadFestivalsFromGoogleCalendar } from "../../services/googleFestivalCalendar";
-import { loadFestivalOverridesFromFirestore } from "../../services/firebaseFestivals";
-import { loadOffersFromFirestore } from "../../services/firebaseOffers";
 import FestivalOffers from "../../components/FestivalOffers/FestivalOffers";
 import FestiveParticles from "../../components/FestiveParticles";
 import FestiveWelcomeOverlay from "../../components/FestiveWelcomeOverlay";
@@ -193,6 +190,7 @@ function Home() {
 
   useEffect(() => {
     async function loadProducts() {
+      const { loadProductsFromFirestore } = await import("../../services/firebaseProducts");
       const firestoreProducts = await loadProductsFromFirestore();
 
       if (firestoreProducts) {
@@ -224,6 +222,7 @@ function Home() {
       // year of festivals; admin-managed Firestore overrides are merged
       // on top and always win on a shared date — see
       // firebaseFestivals.js and festiveGreeting.js's priority sort.
+      const { loadFestivalOverridesFromFirestore } = await import("../../services/firebaseFestivals");
       const [googleFestivals, adminOverrides] = await Promise.all([
         loadFestivalsFromGoogleCalendar(),
         loadFestivalOverridesFromFirestore(),
@@ -238,7 +237,9 @@ function Home() {
 
   const [offers, setOffers] = useState([]);
   useEffect(() => {
-    loadOffersFromFirestore().then(setOffers);
+    import("../../services/firebaseOffers").then(({ loadOffersFromFirestore }) =>
+      loadOffersFromFirestore().then(setOffers)
+    );
   }, []);
 
   // Keep the original site's preloader timing, but let React control it.
@@ -397,6 +398,7 @@ function Home() {
           {active && active.key !== "independence-day" && active.key !== "republic-day" && ActiveIcon && (
             <div className="festive-emblem-decor" aria-hidden="true">
               <div className="festive-emblem-glow"></div>
+              {/* eslint-disable-next-line react-hooks/static-components -- ActiveIcon is a lookup into a module-level map, same key always yields the same stable component reference */}
               <div className="festive-emblem-icon"><ActiveIcon /></div>
               <div className="indep-leaf indep-leaf-1"></div>
               <div className="indep-leaf indep-leaf-2"></div>
@@ -414,7 +416,8 @@ function Home() {
                     <span className="festive-banner-icon-spark s1" aria-hidden="true"></span>
                     <span className="festive-banner-icon-spark s2" aria-hidden="true"></span>
                     <span className="festive-banner-icon-emoji">
-                      {ActiveIcon && <ActiveIcon width={20} height={20} />}
+                      {/* eslint-disable-next-line react-hooks/static-components -- same stable lookup as above */}
+                    {ActiveIcon && <ActiveIcon width={20} height={20} />}
                     </span>
                   </span>
                   <span className="festive-banner-copy">

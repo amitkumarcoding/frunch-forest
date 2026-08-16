@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../services/firebase";
 import { ALLOWED_ADMINS } from "../../utils/admins";
 import "./Header.css";
 
@@ -80,6 +78,10 @@ function Header() {
 
     async function setupAuth() {
       try {
+        const [{ onAuthStateChanged }, { auth }] = await Promise.all([
+          import("firebase/auth"),
+          import("../../services/firebase"),
+        ]);
         unsubscribe = onAuthStateChanged(auth, (user) => {
           if (!user) {
             setAuthLabel("Log in");

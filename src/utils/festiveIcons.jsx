@@ -10,7 +10,6 @@
 // khanda, gada etc. are used as their own recognised symbols instead of
 // attempting a face, which tends to render low-quality and can read as
 // disrespectful.
-import React from "react";
 
 const base = {
   viewBox: "0 0 24 24",
@@ -310,6 +309,7 @@ const ICON_BY_KEY = {
   "teachers-day": BookIcon,
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function getFestiveIcon(key) {
   return ICON_BY_KEY[key] || SparkleIcon;
 }

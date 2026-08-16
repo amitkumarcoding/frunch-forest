@@ -124,7 +124,6 @@ export default function Admin() {
       loadFestivals();
       loadOffers();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthorized]);
 
   function setStatusMessage(text, ok = true) {

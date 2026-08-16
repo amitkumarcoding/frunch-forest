@@ -107,14 +107,15 @@ export default function Testimonials() {
   const waButtonRef = useRef(null);
   const [preloaderDone, setPreloaderDone] = useState(false);
   const [preloaderRemoved, setPreloaderRemoved] = useState(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
   const [scrollTopVisible, setScrollTopVisible] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
 
   // Respect prefers-reduced-motion
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReduceMotion(mq.matches);
     const handler = (e) => setReduceMotion(e.matches);
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
@@ -194,7 +195,7 @@ export default function Testimonials() {
       if (saved && typeof saved.left === 'number' && typeof saved.top === 'number') {
         requestAnimationFrame(() => applyPosition(saved.left, saved.top));
       }
-    } catch (e) {
+    } catch {
       // ignore malformed storage
     }
 
@@ -228,7 +229,7 @@ export default function Testimonials() {
         const rect = btn.getBoundingClientRect();
         try {
           localStorage.setItem(WA_STORAGE_KEY, JSON.stringify({ left: rect.left, top: rect.top }));
-        } catch (err) {
+        } catch {
           // ignore storage errors (e.g. private browsing)
         }
       }
