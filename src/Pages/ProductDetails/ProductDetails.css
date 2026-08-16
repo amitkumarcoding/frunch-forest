@@ -127,6 +127,8 @@ h1.product-name{ font-size:clamp(2.3rem, 4.6vw, 3.3rem); color:var(--forest-dark
   width:fit-content;
 }
 .related-card.out-of-stock .rc-photo img{ opacity:0.55; filter:grayscale(0.3); }
+.related-card.out-of-stock{ cursor:not-allowed; }
+.related-card.out-of-stock:hover{ transform:none; border-color:var(--paper-line); box-shadow:0 14px 26px -22px rgba(19,42,30,0.25); }
 
 .product-search-wrap{
   margin-bottom:36px;

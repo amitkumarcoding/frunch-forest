@@ -51,6 +51,13 @@
     transition:transform .2s ease, background .2s ease;
   }
   .card-details-btn:hover{ transform:translateY(-2px); background:var(--forest-mid); }
+  .card-details-btn.is-disabled{
+    background:rgba(19,42,30,0.35);
+    color:rgba(243,236,224,0.55);
+    cursor:not-allowed;
+    pointer-events:none;
+  }
+  .card-details-btn.is-disabled:hover{ transform:none; background:rgba(19,42,30,0.35); }
   .product-card .tag{
     font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.08em;
     color:var(--amber); text-transform:uppercase; font-weight:700; margin-bottom:6px; display:inline-block;

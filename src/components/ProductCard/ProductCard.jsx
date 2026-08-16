@@ -154,7 +154,18 @@ export default function ProductCard({
             )}
             {outOfStock ? 'Out of Stock' : 'Buy Now'}
           </button>
-          <Link className="card-details-btn" to={`/products/${product.slug}`}>View details →</Link>
+          <Link
+            className={`card-details-btn${outOfStock ? ' is-disabled' : ''}`}
+            to={outOfStock ? '#' : `/products/${product.slug}`}
+            aria-disabled={outOfStock}
+            tabIndex={outOfStock ? -1 : 0}
+            onClick={(e) => {
+              if (!outOfStock) return;
+              e.preventDefault();
+            }}
+          >
+            {outOfStock ? 'Out of stock' : 'View details →'}
+          </Link>
         </div>
       </div>
     </div>

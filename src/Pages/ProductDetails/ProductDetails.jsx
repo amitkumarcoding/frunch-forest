@@ -185,8 +185,8 @@ export default function ProductDetails() {
               <div className="related-grid">
                 {related.map(([key, p]) => {
                   const rOutOfStock = isOutOfStock(p);
-                  return (
-                    <Link key={key} className={`related-card${rOutOfStock ? ' out-of-stock' : ''}`} to={`/products/${key}`}>
+                  const cardBody = (
+                    <>
                       <div className="rc-photo"><img src={p.image} alt={p.name} loading="lazy" /></div>
                       <div className="rc-body">
                         <span className="rc-tag">{p.tag}</span>
@@ -194,6 +194,15 @@ export default function ProductDetails() {
                         <span className="rc-hindi">{p.hindi}</span>
                         {rOutOfStock && <span className="rc-out-of-stock">Out of Stock</span>}
                       </div>
+                    </>
+                  );
+                  return rOutOfStock ? (
+                    <div key={key} className="related-card out-of-stock" aria-disabled="true">
+                      {cardBody}
+                    </div>
+                  ) : (
+                    <Link key={key} className="related-card" to={`/products/${key}`}>
+                      {cardBody}
                     </Link>
                   );
                 })}
