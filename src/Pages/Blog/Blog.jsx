@@ -44,6 +44,19 @@ const SPECIMENS = [
   },
 ];
 
+// Maps a specimen's "sources" name to its real product page slug, so the
+// pill links straight to the product (internal linking + gives crawlers a
+// real path from nutrient content to buyable pages). Names with no matching
+// product yet (e.g. Fox Nuts) render as plain text instead of a dead link.
+const SOURCE_SLUGS = {
+  Almonds: "almonds",
+  Cashews: "cashews",
+  Walnuts: "walnuts",
+  Raisins: "raisins",
+  Pistachios: "pistachios",
+  Dates: "dates",
+};
+
 function SpecimenCard({ specimen }) {
   const [open, setOpen] = useState(false);
   return (
@@ -52,13 +65,19 @@ function SpecimenCard({ specimen }) {
       <h3>{specimen.title}</h3>
       <p className="lede">{specimen.lede}</p>
       <div className="specimen-sources">
-        {specimen.sources.map((s) => <span key={s}>{s}</span>)}
+        {specimen.sources.map((s) =>
+          SOURCE_SLUGS[s] ? (
+            <Link key={s} to={`/products/${SOURCE_SLUGS[s]}`} onClick={(e) => e.stopPropagation()}>{s}</Link>
+          ) : (
+            <span key={s}>{s}</span>
+          )
+        )}
       </div>
       <div className="specimen-toggle">
         Read the field note
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </div>
-      <div className="specimen-note">
+      <div className="specimen-note" onClick={(e) => e.stopPropagation()}>
         <p>{specimen.note}</p>
       </div>
     </div>
@@ -82,9 +101,30 @@ export default function Blog() {
   return (
     <>
       <SEO
-        title="The Nutrient Almanac — Blog"
-        description="A field guide to what's actually inside every handful — the vitamins, minerals and healthy fats that almonds, cashews, walnuts, raisins and fox nuts quietly carry to your plate."
+        title="Dry Fruits Nutrition Guide — Protein, Fibre, Iron & More | The Nutrient Almanac"
+        description="A dry fruits nutrition guide to the protein, healthy fats, fibre, iron, magnesium and antioxidants in almonds, cashews, walnuts, raisins and fox nuts — what each nutrient does and which dry fruit carries it."
         path="/blog"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: "The Nutrient Almanac — A Dry Fruits Nutrition Guide",
+            description: "A field guide to the protein, healthy fats, fibre, iron, magnesium and antioxidants found in almonds, cashews, walnuts, raisins and fox nuts.",
+            image: "https://frunchforest.com/image/logo.png",
+            author: { "@type": "Organization", name: "Frunch Forest" },
+            publisher: { "@type": "Organization", name: "Frunch Forest" },
+            mainEntityOfPage: "https://frunchforest.com/blog",
+            keywords: "dry fruits nutrition, nutrients in dry fruits, almonds protein, walnuts omega-3, cashews magnesium, raisins iron, healthy snacking",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://frunchforest.com/" },
+              { "@type": "ListItem", position: 2, name: "Blog", item: "https://frunchforest.com/blog" },
+            ],
+          },
+        ]}
       />
       <Header />
       <main id="main">
@@ -92,14 +132,14 @@ export default function Blog() {
           <div className="blog-hero-wrap">
             <span className="eyebrow">Field Notes From The Forest</span>
             <h1>The Nutrient <em>Almanac</em></h1>
-            <p>A short field guide to what's actually inside every handful — the vitamins, minerals and healthy fats that almonds, cashews, walnuts, raisins and fox nuts quietly carry to your plate.</p>
+            <p>A dry fruits nutrition guide to what's actually inside every handful — the protein, healthy fats, fibre, iron, magnesium and antioxidants that almonds, cashews, walnuts, raisins and fox nuts quietly carry to your plate.</p>
           </div>
         </section>
 
         <div className="almanac-note reveal">
           <div>
             <span className="k">How to read this page</span>
-            <p>Each specimen card below covers one nutrient found in our dry fruits — what it does in the body, and which of our products carry it. Tap a card to open its full note.</p>
+            <p>Each specimen card below covers one nutrient found in our dry fruits — what it does in the body, and which of our products carry it. Tap a card to open its full note. We're also building a premium spice range — see our <Link to="/#coming">upcoming spices</Link> for what's coming next.</p>
           </div>
           <div className="almanac-legend">
             <span>06 SPECIMENS</span>

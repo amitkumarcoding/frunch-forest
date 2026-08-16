@@ -2,13 +2,13 @@ import "./Footer.css";
 
 const footerLinks = {
   "Quick Links": [
-    ["About", "./about"],
-    ["Why Us", "./index.html#why"],
-    ["Products", "./products"],
-    ["Packaging", "./index.html#packaging"],
-    ["Reviews", "./index.html#testimonials"],
-    ["FAQ", "./index.html#faq"],
-    ["Blog", "./blog"],
+    ["About", "/about"],
+    ["Why Us", "/#why"],
+    ["Products", "/products"],
+    ["Packaging", "/#packaging"],
+    ["Reviews", "/#testimonials"],
+    ["FAQ", "/#faq"],
+    ["Blog", "/blog"],
   ],
   "Our Products": [
     ["Almonds", "/products"],
@@ -19,9 +19,9 @@ const footerLinks = {
   ],
   Policies: [
     ["Return & Refund Policy", "/return-refund-policy"],
-    ["Shipping Policy", "./shipping-policy"],
-    ["Privacy Policy", "./privacy-policy"],
-    ["Terms & Conditions", "./terms-and-conditions"],
+    ["Shipping Policy", "/shipping-policy"],
+    ["Privacy Policy", "/privacy-policy"],
+    ["Terms & Conditions", "/terms-and-conditions"],
   ],
 };
 
@@ -33,7 +33,7 @@ const socials = [
   ["X (Twitter)", "https://x.com/frunchforest", "x"],
 ];
 
-const catalog = "/resources/frunch-forest-catalog.pdf";
+const catalog = "/frunch-forest-catalog.pdf";
 const whatsapp =
   "https://wa.me/919582122419?text=Hi%20Frunch%20Forest%2C%20I%27d%20like%20to%20know%20more%20about%20your%20products.";
 
