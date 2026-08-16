@@ -1,4 +1,3 @@
-
 /* ---------- product detail page (uses tokens & header/footer from styles.css) ---------- */
 .detail-hero{ padding:150px 0 0; }
 .detail-crumb{
@@ -132,7 +131,7 @@ a.btn-primary.is-disabled, button.btn-primary.is-disabled{
 .related-card.out-of-stock{ opacity:0.7; }
 .related-card.out-of-stock .rc-photo img{ filter:grayscale(0.5); }
 .rc-out-of-stock{
-  display:inline-block; margin-top:6px;
+  display:block; margin-top:6px;
   font-family:'JetBrains Mono', monospace; font-size:0.65rem;
   letter-spacing:0.06em; text-transform:uppercase;
   color:#a94442;
@@ -348,4 +347,3 @@ a.btn-primary.is-disabled, button.btn-primary.is-disabled{
 .fav-btn svg{ width:17px; height:17px; stroke:var(--parchment); fill:none; transition:fill .2s ease, stroke .2s ease; }
 .fav-btn.active{ background:rgba(201,151,59,0.9); border-color:var(--gold-1); }
 .fav-btn.active svg{ fill:var(--forest-dark); stroke:var(--forest-dark); }
-
