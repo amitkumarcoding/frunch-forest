@@ -68,6 +68,55 @@ const EMPTY_NEW_BLOG_POST = {
   order: 10,
 };
 
+// The 6 original Nutrient Almanac specimens, hardcoded as the fallback
+// in Blog.jsx (DEFAULT_SPECIMENS). "Seed starter posts" below writes
+// these into Firestore under fixed slug-style ids so they become real,
+// editable/deletable docs instead of a read-only code fallback.
+const STARTER_BLOG_POSTS = [
+  {
+    id: "protein", no: "NO. 01", label: "PROTEIN", title: "Protein",
+    lede: "The building block your body uses to repair muscle and stay full for longer.",
+    sources: ["Almonds", "Cashews"],
+    note: "A small handful of almonds or cashews carries a meaningful dose of plant protein alongside fibre, which is why they curb hunger far better than a snack of refined carbs. Pair them with a fruit or yoghurt for a more complete amino acid profile.",
+    order: 1,
+  },
+  {
+    id: "healthy-fats", no: "NO. 02", label: "OMEGA-3 FATS", title: "Healthy Fats",
+    lede: "Not all fat is equal — these are the kind that support heart and brain health.",
+    sources: ["Walnuts"],
+    note: "Walnuts are one of the few plant sources with a genuinely useful amount of alpha-linolenic acid, a plant-based omega-3. Regularly including a few walnuts in the diet is commonly associated with better cholesterol balance and steadier energy through the day.",
+    order: 2,
+  },
+  {
+    id: "fibre", no: "NO. 03", label: "DIETARY FIBRE", title: "Fibre",
+    lede: "Keeps digestion moving and helps even out blood sugar swings after meals.",
+    sources: ["Raisins", "Almonds"],
+    note: "Because raisins concentrate the fibre of fresh grapes into a smaller bite, a small portion goes a long way toward daily fibre needs. Combined with almond skins, which carry their own fibre and antioxidants, this pairing is a simple way to support gut health.",
+    order: 3,
+  },
+  {
+    id: "iron", no: "NO. 04", label: "IRON", title: "Iron",
+    lede: "Essential for carrying oxygen through the blood and staving off fatigue.",
+    sources: ["Raisins", "Cashews"],
+    note: "Raisins and cashews both carry non-heme iron, the plant-based form the body absorbs best when paired with vitamin C. A squeeze of lemon over a trail mix, or eating them alongside citrus, helps the body take up more of it.",
+    order: 4,
+  },
+  {
+    id: "magnesium", no: "NO. 05", label: "MAGNESIUM", title: "Magnesium",
+    lede: "A quiet mineral behind muscle recovery, sleep quality and steady mood.",
+    sources: ["Cashews", "Fox Nuts"],
+    note: "Cashews are one of the more magnesium-dense nuts, and roasted fox nuts (makhana) add their own light, low-fat contribution. Together they make an easy evening snack that doesn't sit heavy before bed.",
+    order: 5,
+  },
+  {
+    id: "antioxidants", no: "NO. 06", label: "ANTIOXIDANTS", title: "Antioxidants",
+    lede: "Plant compounds that help the body manage everyday cellular wear and tear.",
+    sources: ["Walnuts", "Raisins"],
+    note: "The thin brown skin on a walnut and the dark skin of a raisin both concentrate polyphenols — so resist the urge to peel them. Left whole, both snacks do double duty as flavour and quiet cellular support.",
+    order: 6,
+  },
+];
+
 function toBlogDraft(id, data) {
   return {
     id,
@@ -137,6 +186,7 @@ export default function Admin() {
   const [blogLoading, setBlogLoading] = useState(false);
   const [blogError, setBlogError] = useState("");
   const [blogSavingId, setBlogSavingId] = useState(null);
+  const [blogSeeding, setBlogSeeding] = useState(false);
   const [blogAddOpen, setBlogAddOpen] = useState(false);
   const [newBlogPost, setNewBlogPost] = useState(EMPTY_NEW_BLOG_POST);
 
@@ -727,6 +777,28 @@ export default function Admin() {
       loadBlogPosts();
     } catch (e) {
       setStatusMessage(`Add failed: ${e.message}`, false);
+    }
+  }
+
+  // Writes the 6 original Nutrient Almanac specimens into Firestore
+  // (fixed ids, so re-running this just overwrites them rather than
+  // duplicating) — turns the Blog page's hardcoded fallback into real,
+  // editable/deletable docs.
+  async function handleSeedBlogPosts() {
+    if (!window.confirm("Add the 6 starter blog posts (Protein, Healthy Fats, Fibre, Iron, Magnesium, Antioxidants)?")) return;
+    setBlogSeeding(true);
+    try {
+      const batch = writeBatch(db);
+      STARTER_BLOG_POSTS.forEach(({ id, ...post }) => {
+        batch.set(doc(db, "blogPosts", id), post);
+      });
+      await batch.commit();
+      setStatusMessage("Added the 6 starter blog posts.");
+      loadBlogPosts();
+    } catch (e) {
+      setStatusMessage(`Seed failed: ${e.message}`, false);
+    } finally {
+      setBlogSeeding(false);
     }
   }
 
@@ -1366,9 +1438,16 @@ export default function Admin() {
                 The specimen cards on the Blog (Nutrient Almanac) page. "Sources" is a comma-separated list of product names — a name matching a real product (e.g. Almonds, Cashews, Walnuts, Raisins) links straight to it. Lower "Order" values show first.
               </p>
             </div>
-            <button type="button" className="btn-gold" onClick={() => setBlogAddOpen((v) => !v)}>
-              + Add post
-            </button>
+            <div style={{ display: "flex", gap: "8px" }}>
+              {!blogLoading && !blogError && blogPosts.length === 0 && (
+                <button type="button" className="btn-outline" onClick={handleSeedBlogPosts} disabled={blogSeeding}>
+                  {blogSeeding ? "Adding…" : "Seed starter posts"}
+                </button>
+              )}
+              <button type="button" className="btn-gold" onClick={() => setBlogAddOpen((v) => !v)}>
+                + Add post
+              </button>
+            </div>
           </div>
 
           <div id="addBlogBox" className={blogAddOpen ? "open" : ""}>
@@ -1464,7 +1543,7 @@ export default function Admin() {
                 )}
                 {!blogLoading && !blogError && blogPosts.length === 0 && (
                   <tr>
-                    <td colSpan={8}>No blog posts yet — the Blog page falls back to its built-in specimen list until you add one.</td>
+                    <td colSpan={8}>No blog posts yet — the Blog page is showing its built-in fallback list. Click "Seed starter posts" above to load those 6 into here so you can edit or delete them, or add your own with "+ Add post".</td>
                   </tr>
                 )}
                 {!blogLoading &&
