@@ -146,7 +146,44 @@ function toOriginalDraft(data) {
   };
 }
 
+// ---- Redesigned admin UI helpers ----
+// One tab visible at a time (mobile-friendly: no giant scroll of 4
+// stacked tables) and every field gets a plain-English label plus a
+// small "e.g." example so it's obvious what to type without reading
+// code or docs.
+const TABS = [
+  { id: "products", label: "Products", icon: "🛍️", hint: "What's for sale" },
+  { id: "festivals", label: "Festival Calendar", icon: "📅", hint: "Homepage banner by date" },
+  { id: "offers", label: "Offers", icon: "🏷️", hint: "Promo cards & coupons" },
+  { id: "blog", label: "Blog", icon: "📝", hint: "Nutrient Almanac posts" },
+];
+
+function Field({ label, example, full, children }) {
+  return (
+    <label className={`field${full ? " field-full" : ""}`}>
+      <span className="field-label">{label}</span>
+      {children}
+      {example && <span className="field-example">e.g. {example}</span>}
+    </label>
+  );
+}
+
+function Toggle({ checked, onChange, onLabel = "On", offLabel = "Off" }) {
+  return (
+    <label className="toggle">
+      <input type="checkbox" checked={!!checked} onChange={onChange} />
+      <span className="toggle-track"><span className="toggle-thumb" /></span>
+      <span className="toggle-text">{checked ? onLabel : offLabel}</span>
+    </label>
+  );
+}
+
+function EmptyState({ children }) {
+  return <div className="empty-state">{children}</div>;
+}
+
 export default function Admin() {
+  const [activeTab, setActiveTab] = useState("products");
   const [user, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [loginError, setLoginError] = useState("");
@@ -823,845 +860,813 @@ export default function Admin() {
               <span>Admin console</span>
             </div>
           </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {isAuthorized && (
-            <a href="./" className="btn-outline" style={{ textDecoration: "none" }}>
-              Home
-            </a>
-          )}
-          {isAuthorized && (
-            <button type="button" className="btn-outline" onClick={handleLogout}>
-              Log out
-            </button>
-          )}
-        </div>
-      </header>
-
-      {authChecked && !isAuthorized && (
-        <div className="auth-wrap">
-          <div id="loginView">
-            <div className="login-mark">FF</div>
-            <h2>Admin login</h2>
-            <p className="sub">Sign in with an authorized Gmail account to manage products.</p>
-            <button type="button" className="google-btn" onClick={handleLogin}>
-              <svg width="18" height="18" viewBox="0 0 18 18">
-                <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z" />
-                <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.96v2.33A9 9 0 0 0 9 18z" />
-                <path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.03l2.99-2.33z" />
-                <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.97l2.99 2.33C4.66 5.17 6.65 3.58 9 3.58z" />
-              </svg>
-              Sign in with Google
-            </button>
-            <div id="err">{loginError}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            {isAuthorized && (
+              <a href="./" className="btn-outline" style={{ textDecoration: "none" }}>
+                Home
+              </a>
+            )}
+            {isAuthorized && (
+              <button type="button" className="btn-outline" onClick={handleLogout}>
+                Log out
+              </button>
+            )}
           </div>
-        </div>
-      )}
+        </header>
 
-      {isAuthorized && (
-        <main className={dirtySlugs.length ? "has-savebar" : ""}>
-          <div className="toolbar">
-            <div>
-              <div className={`msg${status.text ? (status.ok ? " ok" : " err") : ""}`}>
-                {status.text}
-              </div>
-              {!status.text && (
-                <div className="hint">
-                  {products.length} product{products.length === 1 ? "" : "s"} · edit fields, then save
+        {authChecked && !isAuthorized && (
+          <div className="auth-wrap">
+            <div id="loginView">
+              <div className="login-mark">FF</div>
+              <h2>Admin login</h2>
+              <p className="sub">Sign in with an authorized Gmail account to manage products.</p>
+              <button type="button" className="google-btn" onClick={handleLogin}>
+                <svg width="18" height="18" viewBox="0 0 18 18">
+                  <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z" />
+                  <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.96v2.33A9 9 0 0 0 9 18z" />
+                  <path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.03l2.99-2.33z" />
+                  <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.97l2.99 2.33C4.66 5.17 6.65 3.58 9 3.58z" />
+                </svg>
+                Sign in with Google
+              </button>
+              <div id="err">{loginError}</div>
+            </div>
+          </div>
+        )}
+
+        {isAuthorized && (
+          <main className={dirtySlugs.length && activeTab === "products" ? "has-savebar" : ""}>
+            <div className={`msg${status.text ? (status.ok ? " ok" : " err") : ""}`}>
+              {status.text}
+            </div>
+
+            {/* Tab bar — one section at a time so it's obvious what you're editing */}
+            <nav className="tab-bar" aria-label="Admin sections">
+              {TABS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={`tab-btn${activeTab === t.id ? " active" : ""}`}
+                  onClick={() => setActiveTab(t.id)}
+                >
+                  <span className="tab-icon" aria-hidden="true">{t.icon}</span>
+                  <span className="tab-copy">
+                    <span className="tab-label">{t.label}</span>
+                    <span className="tab-hint">{t.hint}</span>
+                  </span>
+                </button>
+              ))}
+            </nav>
+
+            {/* ---------------- PRODUCTS ---------------- */}
+            {activeTab === "products" && (
+              <section className="tab-panel">
+                <div className="panel-head">
+                  <div>
+                    <h2>Products</h2>
+                    <p className="hint">
+                      {products.length} product{products.length === 1 ? "" : "s"} on the site. Change a field below, then hit "Save" on that card — nothing goes live until you save.
+                    </p>
+                  </div>
+                  <button type="button" className="btn-gold" onClick={() => setAddOpen((v) => !v)}>
+                    {addOpen ? "Close" : "+ Add product"}
+                  </button>
                 </div>
-              )}
-            </div>
-            <button type="button" className="btn-gold" onClick={() => setAddOpen((v) => !v)}>
-              + Add product
-            </button>
-          </div>
 
-          <div id="addBox" className={addOpen ? "open" : ""}>
-            <div className="grid2">
-              <input
-                placeholder="slug (e.g. cashews)"
-                value={newProduct.slug}
-                onChange={(e) => updateNewProduct({ slug: e.target.value })}
-              />
-              <input
-                placeholder="Name"
-                value={newProduct.name}
-                onChange={(e) => updateNewProduct({ name: e.target.value })}
-              />
-              <input
-                placeholder="Hindi name"
-                value={newProduct.hindi}
-                onChange={(e) => updateNewProduct({ hindi: e.target.value })}
-              />
-              <input
-                placeholder="Tag"
-                value={newProduct.tag}
-                onChange={(e) => updateNewProduct({ tag: e.target.value })}
-              />
-              <input
-                placeholder="/image/products/x.png"
-                value={newProduct.image}
-                onChange={(e) => updateNewProduct({ image: e.target.value })}
-              />
-              <input
-                type="number"
-                placeholder="Stock qty (blank = untracked)"
-                value={newProduct.stock}
-                onChange={(e) => updateNewProduct({ stock: e.target.value })}
-              />
-              <label className="check-inline">
-                <input
-                  type="checkbox"
-                  style={{ width: "auto" }}
-                  checked={newProduct.bestSeller}
-                  onChange={(e) => updateNewProduct({ bestSeller: e.target.checked })}
-                />{" "}
-                Best seller
-              </label>
-            </div>
-            <p className="field-label">Nutrition (JSON array)</p>
-            <textarea
-              value={newProduct.nutrition}
-              onChange={(e) => updateNewProduct({ nutrition: e.target.value })}
-            />
-            <p className="field-label">Bullets (JSON array of strings)</p>
-            <textarea
-              value={newProduct.bullets}
-              onChange={(e) => updateNewProduct({ bullets: e.target.value })}
-            />
-            <p className="field-label">Packs (JSON array)</p>
-            <textarea
-              value={newProduct.packs}
-              onChange={(e) => updateNewProduct({ packs: e.target.value })}
-            />
-            <div className="row-actions" style={{ marginTop: "10px" }}>
-              <button type="button" className="btn-gold" onClick={handleAddProduct}>
-                Save product
-              </button>
-              <button type="button" className="btn-outline" onClick={() => setAddOpen(false)}>
-                Cancel
-              </button>
-            </div>
-          </div>
+                <div id="addBox" className={addOpen ? "open" : ""}>
+                  <p className="form-title">New product</p>
+                  <div className="field-grid">
+                    <Field label="Slug (used in the URL)" example="cashews">
+                      <input
+                        placeholder="cashews"
+                        value={newProduct.slug}
+                        onChange={(e) => updateNewProduct({ slug: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Name" example="Premium Cashews">
+                      <input
+                        placeholder="Premium Cashews"
+                        value={newProduct.name}
+                        onChange={(e) => updateNewProduct({ name: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Hindi name" example="काजू">
+                      <input
+                        placeholder="काजू"
+                        value={newProduct.hindi}
+                        onChange={(e) => updateNewProduct({ hindi: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Tag" example="Bestseller">
+                      <input
+                        placeholder="Bestseller"
+                        value={newProduct.tag}
+                        onChange={(e) => updateNewProduct({ tag: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Image path" example="/image/products/cashews.png">
+                      <input
+                        placeholder="/image/products/cashews.png"
+                        value={newProduct.image}
+                        onChange={(e) => updateNewProduct({ image: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Stock quantity" example="leave blank if you don't track count">
+                      <input
+                        type="number"
+                        placeholder="120"
+                        value={newProduct.stock}
+                        onChange={(e) => updateNewProduct({ stock: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Best seller badge">
+                      <Toggle
+                        checked={newProduct.bestSeller}
+                        onChange={(e) => updateNewProduct({ bestSeller: e.target.checked })}
+                      />
+                    </Field>
+                  </div>
+                  <Field label="Nutrition (JSON list)" full example='[{"label":"Protein","value":"18g"}]'>
+                    <textarea
+                      value={newProduct.nutrition}
+                      onChange={(e) => updateNewProduct({ nutrition: e.target.value })}
+                    />
+                  </Field>
+                  <Field label="Bullet points (JSON list of text)" full example='["Roasted, not fried","No added sugar"]'>
+                    <textarea
+                      value={newProduct.bullets}
+                      onChange={(e) => updateNewProduct({ bullets: e.target.value })}
+                    />
+                  </Field>
+                  <Field label="Pack sizes & prices (JSON list)" full example='[{"size":"200g","price":249,"mrp":299}]'>
+                    <textarea
+                      value={newProduct.packs}
+                      onChange={(e) => updateNewProduct({ packs: e.target.value })}
+                    />
+                  </Field>
+                  <div className="row-actions">
+                    <button type="button" className="btn-gold" onClick={handleAddProduct}>
+                      Save product
+                    </button>
+                    <button type="button" className="btn-outline" onClick={() => setAddOpen(false)}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
 
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Slug</th>
-                  <th>Name</th>
-                  <th>Tag</th>
-                  <th>Packs (size:price)</th>
-                  <th>Stock</th>
-                  <th>In stock</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {productsLoading && (
-                  <tr>
-                    <td colSpan={8}>Loading…</td>
-                  </tr>
+                {productsLoading && <EmptyState>Loading…</EmptyState>}
+                {!productsLoading && productsError && <EmptyState>{productsError}</EmptyState>}
+                {!productsLoading && !productsError && products.length === 0 && (
+                  <EmptyState>No products yet — click "+ Add product" above.</EmptyState>
                 )}
-                {!productsLoading && productsError && (
-                  <tr>
-                    <td colSpan={8}>{productsError}</td>
-                  </tr>
-                )}
-                {!productsLoading &&
-                  !productsError &&
-                  products.map((p) => {
-                    const draft = drafts[p.slug] || {};
-                    const dirty = isRowDirty(p.slug);
-                    return (
-                      <tr key={p.slug} className={dirty ? "dirty-row" : ""}>
-                        <td className="slug-cell" data-label="Slug">
-                          {dirty && <span className="dirty-dot" title="Unsaved changes" />}
-                          {p.slug}
-                        </td>
-                        <td data-label="Name">
-                          <input
-                            className={fieldChanged(p.slug, "name") ? "changed" : ""}
-                            value={draft.name || ""}
-                            onChange={(e) => updateDraft(p.slug, { name: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Tag">
-                          <input
-                            className={fieldChanged(p.slug, "tag") ? "changed" : ""}
-                            value={draft.tag || ""}
-                            onChange={(e) => updateDraft(p.slug, { tag: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Packs">
-                          <input
-                            className={fieldChanged(p.slug, "packs") ? "changed" : ""}
-                            value={packsSummary(draft.packs)}
-                            title="Edit packs JSON below"
-                            readOnly
-                          />
-                        </td>
-                        <td data-label="Stock">
-                          <input
-                            className={fieldChanged(p.slug, "stock") ? "changed" : ""}
-                            type="number"
-                            style={{ width: "80px" }}
-                            placeholder="—"
-                            value={draft.stock ?? ""}
-                            onChange={(e) => updateDraft(p.slug, { stock: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="In stock">
-                          <input
-                            className={fieldChanged(p.slug, "inStock") ? "changed" : ""}
-                            type="checkbox"
-                            checked={!!draft.inStock}
-                            onChange={(e) => updateDraft(p.slug, { inStock: e.target.checked })}
-                          />
-                        </td>
-                        <td data-label="Status">
-                          {isOutOfStock({ inStock: draft.inStock, stock: draft.stock === "" ? null : Number(draft.stock) })
-                            ? <span className="status-out">Out of stock</span>
-                            : <span className="status-in">In stock</span>}
-                        </td>
-                        <td className="row-actions">
-                          <button type="button" className="btn-outline" onClick={() => handleEditPacks(p.slug)}>
-                            Edit packs
-                          </button>
-                          <button type="button" className="btn-danger" onClick={() => handleDeleteRow(p.slug)}>
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
 
-          <div className="section-header">
-            <div>
-              <h2>Festival calendar</h2>
-              <p className="hint">
-                Overrides which festival (and hero theme) shows on a given date — takes priority over Google Calendar and the built-in default list. Add one whenever a festival's date changes or you want to schedule a one-off occasion ahead of time.
-              </p>
-            </div>
-            <button type="button" className="btn-gold" onClick={() => setFestivalAddOpen((v) => !v)}>
-              + Add override
-            </button>
-          </div>
+                <div className="card-list">
+                  {!productsLoading &&
+                    !productsError &&
+                    products.map((p) => {
+                      const draft = drafts[p.slug] || {};
+                      const dirty = isRowDirty(p.slug);
+                      const outOfStock = isOutOfStock({ inStock: draft.inStock, stock: draft.stock === "" ? null : Number(draft.stock) });
+                      return (
+                        <article key={p.slug} className={`item-card${dirty ? " dirty" : ""}`}>
+                          <div className="card-head">
+                            <div className="card-head-title">
+                              {dirty && <span className="dirty-dot" title="Unsaved changes" />}
+                              <span className="slug-pill">{p.slug}</span>
+                              <span className={outOfStock ? "status-out" : "status-in"}>
+                                {outOfStock ? "Out of stock" : "In stock"}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="field-grid">
+                            <Field label="Name">
+                              <input
+                                className={fieldChanged(p.slug, "name") ? "changed" : ""}
+                                value={draft.name || ""}
+                                onChange={(e) => updateDraft(p.slug, { name: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Tag" example="Bestseller">
+                              <input
+                                className={fieldChanged(p.slug, "tag") ? "changed" : ""}
+                                value={draft.tag || ""}
+                                onChange={(e) => updateDraft(p.slug, { tag: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Stock quantity" example="blank = untracked">
+                              <input
+                                className={fieldChanged(p.slug, "stock") ? "changed" : ""}
+                                type="number"
+                                placeholder="—"
+                                value={draft.stock ?? ""}
+                                onChange={(e) => updateDraft(p.slug, { stock: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="In stock">
+                              <Toggle
+                                checked={draft.inStock}
+                                onChange={(e) => updateDraft(p.slug, { inStock: e.target.checked })}
+                              />
+                            </Field>
+                          </div>
+                          <Field label="Pack sizes & prices" full example="200g:₹249, 500g:₹599 — tap Edit to change">
+                            <div className="packs-row">
+                              <input value={packsSummary(draft.packs)} readOnly />
+                              <button type="button" className="btn-outline" onClick={() => handleEditPacks(p.slug)}>
+                                Edit
+                              </button>
+                            </div>
+                          </Field>
+                          <div className="row-actions">
+                            {dirty && <span className="unsaved-note">Unsaved — use "Save changes" bar below</span>}
+                            <button type="button" className="btn-danger" onClick={() => handleDeleteRow(p.slug)}>
+                              Delete
+                            </button>
+                          </div>
+                        </article>
+                      );
+                    })}
+                </div>
+              </section>
+            )}
 
-          <div id="addFestivalBox" className={festivalAddOpen ? "open" : ""}>
-            <div className="grid2">
-              <label className="field-inline">
-                <span className="field-label">Date</span>
-                <input
-                  type="date"
-                  value={newFestival.date}
-                  onChange={(e) => updateNewFestival({ date: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Key (matches theme/icon)</span>
-                <input
-                  list="festival-keys"
-                  placeholder="e.g. diwali"
-                  value={newFestival.key}
-                  onChange={(e) => updateNewFestival({ key: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Banner text</span>
-                <input
-                  placeholder="Happy Diwali"
-                  value={newFestival.text}
-                  onChange={(e) => updateNewFestival({ text: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Eyebrow</span>
-                <input
-                  placeholder="Celebrating the festival of lights"
-                  value={newFestival.eyebrow}
-                  onChange={(e) => updateNewFestival({ eyebrow: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Emoji</span>
-                <input
-                  placeholder="🪔"
-                  value={newFestival.emoji}
-                  onChange={(e) => updateNewFestival({ emoji: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Priority (higher wins on a shared date)</span>
-                <input
-                  type="number"
-                  value={newFestival.priority}
-                  onChange={(e) => updateNewFestival({ priority: e.target.value })}
-                />
-              </label>
-            </div>
-            <div className="row-actions" style={{ marginTop: "10px" }}>
-              <button type="button" className="btn-gold" onClick={handleAddFestival}>
-                Save override
-              </button>
-              <button type="button" className="btn-outline" onClick={() => setFestivalAddOpen(false)}>
-                Cancel
-              </button>
-            </div>
-          </div>
+            {/* ---------------- FESTIVAL CALENDAR ---------------- */}
+            {activeTab === "festivals" && (
+              <section className="tab-panel">
+                <div className="panel-head">
+                  <div>
+                    <h2>Festival calendar</h2>
+                    <p className="hint">
+                      Controls the homepage banner &amp; theme for a specific date — overrides Google Calendar and the built-in list. Use this to fix a wrong date or schedule something ahead of time.
+                    </p>
+                  </div>
+                  <button type="button" className="btn-gold" onClick={() => setFestivalAddOpen((v) => !v)}>
+                    {festivalAddOpen ? "Close" : "+ Add override"}
+                  </button>
+                </div>
 
-          <datalist id="festival-keys">
-            {KNOWN_FESTIVAL_KEYS.map((k) => (
-              <option key={k} value={k} />
-            ))}
-          </datalist>
+                <datalist id="festival-keys">
+                  {KNOWN_FESTIVAL_KEYS.map((k) => (
+                    <option key={k} value={k} />
+                  ))}
+                </datalist>
 
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Key</th>
-                  <th>Banner text</th>
-                  <th>Eyebrow</th>
-                  <th>Emoji</th>
-                  <th>Priority</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {festivalsLoading && (
-                  <tr>
-                    <td colSpan={7}>Loading…</td>
-                  </tr>
-                )}
-                {!festivalsLoading && festivalsError && (
-                  <tr>
-                    <td colSpan={7}>{festivalsError}</td>
-                  </tr>
-                )}
+                <div id="addFestivalBox" className={festivalAddOpen ? "open" : ""}>
+                  <p className="form-title">New override</p>
+                  <div className="field-grid">
+                    <Field label="Date">
+                      <input
+                        type="date"
+                        value={newFestival.date}
+                        onChange={(e) => updateNewFestival({ date: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Key (matches theme/icon)" example="diwali">
+                      <input
+                        list="festival-keys"
+                        placeholder="diwali"
+                        value={newFestival.key}
+                        onChange={(e) => updateNewFestival({ key: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Banner text" example="Happy Diwali">
+                      <input
+                        placeholder="Happy Diwali"
+                        value={newFestival.text}
+                        onChange={(e) => updateNewFestival({ text: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Eyebrow (small line above)" example="Celebrating the festival of lights">
+                      <input
+                        placeholder="Celebrating the festival of lights"
+                        value={newFestival.eyebrow}
+                        onChange={(e) => updateNewFestival({ eyebrow: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Emoji" example="🪔">
+                      <input
+                        placeholder="🪔"
+                        value={newFestival.emoji}
+                        onChange={(e) => updateNewFestival({ emoji: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Priority" example="higher number wins if two dates clash">
+                      <input
+                        type="number"
+                        value={newFestival.priority}
+                        onChange={(e) => updateNewFestival({ priority: e.target.value })}
+                      />
+                    </Field>
+                  </div>
+                  <div className="row-actions">
+                    <button type="button" className="btn-gold" onClick={handleAddFestival}>
+                      Save override
+                    </button>
+                    <button type="button" className="btn-outline" onClick={() => setFestivalAddOpen(false)}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+
+                {festivalsLoading && <EmptyState>Loading…</EmptyState>}
+                {!festivalsLoading && festivalsError && <EmptyState>{festivalsError}</EmptyState>}
                 {!festivalsLoading && !festivalsError && festivals.length === 0 && (
-                  <tr>
-                    <td colSpan={7}>No overrides yet — dates fall back to Google Calendar / the default list.</td>
-                  </tr>
+                  <EmptyState>No overrides yet — dates fall back to Google Calendar / the default list.</EmptyState>
                 )}
-                {!festivalsLoading &&
-                  !festivalsError &&
-                  festivals.map((f) => {
-                    const draft = festivalDrafts[f.id] || f;
-                    const dirty = festivalRowDirty(f.id);
-                    return (
-                      <tr key={f.id} className={dirty ? "dirty-row" : ""}>
-                        <td data-label="Date">
-                          {dirty && <span className="dirty-dot" title="Unsaved changes" />}
-                          <input
-                            type="date"
-                            value={draft.date}
-                            onChange={(e) => updateFestivalDraft(f.id, { date: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Key">
-                          <input
-                            list="festival-keys"
-                            value={draft.key}
-                            onChange={(e) => updateFestivalDraft(f.id, { key: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Banner text">
-                          <input
-                            value={draft.text}
-                            onChange={(e) => updateFestivalDraft(f.id, { text: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Eyebrow">
-                          <input
-                            value={draft.eyebrow}
-                            onChange={(e) => updateFestivalDraft(f.id, { eyebrow: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Emoji">
-                          <input
-                            style={{ width: "56px" }}
-                            value={draft.emoji}
-                            onChange={(e) => updateFestivalDraft(f.id, { emoji: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Priority">
-                          <input
-                            type="number"
-                            style={{ width: "64px" }}
-                            value={draft.priority}
-                            onChange={(e) => updateFestivalDraft(f.id, { priority: e.target.value })}
-                          />
-                        </td>
-                        <td className="row-actions">
-                          <button
-                            type="button"
-                            className="btn-gold"
-                            disabled={!dirty || festivalSavingId === f.id}
-                            onClick={() => handleSaveFestivalRow(f.id)}
-                          >
-                            {festivalSavingId === f.id ? "Saving…" : "Save"}
-                          </button>
-                          <button
-                            type="button"
-                            className="btn-danger"
-                            onClick={() => handleDeleteFestival(f.id, draft.text || f.id)}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
 
-          <div className="section-header">
-            <div>
-              <h2>Festival offers &amp; discounts</h2>
-              <p className="hint">
-                Promo cards shown on the Home page. Uncheck "Active" to hide an offer without deleting it; start/end dates are optional.
-              </p>
-            </div>
-            <button type="button" className="btn-gold" onClick={() => setOfferAddOpen((v) => !v)}>
-              + Add offer
-            </button>
-          </div>
+                <div className="card-list">
+                  {!festivalsLoading &&
+                    !festivalsError &&
+                    festivals.map((f) => {
+                      const draft = festivalDrafts[f.id] || f;
+                      const dirty = festivalRowDirty(f.id);
+                      return (
+                        <article key={f.id} className={`item-card${dirty ? " dirty" : ""}`}>
+                          <div className="card-head">
+                            <div className="card-head-title">
+                              {dirty && <span className="dirty-dot" title="Unsaved changes" />}
+                              <span className="emoji-badge">{draft.emoji || "🎉"}</span>
+                              <span>{draft.text || "Untitled"}</span>
+                            </div>
+                          </div>
+                          <div className="field-grid">
+                            <Field label="Date">
+                              <input
+                                type="date"
+                                value={draft.date}
+                                onChange={(e) => updateFestivalDraft(f.id, { date: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Key" example="diwali">
+                              <input
+                                list="festival-keys"
+                                value={draft.key}
+                                onChange={(e) => updateFestivalDraft(f.id, { key: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Banner text">
+                              <input
+                                value={draft.text}
+                                onChange={(e) => updateFestivalDraft(f.id, { text: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Eyebrow">
+                              <input
+                                value={draft.eyebrow}
+                                onChange={(e) => updateFestivalDraft(f.id, { eyebrow: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Emoji">
+                              <input
+                                value={draft.emoji}
+                                onChange={(e) => updateFestivalDraft(f.id, { emoji: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Priority">
+                              <input
+                                type="number"
+                                value={draft.priority}
+                                onChange={(e) => updateFestivalDraft(f.id, { priority: e.target.value })}
+                              />
+                            </Field>
+                          </div>
+                          <div className="row-actions">
+                            <button
+                              type="button"
+                              className="btn-gold"
+                              disabled={!dirty || festivalSavingId === f.id}
+                              onClick={() => handleSaveFestivalRow(f.id)}
+                            >
+                              {festivalSavingId === f.id ? "Saving…" : dirty ? "Save" : "Saved"}
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-danger"
+                              onClick={() => handleDeleteFestival(f.id, draft.text || f.id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </article>
+                      );
+                    })}
+                </div>
+              </section>
+            )}
 
-          <div id="addOfferBox" className={offerAddOpen ? "open" : ""}>
-            <div className="grid2">
-              <label className="field-inline">
-                <span className="field-label">Title</span>
-                <input
-                  placeholder="Diwali Dhamaka"
-                  value={newOffer.title}
-                  onChange={(e) => updateNewOffer({ title: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Discount badge</span>
-                <input
-                  placeholder="20% OFF"
-                  value={newOffer.discount}
-                  onChange={(e) => updateNewOffer({ discount: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Description</span>
-                <input
-                  placeholder="Flat 20% off on all gift boxes"
-                  value={newOffer.description}
-                  onChange={(e) => updateNewOffer({ description: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Coupon code</span>
-                <input
-                  placeholder="DIWALI20"
-                  value={newOffer.code}
-                  onChange={(e) => updateNewOffer({ code: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Image URL</span>
-                <input
-                  placeholder="/image/offers/diwali.jpg"
-                  value={newOffer.image}
-                  onChange={(e) => updateNewOffer({ image: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Link</span>
-                <input
-                  placeholder="#products"
-                  value={newOffer.link}
-                  onChange={(e) => updateNewOffer({ link: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Start date (optional)</span>
-                <input
-                  type="date"
-                  value={newOffer.startDate}
-                  onChange={(e) => updateNewOffer({ startDate: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">End date (optional)</span>
-                <input
-                  type="date"
-                  value={newOffer.endDate}
-                  onChange={(e) => updateNewOffer({ endDate: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Priority (higher shows first)</span>
-                <input
-                  type="number"
-                  value={newOffer.priority}
-                  onChange={(e) => updateNewOffer({ priority: e.target.value })}
-                />
-              </label>
-              <label className="check-inline">
-                <input
-                  type="checkbox"
-                  style={{ width: "auto" }}
-                  checked={newOffer.active}
-                  onChange={(e) => updateNewOffer({ active: e.target.checked })}
-                />{" "}
-                Active
-              </label>
-            </div>
-            <div className="row-actions" style={{ marginTop: "10px" }}>
-              <button type="button" className="btn-gold" onClick={handleAddOffer}>
-                Save offer
-              </button>
-              <button type="button" className="btn-outline" onClick={() => setOfferAddOpen(false)}>
-                Cancel
-              </button>
-            </div>
-          </div>
+            {/* ---------------- OFFERS ---------------- */}
+            {activeTab === "offers" && (
+              <section className="tab-panel">
+                <div className="panel-head">
+                  <div>
+                    <h2>Festival offers &amp; discounts</h2>
+                    <p className="hint">
+                      Promo cards on the Home page. Turn "Active" off to hide an offer without deleting it. Start/End dates are optional.
+                    </p>
+                  </div>
+                  <button type="button" className="btn-gold" onClick={() => setOfferAddOpen((v) => !v)}>
+                    {offerAddOpen ? "Close" : "+ Add offer"}
+                  </button>
+                </div>
 
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Discount</th>
-                  <th>Code</th>
-                  <th>Window</th>
-                  <th>Active</th>
-                  <th>Priority</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {offersLoading && (
-                  <tr>
-                    <td colSpan={7}>Loading…</td>
-                  </tr>
-                )}
-                {!offersLoading && offersError && (
-                  <tr>
-                    <td colSpan={7}>{offersError}</td>
-                  </tr>
-                )}
+                <div id="addOfferBox" className={offerAddOpen ? "open" : ""}>
+                  <p className="form-title">New offer</p>
+                  <div className="field-grid">
+                    <Field label="Title" example="Diwali Dhamaka">
+                      <input
+                        placeholder="Diwali Dhamaka"
+                        value={newOffer.title}
+                        onChange={(e) => updateNewOffer({ title: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Discount badge" example="20% OFF">
+                      <input
+                        placeholder="20% OFF"
+                        value={newOffer.discount}
+                        onChange={(e) => updateNewOffer({ discount: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Description" example="Flat 20% off on all gift boxes" full>
+                      <input
+                        placeholder="Flat 20% off on all gift boxes"
+                        value={newOffer.description}
+                        onChange={(e) => updateNewOffer({ description: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Coupon code" example="DIWALI20">
+                      <input
+                        placeholder="DIWALI20"
+                        value={newOffer.code}
+                        onChange={(e) => updateNewOffer({ code: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Image path" example="/image/offers/diwali.jpg">
+                      <input
+                        placeholder="/image/offers/diwali.jpg"
+                        value={newOffer.image}
+                        onChange={(e) => updateNewOffer({ image: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Link" example="#products">
+                      <input
+                        placeholder="#products"
+                        value={newOffer.link}
+                        onChange={(e) => updateNewOffer({ link: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Start date (optional)">
+                      <input
+                        type="date"
+                        value={newOffer.startDate}
+                        onChange={(e) => updateNewOffer({ startDate: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="End date (optional)">
+                      <input
+                        type="date"
+                        value={newOffer.endDate}
+                        onChange={(e) => updateNewOffer({ endDate: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Priority" example="higher shows first">
+                      <input
+                        type="number"
+                        value={newOffer.priority}
+                        onChange={(e) => updateNewOffer({ priority: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Active">
+                      <Toggle
+                        checked={newOffer.active}
+                        onChange={(e) => updateNewOffer({ active: e.target.checked })}
+                      />
+                    </Field>
+                  </div>
+                  <div className="row-actions">
+                    <button type="button" className="btn-gold" onClick={handleAddOffer}>
+                      Save offer
+                    </button>
+                    <button type="button" className="btn-outline" onClick={() => setOfferAddOpen(false)}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+
+                {offersLoading && <EmptyState>Loading…</EmptyState>}
+                {!offersLoading && offersError && <EmptyState>{offersError}</EmptyState>}
                 {!offersLoading && !offersError && offers.length === 0 && (
-                  <tr>
-                    <td colSpan={7}>No offers yet — add one to show a promo card on the Home page.</td>
-                  </tr>
+                  <EmptyState>No offers yet — add one to show a promo card on the Home page.</EmptyState>
                 )}
-                {!offersLoading &&
-                  !offersError &&
-                  offers.map((o) => {
-                    const draft = offerDrafts[o.id] || o;
-                    const dirty = offerRowDirty(o.id);
-                    return (
-                      <tr key={o.id} className={dirty ? "dirty-row" : ""}>
-                        <td data-label="Title">
-                          {dirty && <span className="dirty-dot" title="Unsaved changes" />}
-                          <input
-                            value={draft.title}
-                            onChange={(e) => updateOfferDraft(o.id, { title: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Discount">
-                          <input
-                            value={draft.discount}
-                            onChange={(e) => updateOfferDraft(o.id, { discount: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Code">
-                          <input
-                            value={draft.code}
-                            onChange={(e) => updateOfferDraft(o.id, { code: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Window">
-                          <div style={{ display: "flex", gap: "4px" }}>
-                            <input
-                              type="date"
-                              value={draft.startDate}
-                              onChange={(e) => updateOfferDraft(o.id, { startDate: e.target.value })}
-                            />
-                            <input
-                              type="date"
-                              value={draft.endDate}
-                              onChange={(e) => updateOfferDraft(o.id, { endDate: e.target.value })}
+
+                <div className="card-list">
+                  {!offersLoading &&
+                    !offersError &&
+                    offers.map((o) => {
+                      const draft = offerDrafts[o.id] || o;
+                      const dirty = offerRowDirty(o.id);
+                      return (
+                        <article key={o.id} className={`item-card${dirty ? " dirty" : ""}${draft.active ? "" : " muted"}`}>
+                          <div className="card-head">
+                            <div className="card-head-title">
+                              {dirty && <span className="dirty-dot" title="Unsaved changes" />}
+                              <span>{draft.title || "Untitled offer"}</span>
+                            </div>
+                            <Toggle
+                              checked={draft.active}
+                              onChange={(e) => updateOfferDraft(o.id, { active: e.target.checked })}
+                              onLabel="Active"
+                              offLabel="Hidden"
                             />
                           </div>
-                        </td>
-                        <td data-label="Active">
-                          <input
-                            type="checkbox"
-                            checked={!!draft.active}
-                            onChange={(e) => updateOfferDraft(o.id, { active: e.target.checked })}
-                          />
-                        </td>
-                        <td data-label="Priority">
-                          <input
-                            type="number"
-                            style={{ width: "64px" }}
-                            value={draft.priority}
-                            onChange={(e) => updateOfferDraft(o.id, { priority: e.target.value })}
-                          />
-                        </td>
-                        <td className="row-actions">
-                          <button
-                            type="button"
-                            className="btn-gold"
-                            disabled={!dirty || offerSavingId === o.id}
-                            onClick={() => handleSaveOfferRow(o.id)}
-                          >
-                            {offerSavingId === o.id ? "Saving…" : "Save"}
-                          </button>
-                          <button
-                            type="button"
-                            className="btn-danger"
-                            onClick={() => handleDeleteOffer(o.id, draft.title || o.id)}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
+                          <div className="field-grid">
+                            <Field label="Title">
+                              <input
+                                value={draft.title}
+                                onChange={(e) => updateOfferDraft(o.id, { title: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Discount badge">
+                              <input
+                                value={draft.discount}
+                                onChange={(e) => updateOfferDraft(o.id, { discount: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Description" full>
+                              <input
+                                value={draft.description}
+                                onChange={(e) => updateOfferDraft(o.id, { description: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Coupon code">
+                              <input
+                                value={draft.code}
+                                onChange={(e) => updateOfferDraft(o.id, { code: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Image path">
+                              <input
+                                value={draft.image}
+                                onChange={(e) => updateOfferDraft(o.id, { image: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Link">
+                              <input
+                                value={draft.link}
+                                onChange={(e) => updateOfferDraft(o.id, { link: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Start date">
+                              <input
+                                type="date"
+                                value={draft.startDate}
+                                onChange={(e) => updateOfferDraft(o.id, { startDate: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="End date">
+                              <input
+                                type="date"
+                                value={draft.endDate}
+                                onChange={(e) => updateOfferDraft(o.id, { endDate: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Priority">
+                              <input
+                                type="number"
+                                value={draft.priority}
+                                onChange={(e) => updateOfferDraft(o.id, { priority: e.target.value })}
+                              />
+                            </Field>
+                          </div>
+                          <div className="row-actions">
+                            <button
+                              type="button"
+                              className="btn-gold"
+                              disabled={!dirty || offerSavingId === o.id}
+                              onClick={() => handleSaveOfferRow(o.id)}
+                            >
+                              {offerSavingId === o.id ? "Saving…" : dirty ? "Save" : "Saved"}
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-danger"
+                              onClick={() => handleDeleteOffer(o.id, draft.title || o.id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </article>
+                      );
+                    })}
+                </div>
+              </section>
+            )}
 
-          <div className="section-header">
-            <div>
-              <h2>Blog / Field notes</h2>
-              <p className="hint">
-                The specimen cards on the Blog (Nutrient Almanac) page. "Sources" is a comma-separated list of product names — a name matching a real product (e.g. Almonds, Cashews, Walnuts, Raisins) links straight to it. Lower "Order" values show first.
-              </p>
-            </div>
-            <div style={{ display: "flex", gap: "8px" }}>
-              {!blogLoading && !blogError && blogPosts.length === 0 && (
-                <button type="button" className="btn-outline" onClick={handleSeedBlogPosts} disabled={blogSeeding}>
-                  {blogSeeding ? "Adding…" : "Seed starter posts"}
-                </button>
-              )}
-              <button type="button" className="btn-gold" onClick={() => setBlogAddOpen((v) => !v)}>
-                + Add post
-              </button>
-            </div>
-          </div>
+            {/* ---------------- BLOG ---------------- */}
+            {activeTab === "blog" && (
+              <section className="tab-panel">
+                <div className="panel-head">
+                  <div>
+                    <h2>Blog / Field notes</h2>
+                    <p className="hint">
+                      The specimen cards on the Blog page. "Sources" is a comma-separated list of product names — a name matching a real product (e.g. Almonds, Cashews) links straight to it. Lower "Order" shows first. Turn "Published" off to hide a post without deleting it.
+                    </p>
+                  </div>
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    {!blogLoading && !blogError && blogPosts.length === 0 && (
+                      <button type="button" className="btn-outline" onClick={handleSeedBlogPosts} disabled={blogSeeding}>
+                        {blogSeeding ? "Adding…" : "Seed starter posts"}
+                      </button>
+                    )}
+                    <button type="button" className="btn-gold" onClick={() => setBlogAddOpen((v) => !v)}>
+                      {blogAddOpen ? "Close" : "+ Add post"}
+                    </button>
+                  </div>
+                </div>
 
-          <div id="addBlogBox" className={blogAddOpen ? "open" : ""}>
-            <div className="grid2">
-              <label className="field-inline">
-                <span className="field-label">No. (display label)</span>
-                <input
-                  placeholder="NO. 07"
-                  value={newBlogPost.no}
-                  onChange={(e) => updateNewBlogPost({ no: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Tag label</span>
-                <input
-                  placeholder="VITAMIN E"
-                  value={newBlogPost.label}
-                  onChange={(e) => updateNewBlogPost({ label: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Title</span>
-                <input
-                  placeholder="Vitamin E"
-                  value={newBlogPost.title}
-                  onChange={(e) => updateNewBlogPost({ title: e.target.value })}
-                />
-              </label>
-              <label className="field-inline">
-                <span className="field-label">Order (lower shows first)</span>
-                <input
-                  type="number"
-                  value={newBlogPost.order}
-                  onChange={(e) => updateNewBlogPost({ order: e.target.value })}
-                />
-              </label>
-              <label className="check-inline">
-                <input
-                  type="checkbox"
-                  style={{ width: "auto" }}
-                  checked={newBlogPost.published}
-                  onChange={(e) => updateNewBlogPost({ published: e.target.checked })}
-                />{" "}
-                Published
-              </label>
-              <label className="field-inline" style={{ gridColumn: "1 / -1" }}>
-                <span className="field-label">Lede (one-line hook)</span>
-                <input
-                  placeholder="A quiet antioxidant that protects cell membranes."
-                  value={newBlogPost.lede}
-                  onChange={(e) => updateNewBlogPost({ lede: e.target.value })}
-                />
-              </label>
-              <label className="field-inline" style={{ gridColumn: "1 / -1" }}>
-                <span className="field-label">Sources (comma-separated)</span>
-                <input
-                  placeholder="Almonds, Pistachios"
-                  value={newBlogPost.sources}
-                  onChange={(e) => updateNewBlogPost({ sources: e.target.value })}
-                />
-              </label>
-            </div>
-            <p className="field-label">Field note (full paragraph)</p>
-            <textarea
-              value={newBlogPost.note}
-              onChange={(e) => updateNewBlogPost({ note: e.target.value })}
-            />
-            <div className="row-actions" style={{ marginTop: "10px" }}>
-              <button type="button" className="btn-gold" onClick={handleAddBlogPost}>
-                Save post
-              </button>
-              <button type="button" className="btn-outline" onClick={() => setBlogAddOpen(false)}>
-                Cancel
-              </button>
-            </div>
-          </div>
+                <div id="addBlogBox" className={blogAddOpen ? "open" : ""}>
+                  <p className="form-title">New post</p>
+                  <div className="field-grid">
+                    <Field label="No. (display label)" example="NO. 07">
+                      <input
+                        placeholder="NO. 07"
+                        value={newBlogPost.no}
+                        onChange={(e) => updateNewBlogPost({ no: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Tag label" example="VITAMIN E">
+                      <input
+                        placeholder="VITAMIN E"
+                        value={newBlogPost.label}
+                        onChange={(e) => updateNewBlogPost({ label: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Title" example="Vitamin E">
+                      <input
+                        placeholder="Vitamin E"
+                        value={newBlogPost.title}
+                        onChange={(e) => updateNewBlogPost({ title: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Order" example="lower shows first">
+                      <input
+                        type="number"
+                        value={newBlogPost.order}
+                        onChange={(e) => updateNewBlogPost({ order: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Published">
+                      <Toggle
+                        checked={newBlogPost.published}
+                        onChange={(e) => updateNewBlogPost({ published: e.target.checked })}
+                      />
+                    </Field>
+                    <Field label="Lede (one-line hook)" full example="A quiet antioxidant that protects cell membranes.">
+                      <input
+                        placeholder="A quiet antioxidant that protects cell membranes."
+                        value={newBlogPost.lede}
+                        onChange={(e) => updateNewBlogPost({ lede: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Sources (comma-separated)" full example="Almonds, Pistachios">
+                      <input
+                        placeholder="Almonds, Pistachios"
+                        value={newBlogPost.sources}
+                        onChange={(e) => updateNewBlogPost({ sources: e.target.value })}
+                      />
+                    </Field>
+                  </div>
+                  <Field label="Field note (full paragraph)" full>
+                    <textarea
+                      value={newBlogPost.note}
+                      onChange={(e) => updateNewBlogPost({ note: e.target.value })}
+                    />
+                  </Field>
+                  <div className="row-actions">
+                    <button type="button" className="btn-gold" onClick={handleAddBlogPost}>
+                      Save post
+                    </button>
+                    <button type="button" className="btn-outline" onClick={() => setBlogAddOpen(false)}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
 
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>No.</th>
-                  <th>Label</th>
-                  <th>Title</th>
-                  <th>Lede</th>
-                  <th>Sources</th>
-                  <th>Note</th>
-                  <th>Order</th>
-                  <th>Published</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {blogLoading && (
-                  <tr>
-                    <td colSpan={9}>Loading…</td>
-                  </tr>
-                )}
-                {!blogLoading && blogError && (
-                  <tr>
-                    <td colSpan={9}>{blogError}</td>
-                  </tr>
-                )}
+                {blogLoading && <EmptyState>Loading…</EmptyState>}
+                {!blogLoading && blogError && <EmptyState>{blogError}</EmptyState>}
                 {!blogLoading && !blogError && blogPosts.length === 0 && (
-                  <tr>
-                    <td colSpan={9}>No blog posts yet — the Blog page is showing its built-in fallback list. Click "Seed starter posts" above to load those 6 into here so you can edit or delete them, or add your own with "+ Add post".</td>
-                  </tr>
+                  <EmptyState>
+                    No blog posts yet — the Blog page is showing its built-in fallback list. Click "Seed starter posts" above to load those 6 in so you can edit or delete them, or add your own with "+ Add post".
+                  </EmptyState>
                 )}
-                {!blogLoading &&
-                  !blogError &&
-                  blogPosts.map((b) => {
-                    const draft = blogDrafts[b.id] || b;
-                    const dirty = blogRowDirty(b.id);
-                    return (
-                      <tr key={b.id} className={dirty ? "dirty-row" : ""}>
-                        <td data-label="No.">
-                          {dirty && <span className="dirty-dot" title="Unsaved changes" />}
-                          <input
-                            style={{ width: "84px" }}
-                            value={draft.no}
-                            onChange={(e) => updateBlogDraft(b.id, { no: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Label">
-                          <input
-                            value={draft.label}
-                            onChange={(e) => updateBlogDraft(b.id, { label: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Title">
-                          <input
-                            value={draft.title}
-                            onChange={(e) => updateBlogDraft(b.id, { title: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Lede">
-                          <input
-                            value={draft.lede}
-                            onChange={(e) => updateBlogDraft(b.id, { lede: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Sources">
-                          <input
-                            placeholder="Almonds, Cashews"
-                            value={draft.sources}
-                            onChange={(e) => updateBlogDraft(b.id, { sources: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Note">
-                          <input
-                            value={draft.note}
-                            onChange={(e) => updateBlogDraft(b.id, { note: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Order">
-                          <input
-                            type="number"
-                            style={{ width: "64px" }}
-                            value={draft.order}
-                            onChange={(e) => updateBlogDraft(b.id, { order: e.target.value })}
-                          />
-                        </td>
-                        <td data-label="Published">
-                          <input
-                            type="checkbox"
-                            checked={!!draft.published}
-                            onChange={(e) => updateBlogDraft(b.id, { published: e.target.checked })}
-                          />
-                        </td>
-                        <td className="row-actions">
-                          <button
-                            type="button"
-                            className="btn-gold"
-                            disabled={!dirty || blogSavingId === b.id}
-                            onClick={() => handleSaveBlogRow(b.id)}
-                          >
-                            {blogSavingId === b.id ? "Saving…" : "Save"}
-                          </button>
-                          <button
-                            type="button"
-                            className="btn-danger"
-                            onClick={() => handleDeleteBlogPost(b.id, draft.title || b.id)}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
-        </main>
-      )}
 
-      {isAuthorized && dirtySlugs.length > 0 && (
-        <div className="savebar">
-          <span className="savebar-text">
-            {dirtySlugs.length} product{dirtySlugs.length === 1 ? "" : "s"} changed
-          </span>
-          <div className="savebar-actions">
-            <button type="button" className="btn-outline" onClick={handleDiscardAll} disabled={saving}>
-              Discard
-            </button>
-            <button type="button" className="btn-gold" onClick={handleSaveAll} disabled={saving}>
-              {saving ? "Saving…" : `Save changes (${dirtySlugs.length})`}
-            </button>
+                <div className="card-list">
+                  {!blogLoading &&
+                    !blogError &&
+                    blogPosts.map((b) => {
+                      const draft = blogDrafts[b.id] || b;
+                      const dirty = blogRowDirty(b.id);
+                      return (
+                        <article key={b.id} className={`item-card${dirty ? " dirty" : ""}${draft.published ? "" : " muted"}`}>
+                          <div className="card-head">
+                            <div className="card-head-title">
+                              {dirty && <span className="dirty-dot" title="Unsaved changes" />}
+                              <span className="slug-pill">{draft.no || "—"}</span>
+                              <span>{draft.title || "Untitled"}</span>
+                            </div>
+                            <Toggle
+                              checked={draft.published}
+                              onChange={(e) => updateBlogDraft(b.id, { published: e.target.checked })}
+                              onLabel="Published"
+                              offLabel="Hidden"
+                            />
+                          </div>
+                          <div className="field-grid">
+                            <Field label="No.">
+                              <input
+                                value={draft.no}
+                                onChange={(e) => updateBlogDraft(b.id, { no: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Tag label">
+                              <input
+                                value={draft.label}
+                                onChange={(e) => updateBlogDraft(b.id, { label: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Title" full>
+                              <input
+                                value={draft.title}
+                                onChange={(e) => updateBlogDraft(b.id, { title: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Lede" full>
+                              <input
+                                value={draft.lede}
+                                onChange={(e) => updateBlogDraft(b.id, { lede: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Sources" example="Almonds, Cashews" full>
+                              <input
+                                placeholder="Almonds, Cashews"
+                                value={draft.sources}
+                                onChange={(e) => updateBlogDraft(b.id, { sources: e.target.value })}
+                              />
+                            </Field>
+                            <Field label="Order">
+                              <input
+                                type="number"
+                                value={draft.order}
+                                onChange={(e) => updateBlogDraft(b.id, { order: e.target.value })}
+                              />
+                            </Field>
+                          </div>
+                          <Field label="Field note" full>
+                            <textarea
+                              value={draft.note}
+                              onChange={(e) => updateBlogDraft(b.id, { note: e.target.value })}
+                            />
+                          </Field>
+                          <div className="row-actions">
+                            <button
+                              type="button"
+                              className="btn-gold"
+                              disabled={!dirty || blogSavingId === b.id}
+                              onClick={() => handleSaveBlogRow(b.id)}
+                            >
+                              {blogSavingId === b.id ? "Saving…" : dirty ? "Save" : "Saved"}
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-danger"
+                              onClick={() => handleDeleteBlogPost(b.id, draft.title || b.id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </article>
+                      );
+                    })}
+                </div>
+              </section>
+            )}
+          </main>
+        )}
+
+        {isAuthorized && activeTab === "products" && dirtySlugs.length > 0 && (
+          <div className="savebar">
+            <span className="savebar-text">
+              {dirtySlugs.length} product{dirtySlugs.length === 1 ? "" : "s"} changed
+            </span>
+            <div className="savebar-actions">
+              <button type="button" className="btn-outline" onClick={handleDiscardAll} disabled={saving}>
+                Discard
+              </button>
+              <button type="button" className="btn-gold" onClick={handleSaveAll} disabled={saving}>
+                {saving ? "Saving…" : `Save changes (${dirtySlugs.length})`}
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
       </div>
     </>
   );

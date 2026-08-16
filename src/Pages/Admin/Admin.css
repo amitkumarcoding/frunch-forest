@@ -23,11 +23,12 @@
 .admin-page button{ cursor:pointer; font-family:inherit }
 .admin-page button:disabled{ opacity:0.55; cursor:not-allowed; transform:none !important }
 
+/* ---------- header ---------- */
 .admin-page header{
   display:flex;justify-content:space-between;align-items:center;
   padding:14px 28px;border-bottom:1px solid var(--card-line);
   background:linear-gradient(180deg, rgba(241,212,138,0.05), transparent);
-  position:sticky;top:0;z-index:10;backdrop-filter:blur(6px);
+  position:sticky;top:0;z-index:30;backdrop-filter:blur(6px);
 }
 .admin-page .brand{display:flex;align-items:center;gap:10px}
 .admin-page .brand-badge{
@@ -47,6 +48,7 @@
 .admin-page .btn-danger{background:var(--danger);color:#fff}
 .admin-page .btn-danger:hover{background:#a8321f}
 
+/* ---------- login ---------- */
 .admin-page .auth-wrap{min-height:calc(100vh - 65px);display:flex;align-items:center;justify-content:center;padding:24px}
 .admin-page #loginView{
   width:100%;max-width:380px;padding:36px 32px;
@@ -70,56 +72,125 @@
 .admin-page .google-btn:hover{transform:translateY(-1px);box-shadow:0 12px 26px -10px rgba(0,0,0,0.45);background:#fff}
 .admin-page #err{color:#ff8a80;font-size:13px;min-height:18px;margin-top:14px}
 
-.admin-page main{padding:28px;max-width:1100px;margin:0 auto}
-.admin-page main.has-savebar{padding-bottom:96px}
-@media (max-width:820px){ .admin-page main{padding:22px} .admin-page main.has-savebar{padding-bottom:104px} }
-
-.admin-page .toolbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;gap:12px}
-.admin-page .hint{font-size:12px;color:var(--text-dim)}
-.admin-page .field-label{margin:10px 0 2px;color:var(--accent);font-size:12px}
-.admin-page .check-inline{display:flex;align-items:center;gap:6px;font-size:13px}
-
-.admin-page .table-wrap{width:100%;overflow-x:auto;border:1px solid var(--card-line);border-radius:12px}
-.admin-page table{width:100%;border-collapse:collapse;font-size:14px;min-width:720px}
-.admin-page th,
-.admin-page td{padding:10px 12px;border-bottom:1px solid var(--card-line);text-align:left;vertical-align:top}
-.admin-page thead th{color:var(--accent);background:rgba(241,212,138,0.04);font-size:12px;text-transform:uppercase;letter-spacing:0.04em}
-.admin-page tbody tr:hover{background:rgba(241,212,138,0.03)}
-.admin-page tbody tr.dirty-row{background:rgba(232,184,75,0.06);box-shadow:inset 3px 0 0 var(--changed)}
-.admin-page tbody tr.dirty-row:hover{background:rgba(232,184,75,0.1)}
-
-.admin-page input,
-.admin-page textarea{background:var(--bg-soft);color:var(--text);border:1px solid #3a5a48;border-radius:6px;padding:8px 10px;width:100%;font-size:13px;transition:border-color .15s ease, box-shadow .15s ease}
-.admin-page input:focus,
-.admin-page textarea:focus{outline:none;border-color:var(--gold-2);box-shadow:0 0 0 3px rgba(201,151,59,0.18)}
-.admin-page input.changed{border-color:var(--changed);box-shadow:0 0 0 3px rgba(232,184,75,0.16)}
-.admin-page input[type="checkbox"].changed{outline:2px solid var(--changed);outline-offset:2px}
-.admin-page textarea{min-height:60px;font-family:monospace}
-.admin-page .row-actions{display:flex;gap:6px}
-.admin-page .slug-cell{font-family:monospace;font-size:12px;color:var(--accent);display:flex;align-items:center;gap:6px}
-.admin-page .dirty-dot{width:7px;height:7px;border-radius:50%;background:var(--changed);flex:none;box-shadow:0 0 0 3px rgba(232,184,75,0.2)}
-.admin-page .status-in{color:#2e7d32;font-weight:600;font-size:0.85rem}
-.admin-page .status-out{color:#c0392b;font-weight:600;font-size:0.85rem}
-
-.admin-page #addBox{display:none;background:var(--card);padding:18px;border-radius:12px;margin-bottom:18px;border:1px solid var(--card-line)}
-.admin-page #addBox.open{display:block}
-.admin-page #addFestivalBox{display:none;background:var(--card);padding:18px;border-radius:12px;margin-bottom:14px;border:1px solid var(--card-line)}
-.admin-page #addFestivalBox.open{display:block}
-.admin-page #addOfferBox{display:none;background:var(--card);padding:18px;border-radius:12px;margin-bottom:14px;border:1px solid var(--card-line)}
-.admin-page #addOfferBox.open{display:block}
-.admin-page #addBlogBox{display:none;background:var(--card);padding:18px;border-radius:12px;margin-bottom:14px;border:1px solid var(--card-line)}
-.admin-page #addBlogBox.open{display:block}
-.admin-page .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.admin-page .field-inline{display:flex;flex-direction:column;gap:4px}
-.admin-page .field-inline .field-label{margin:0}
-.admin-page .section-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:36px 0 14px}
-.admin-page .section-header h2{margin:0 0 4px;font-size:16px;color:var(--gold)}
-.admin-page .section-header .hint{max-width:520px}
-.admin-page .msg{font-size:13px;margin:0;min-height:16px;font-weight:600}
+/* ---------- layout ---------- */
+.admin-page main{padding:22px 28px 40px;max-width:1000px;margin:0 auto}
+.admin-page main.has-savebar{padding-bottom:110px}
+.admin-page .msg{font-size:13px;margin:0 0 8px;min-height:16px;font-weight:600}
 .admin-page .msg.ok{color:var(--success)}
 .admin-page .msg.err{color:#ff8a80}
 
-/* Sticky save bar */
+/* ---------- tab bar ---------- */
+.admin-page .tab-bar{
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;
+  margin:6px 0 26px; position:sticky; top:65px; z-index:20;
+  background:var(--bg); padding:6px 0;
+}
+.admin-page .tab-btn{
+  display:flex; align-items:center; gap:8px; text-align:left;
+  background:var(--card); border:1px solid var(--card-line); border-radius:12px;
+  padding:10px 12px; color:var(--text-dim); font-weight:600;
+}
+.admin-page .tab-btn:hover{ border-color:var(--gold-2); color:var(--text) }
+.admin-page .tab-btn.active{
+  background:linear-gradient(160deg, rgba(241,212,138,0.14), var(--card));
+  border-color:var(--gold-2); color:var(--gold);
+  box-shadow:0 8px 20px -12px rgba(201,151,59,0.55);
+}
+.admin-page .tab-icon{ font-size:18px; line-height:1 }
+.admin-page .tab-copy{ display:flex; flex-direction:column; gap:1px; min-width:0 }
+.admin-page .tab-label{ font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.admin-page .tab-hint{ font-size:10.5px; font-weight:400; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.admin-page .tab-btn.active .tab-hint{ color:rgba(241,212,138,0.7) }
+
+/* ---------- panel head ---------- */
+.admin-page .tab-panel{ animation:panel-in .15s ease-out }
+@keyframes panel-in{ from{ opacity:0; transform:translateY(4px) } to{ opacity:1; transform:translateY(0) } }
+.admin-page .panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.admin-page .panel-head h2{margin:0 0 4px;font-size:18px;color:var(--gold)}
+.admin-page .panel-head .hint{max-width:560px}
+.admin-page .hint{font-size:12.5px;color:var(--text-dim)}
+
+/* ---------- fields (shared by add-forms and cards) ---------- */
+.admin-page .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:4px}
+.admin-page .field{display:flex;flex-direction:column;gap:4px}
+.admin-page .field-full{grid-column:1 / -1}
+.admin-page .field-label{color:var(--accent);font-size:12px;font-weight:700}
+.admin-page .field-example{font-size:11px;color:var(--text-dim);font-style:italic}
+.admin-page .form-title{margin:0 0 12px;font-size:13px;font-weight:700;color:var(--gold)}
+
+.admin-page input,
+.admin-page textarea{background:var(--bg-soft);color:var(--text);border:1px solid #3a5a48;border-radius:8px;padding:9px 11px;width:100%;font-size:13.5px;transition:border-color .15s ease, box-shadow .15s ease}
+.admin-page input:focus,
+.admin-page textarea:focus{outline:none;border-color:var(--gold-2);box-shadow:0 0 0 3px rgba(201,151,59,0.18)}
+.admin-page input.changed{border-color:var(--changed);box-shadow:0 0 0 3px rgba(232,184,75,0.16)}
+.admin-page textarea{min-height:64px;font-family:'JetBrains Mono', monospace;font-size:12px}
+.admin-page .packs-row{display:flex;gap:8px}
+.admin-page .packs-row input{flex:1}
+.admin-page .packs-row button{flex:none}
+.admin-page .unsaved-note{font-size:12px;color:var(--changed);font-weight:600;align-self:center}
+
+/* ---------- toggle switch ---------- */
+.admin-page .toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.admin-page .toggle input{position:absolute;opacity:0;width:0;height:0}
+.admin-page .toggle-track{
+  width:38px;height:22px;border-radius:100px;background:#3a5a48;flex:none;
+  position:relative;transition:background .15s ease;
+}
+.admin-page .toggle-thumb{
+  position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;
+  background:var(--text-dim);transition:transform .15s ease, background .15s ease;
+}
+.admin-page .toggle input:checked + .toggle-track{background:var(--gold-3)}
+.admin-page .toggle input:checked + .toggle-track .toggle-thumb{transform:translateX(16px);background:var(--gold)}
+.admin-page .toggle input:focus-visible + .toggle-track{box-shadow:0 0 0 3px rgba(201,151,59,0.35)}
+.admin-page .toggle-text{font-size:12.5px;font-weight:700;color:var(--text-dim)}
+.admin-page .toggle input:checked ~ .toggle-text{color:var(--gold)}
+
+/* ---------- add-new box ---------- */
+.admin-page #addBox,
+.admin-page #addFestivalBox,
+.admin-page #addOfferBox,
+.admin-page #addBlogBox{
+  display:none;background:var(--card);padding:18px;border-radius:14px;margin-bottom:22px;
+  border:1px dashed rgba(241,212,138,0.35);
+}
+.admin-page #addBox.open,
+.admin-page #addFestivalBox.open,
+.admin-page #addOfferBox.open,
+.admin-page #addBlogBox.open{display:block; animation:panel-in .15s ease-out}
+
+/* ---------- item cards (replaces tables) ---------- */
+.admin-page .card-list{display:flex;flex-direction:column;gap:14px}
+.admin-page .item-card{
+  background:var(--card); border:1px solid var(--card-line); border-radius:14px; padding:16px;
+  transition:border-color .15s ease;
+}
+.admin-page .item-card.dirty{border-color:var(--changed); box-shadow:0 0 0 1px rgba(232,184,75,0.25)}
+.admin-page .item-card.muted{opacity:0.62}
+.admin-page .card-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--card-line);
+  flex-wrap:wrap;
+}
+.admin-page .card-head-title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14.5px;min-width:0}
+.admin-page .slug-pill{
+  font-family:'JetBrains Mono', monospace; font-size:11.5px; color:var(--gold);
+  background:rgba(241,212,138,0.1); border:1px solid rgba(241,212,138,0.25);
+  border-radius:6px; padding:2px 7px; flex:none;
+}
+.admin-page .emoji-badge{font-size:18px; line-height:1}
+.admin-page .dirty-dot{width:7px;height:7px;border-radius:50%;background:var(--changed);flex:none;box-shadow:0 0 0 3px rgba(232,184,75,0.2)}
+.admin-page .status-in{color:#8fbf6e;font-weight:700;font-size:11.5px;background:rgba(143,191,110,0.12);border-radius:100px;padding:3px 9px}
+.admin-page .status-out{color:#ff8a80;font-weight:700;font-size:11.5px;background:rgba(192,57,43,0.15);border-radius:100px;padding:3px 9px}
+
+.admin-page .row-actions{display:flex;gap:8px;align-items:center;margin-top:14px;flex-wrap:wrap}
+
+.admin-page .empty-state{
+  border:1px dashed var(--card-line); border-radius:12px; padding:18px;
+  color:var(--text-dim); font-size:13px; text-align:center; margin-bottom:16px;
+}
+
+/* ---------- sticky save bar (products only) ---------- */
 .admin-page .savebar{
   position:fixed;left:0;right:0;bottom:0;z-index:20;
   display:flex;align-items:center;justify-content:space-between;gap:12px;
@@ -134,44 +205,38 @@
 .admin-page .savebar-text{font-size:13px;font-weight:700;color:var(--changed)}
 .admin-page .savebar-actions{display:flex;gap:10px}
 
+/* ---------- mobile ---------- */
+@media (max-width:820px){
+  .admin-page main{padding:16px 16px 32px}
+  .admin-page main.has-savebar{padding-bottom:118px}
+  .admin-page .tab-bar{top:57px}
+}
+
 @media (max-width:640px){
   .admin-page header{padding:12px 16px}
   .admin-page .brand-text span{display:none}
-  .admin-page main{padding:16px}
   .admin-page .auth-wrap{padding:16px;min-height:calc(100vh - 60px)}
   .admin-page #loginView{padding:28px 22px}
-  .admin-page .toolbar{flex-direction:column;align-items:stretch;gap:10px}
-  .admin-page .toolbar button{width:100%}
-  .admin-page .grid2{grid-template-columns:1fr}
-  .admin-page .row-actions{flex-direction:column}
+
+  .admin-page .tab-bar{grid-template-columns:1fr 1fr; gap:6px}
+  .admin-page .tab-hint{display:none}
+
+  .admin-page .panel-head{flex-direction:column;align-items:stretch}
+  .admin-page .panel-head button,
+  .admin-page .panel-head > div:last-child{width:100%}
+  .admin-page .panel-head > div:last-child{display:flex;gap:8px}
+  .admin-page .panel-head > div:last-child button{flex:1}
+
+  .admin-page .field-grid{grid-template-columns:1fr}
+  .admin-page .row-actions{flex-direction:column;align-items:stretch}
   .admin-page .row-actions button{width:100%}
+  .admin-page .card-head{flex-direction:column;align-items:flex-start}
+
   .admin-page .savebar{flex-direction:column;align-items:stretch;padding:12px 16px}
   .admin-page .savebar-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-
-  .admin-page .table-wrap{border:none;overflow-x:visible}
-  .admin-page table{min-width:0}
-  .admin-page thead{display:none}
-  .admin-page tbody,
-  .admin-page tr{display:block}
-  .admin-page tr{
-    background:var(--card); border:1px solid var(--card-line); border-radius:12px;
-    margin-bottom:14px; padding:12px;
-  }
-  .admin-page tr.dirty-row{border-color:var(--changed)}
-  .admin-page td{
-    display:flex; align-items:center; gap:10px;
-    border-bottom:1px dashed rgba(241,212,138,0.1);
-    padding:8px 0;
-  }
-  .admin-page td:last-child{border-bottom:none}
-  .admin-page td::before{
-    content:attr(data-label); flex:0 0 92px; color:var(--accent);
-    font-size:11px; text-transform:uppercase; letter-spacing:0.04em; font-weight:700;
-  }
-  .admin-page td.row-actions{flex-direction:column; align-items:stretch; gap:8px}
-  .admin-page td.row-actions::before{ display:none }
 }
 @media (max-width:400px){
   .admin-page .login-mark{width:44px;height:44px;font-size:18px}
   .admin-page #loginView h2{font-size:18px}
+  .admin-page .tab-bar{grid-template-columns:1fr}
 }
