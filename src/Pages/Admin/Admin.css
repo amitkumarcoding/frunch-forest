@@ -105,6 +105,10 @@
 .admin-page #addBox.open{display:block}
 .admin-page #addFestivalBox{display:none;background:var(--card);padding:18px;border-radius:12px;margin-bottom:14px;border:1px solid var(--card-line)}
 .admin-page #addFestivalBox.open{display:block}
+.admin-page #addOfferBox{display:none;background:var(--card);padding:18px;border-radius:12px;margin-bottom:14px;border:1px solid var(--card-line)}
+.admin-page #addOfferBox.open{display:block}
+.admin-page #addBlogBox{display:none;background:var(--card);padding:18px;border-radius:12px;margin-bottom:14px;border:1px solid var(--card-line)}
+.admin-page #addBlogBox.open{display:block}
 .admin-page .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .admin-page .field-inline{display:flex;flex-direction:column;gap:4px}
 .admin-page .field-inline .field-label{margin:0}

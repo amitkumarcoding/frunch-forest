@@ -7,11 +7,12 @@ import { db } from './firebase';
 // instead of a code deploy.
 //
 // Firestore collection: "blogPosts". Doc shape:
-//   { no, label, title, lede, sources: string[], note, order }
+//   { no, label, title, lede, sources: string[], note, order, published }
 // `sources` names are matched against SOURCE_SLUGS in Blog.jsx to link
 // straight to a product page — an unmatched name just renders as plain
 // text. `order` controls display order (ascending); ties fall back to
-// `no`/title.
+// `no`/title. `published: false` hides the post from the Blog page
+// while leaving it editable in Admin (default true when unset).
 export async function loadBlogPostsFromFirestore() {
   try {
     const snapshot = await getDocs(collection(db, 'blogPosts'));
@@ -21,6 +22,7 @@ export async function loadBlogPostsFromFirestore() {
       .map((docSnap) => {
         const data = docSnap.data();
         if (!data.title) return null;
+        if (data.published === false) return null;
         return {
           id: docSnap.id,
           no: data.no || '',

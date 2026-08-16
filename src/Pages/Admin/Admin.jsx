@@ -66,6 +66,7 @@ const EMPTY_NEW_BLOG_POST = {
   sources: "",
   note: "",
   order: 10,
+  published: true,
 };
 
 // The 6 original Nutrient Almanac specimens, hardcoded as the fallback
@@ -127,6 +128,7 @@ function toBlogDraft(id, data) {
     sources: Array.isArray(data.sources) ? data.sources.join(", ") : (data.sources || ""),
     note: data.note || "",
     order: typeof data.order === "number" ? data.order : 10,
+    published: data.published !== false,
   };
 }
 
@@ -706,7 +708,7 @@ export default function Admin() {
     const original = blogPosts.find((b) => b.id === id);
     const draft = blogDrafts[id];
     if (!original || !draft) return false;
-    return ["no", "label", "title", "lede", "sources", "note", "order"].some(
+    return ["no", "label", "title", "lede", "sources", "note", "order", "published"].some(
       (field) => String(original[field]) !== String(draft[field])
     );
   }
@@ -725,6 +727,7 @@ export default function Admin() {
         sources: draft.sources.split(",").map((s) => s.trim()).filter(Boolean),
         note: draft.note.trim(),
         order: Number(draft.order) || 10,
+        published: !!draft.published,
       };
       await setDoc(doc(db, "blogPosts", id), cleaned);
       const row = toBlogDraft(id, cleaned);
@@ -770,6 +773,7 @@ export default function Admin() {
         sources: newBlogPost.sources.split(",").map((s) => s.trim()).filter(Boolean),
         note: newBlogPost.note.trim(),
         order: Number(newBlogPost.order) || 10,
+        published: !!newBlogPost.published,
       });
       setBlogAddOpen(false);
       setNewBlogPost(EMPTY_NEW_BLOG_POST);
@@ -1484,6 +1488,15 @@ export default function Admin() {
                   onChange={(e) => updateNewBlogPost({ order: e.target.value })}
                 />
               </label>
+              <label className="check-inline">
+                <input
+                  type="checkbox"
+                  style={{ width: "auto" }}
+                  checked={newBlogPost.published}
+                  onChange={(e) => updateNewBlogPost({ published: e.target.checked })}
+                />{" "}
+                Published
+              </label>
               <label className="field-inline" style={{ gridColumn: "1 / -1" }}>
                 <span className="field-label">Lede (one-line hook)</span>
                 <input
@@ -1527,23 +1540,24 @@ export default function Admin() {
                   <th>Sources</th>
                   <th>Note</th>
                   <th>Order</th>
+                  <th>Published</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {blogLoading && (
                   <tr>
-                    <td colSpan={8}>Loading…</td>
+                    <td colSpan={9}>Loading…</td>
                   </tr>
                 )}
                 {!blogLoading && blogError && (
                   <tr>
-                    <td colSpan={8}>{blogError}</td>
+                    <td colSpan={9}>{blogError}</td>
                   </tr>
                 )}
                 {!blogLoading && !blogError && blogPosts.length === 0 && (
                   <tr>
-                    <td colSpan={8}>No blog posts yet — the Blog page is showing its built-in fallback list. Click "Seed starter posts" above to load those 6 into here so you can edit or delete them, or add your own with "+ Add post".</td>
+                    <td colSpan={9}>No blog posts yet — the Blog page is showing its built-in fallback list. Click "Seed starter posts" above to load those 6 into here so you can edit or delete them, or add your own with "+ Add post".</td>
                   </tr>
                 )}
                 {!blogLoading &&
@@ -1598,6 +1612,13 @@ export default function Admin() {
                             style={{ width: "64px" }}
                             value={draft.order}
                             onChange={(e) => updateBlogDraft(b.id, { order: e.target.value })}
+                          />
+                        </td>
+                        <td data-label="Published">
+                          <input
+                            type="checkbox"
+                            checked={!!draft.published}
+                            onChange={(e) => updateBlogDraft(b.id, { published: e.target.checked })}
                           />
                         </td>
                         <td className="row-actions">
