@@ -105,6 +105,9 @@ function Home() {
   // FAQ accordion — only one answer open at a time; clicking the open
   // question again closes it.
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
+  const [offerPhone, setOfferPhone] = useState("");
+  const [offerError, setOfferError] = useState("");
+  const [offerSent, setOfferSent] = useState(false);
 
   const [activeGiftItem, setActiveGiftItem] = useState("diwali");
   const [giftImgErrors, setGiftImgErrors] = useState({});
@@ -918,21 +921,51 @@ function Home() {
                 <p>Get 10% OFF on your first order — tell us your WhatsApp number and we'll send the code.</p>
               </div>
 
-              <form className="offer-capture" id="offerCaptureForm" noValidate>
+              <form
+                className="offer-capture"
+                id="offerCaptureForm"
+                noValidate
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const digits = offerPhone.replace(/\D/g, "");
+                  if (digits.length !== 10) {
+                    setOfferError("Enter a valid 10-digit WhatsApp number.");
+                    return;
+                  }
+                  setOfferError("");
+                  const msg = encodeURIComponent(
+                    `Hi Frunch Forest, please send my 10% OFF code. My WhatsApp number is ${digits}.`
+                  );
+                  window.open(`https://wa.me/919582122419?text=${msg}`, "_blank", "noopener");
+                  setOfferSent(true);
+                }}
+              >
                 <div className="offer-capture-panel active" data-panel="whatsapp">
-                  <input type="tel" id="offerPhoneInput" placeholder="10-digit WhatsApp number" autoComplete="tel" inputMode="numeric" maxLength="10" aria-label="WhatsApp number" />
+                  <input
+                    type="tel"
+                    id="offerPhoneInput"
+                    placeholder="10-digit WhatsApp number"
+                    autoComplete="tel"
+                    inputMode="numeric"
+                    maxLength="10"
+                    aria-label="WhatsApp number"
+                    value={offerPhone}
+                    onChange={(e) => setOfferPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                  />
                   <button type="submit" className="offer-capture-submit">Send Code on WhatsApp →</button>
                 </div>
 
-                <p className="offer-capture-error" id="offerCaptureError"></p>
+                <p className="offer-capture-error" id="offerCaptureError">{offerError}</p>
                 <p className="offer-capture-wa-note">Opens WhatsApp with your code request pre-filled — just hit send.</p>
 
-                <div className="offer-capture-success" id="offerCaptureSuccess">
-                  <p className="offer-capture-waiting">
-                    <span className="offer-capture-spinner" aria-hidden="true"></span>
-                    We're sending your code on WhatsApp — keep waiting, it'll land in your chat shortly!
-                  </p>
-                </div>
+                {offerSent && (
+                  <div className="offer-capture-success" id="offerCaptureSuccess">
+                    <p className="offer-capture-waiting">
+                      <span className="offer-capture-spinner" aria-hidden="true"></span>
+                      We're sending your code on WhatsApp — keep waiting, it'll land in your chat shortly!
+                    </p>
+                  </div>
+                )}
               </form>
             </div>
           </div>
