@@ -1,0 +1,188 @@
+/* Products.css
+   Previously this page used generic class="hero" and id="products", which
+   collide with Home.css's very elaborate `.hero` (two-column festive grid)
+   and `#products` (dark showcase section with its own background/decor).
+   Because all page CSS is bundled together, those rules leaked onto this
+   page too — hence the broken giant-ring / dark-bg render. This file gives
+   the page its own class/id names so nothing else in the app can style it
+   by accident, and defines every class the JSX actually uses (several,
+   like .product-search, were never styled anywhere in this page's own
+   scope at all). */
+
+.products-hero{
+  position:relative;
+  overflow:hidden;
+  padding:72px 0 60px;
+  background:
+    linear-gradient(180deg, rgba(19,42,30,0.6) 0%, rgba(19,42,30,0.88) 70%, var(--forest-dark) 100%),
+    url("/image/background/products-hero-bg.png") center 32% / cover no-repeat;
+  color:var(--parchment);
+}
+.products-hero .eyebrow{
+  color:var(--gold-1);
+  border-color:rgba(241,212,138,0.35);
+  background:rgba(241,212,138,0.08);
+}
+.products-hero h1{ color:var(--parchment); }
+.products-hero p{
+  color:rgba(243,236,224,0.78);
+  max-width:640px;
+  margin-top:14px;
+  font-size:1.02rem;
+}
+
+#products-listing{
+  position:relative;
+  overflow:hidden;
+  background:var(--forest-dark);
+  color:var(--parchment);
+  padding:56px 0 80px;
+}
+#products-listing .wrap{ position:relative; z-index:1; }
+
+/* ---------- search + filters ---------- */
+.product-search-wrap{
+  margin-bottom:36px;
+  background:rgba(243,236,224,0.04);
+  border:1px solid rgba(243,236,224,0.12);
+  border-radius:22px;
+  padding:24px 26px 22px;
+}
+.product-search{
+  position:relative;
+  display:flex; align-items:center;
+  max-width:480px;
+  background:rgba(243,236,224,0.06);
+  border:1px solid rgba(243,236,224,0.18);
+  border-radius:100px;
+  padding:0 18px;
+  transition:border-color .25s ease, background .25s ease;
+}
+.product-search:focus-within{
+  border-color:var(--gold-2);
+  background:rgba(243,236,224,0.1);
+}
+.product-search svg{
+  width:18px; height:18px; flex-shrink:0;
+  color:rgba(243,236,224,0.55);
+}
+.product-search input{
+  flex:1;
+  background:transparent; border:none; outline:none;
+  color:var(--parchment);
+  font-family:'Manrope', sans-serif; font-size:0.95rem;
+  padding:14px 12px;
+}
+.product-search input::placeholder{ color:rgba(243,236,224,0.4); }
+.product-search-clear{
+  background:none; border:none; cursor:pointer;
+  color:rgba(243,236,224,0.55);
+  font-size:1.3rem; line-height:1;
+  padding:4px 2px;
+  display:none;
+  transition:color .2s ease;
+}
+.product-search-clear:hover{ color:var(--gold-1); }
+.product-search-clear.show{ display:block; }
+.product-search-count{
+  margin-top:12px;
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.75rem; letter-spacing:0.04em;
+  color:rgba(243,236,224,0.5);
+}
+
+.filter-group{ margin-top:20px; }
+.filter-group + .filter-group{
+  padding-top:18px;
+  border-top:1px solid rgba(243,236,224,0.1);
+}
+.filter-group-label{
+  display:block;
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.68rem; font-weight:700; letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:rgba(243,236,224,0.42);
+  margin-bottom:10px;
+}
+.product-filter-chips{
+  display:flex; flex-wrap:nowrap; gap:9px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+  padding-bottom:2px;
+}
+.product-filter-chips::-webkit-scrollbar{ display:none; }
+.filter-chip{
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.72rem; font-weight:600; letter-spacing:0.03em;
+  text-transform:uppercase;
+  color:rgba(243,236,224,0.72);
+  background:rgba(243,236,224,0.06);
+  border:1px solid rgba(243,236,224,0.18);
+  border-radius:100px;
+  padding:8px 15px;
+  cursor:pointer;
+  white-space:nowrap; flex-shrink:0;
+  transition:background .2s ease, border-color .2s ease, color .2s ease, transform .15s ease;
+}
+.filter-chip:hover{ border-color:rgba(201,151,59,0.5); color:var(--parchment); transform:translateY(-1px); }
+.filter-chip.active{
+  background:linear-gradient(120deg, var(--gold-3), var(--gold-1) 45%, var(--gold-2));
+  border-color:transparent;
+  color:var(--forest-dark);
+  box-shadow:0 6px 16px -6px rgba(201,151,59,0.5);
+}
+
+.product-toolbar-row{
+  display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between;
+  gap:16px;
+}
+.product-toolbar-row .filter-group{ margin-top:0; flex:1; min-width:0; }
+.product-sort-wrap{
+  display:flex; flex-direction:column; gap:8px;
+  flex-shrink:0;
+}
+.product-sort-wrap label{
+  font-family:'JetBrains Mono', monospace; font-size:0.68rem; font-weight:700;
+  letter-spacing:0.1em; text-transform:uppercase;
+  color:rgba(243,236,224,0.42);
+}
+.product-sort-wrap .select-wrap{ position:relative; }
+.product-sort-wrap select{
+  font-family:'JetBrains Mono', monospace; font-size:0.78rem; font-weight:600;
+  color:var(--parchment);
+  background:rgba(243,236,224,0.06);
+  border:1px solid rgba(243,236,224,0.22);
+  border-radius:100px;
+  padding:9px 36px 9px 16px;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
+  min-width:190px;
+  transition:border-color .2s ease, background .2s ease;
+}
+.product-sort-wrap select:hover{ border-color:rgba(201,151,59,0.5); }
+.product-sort-wrap select:focus{ outline:none; border-color:var(--gold-2); background:rgba(243,236,224,0.1); }
+.product-sort-wrap select option{ background:var(--forest-dark); color:var(--parchment); }
+.product-sort-wrap .select-wrap::after{
+  content:"";
+  position:absolute; right:14px; top:50%; width:8px; height:8px;
+  border-right:1.5px solid rgba(243,236,224,0.55);
+  border-bottom:1.5px solid rgba(243,236,224,0.55);
+  transform:translateY(-65%) rotate(45deg);
+  pointer-events:none;
+}
+
+.product-no-results{
+  color:rgba(243,236,224,0.7);
+  font-size:1rem;
+  padding:40px 0;
+  text-align:center;
+}
+
+@media (max-width:640px){
+  .products-hero{ padding:52px 0 40px; }
+  .product-search-wrap{ padding:18px 18px 16px; border-radius:18px; }
+  .product-toolbar-row{ flex-direction:column; align-items:stretch; }
+  .product-sort-wrap select{ width:100%; }
+}

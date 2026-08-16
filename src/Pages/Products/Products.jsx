@@ -5,6 +5,7 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import SEO from "../../components/SEO/SEO";
+import "./Products.css";
 
 const FAV_KEY = "ff_favourites";
 
@@ -108,7 +109,7 @@ export default function Products() {
       />
       <Header />
       <main id="main">
-        <section className="hero" id="productsPageHero">
+        <section className="products-hero" id="productsPageHero">
           <div className="wrap">
             <div className="section-head reveal">
               <div className="eyebrow">The range</div>
@@ -120,7 +121,7 @@ export default function Products() {
           </div>
         </section>
 
-        <section id="products">
+        <section id="products-listing">
           <div className="wrap">
             <div className="product-search-wrap reveal">
               <div className="product-search">
