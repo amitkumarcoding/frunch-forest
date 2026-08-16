@@ -504,7 +504,7 @@ function Home() {
                 <span className="badge-sparkle sp1"></span>
                 <span className="badge-sparkle sp2"></span>
                 <span className="badge-sparkle sp3"></span>
-                <img src="/image/background/bg1.png" alt="" className="badge-bg" />
+                <img src="/image/background/bg1.png" alt="" className="badge-bg" loading="lazy" />
                 <div className="badge-mark"><img style={{ width: "150px", height: "150px" }} src="/image/logo.png" alt="" /></div>
 
               </div>

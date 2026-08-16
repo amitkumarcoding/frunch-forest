@@ -187,7 +187,7 @@ export default function ProductDetails() {
                   const rOutOfStock = isOutOfStock(p);
                   return (
                     <Link key={key} className={`related-card${rOutOfStock ? ' out-of-stock' : ''}`} to={`/products/${key}`}>
-                      <div className="rc-photo"><img src={p.image} alt={p.name} /></div>
+                      <div className="rc-photo"><img src={p.image} alt={p.name} loading="lazy" /></div>
                       <div className="rc-body">
                         <span className="rc-tag">{p.tag}</span>
                         <h3>{p.name}</h3>

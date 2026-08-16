@@ -1,14 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { initializeApp } from "firebase/app";
 import {
-  getAuth,
   GoogleAuthProvider,
   signInWithPopup,
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
 import {
-  getFirestore,
   collection,
   getDocs,
   doc,
@@ -22,25 +19,9 @@ import SEO from "../../components/SEO/SEO";
 import { FESTIVE_THEMES } from "../../utils/festiveTheme";
 import { ALLOWED_ADMINS } from "../../utils/admins";
 import { isOutOfStock } from "../../utils/stock";
+import { auth, db } from "../../services/firebase";
 
 const KNOWN_FESTIVAL_KEYS = Object.keys(FESTIVE_THEMES);
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAJOYj9rbjeerHeIuRoi7mqKEUqebfEQT8",
-  authDomain: "frunch-forest.firebaseapp.com",
-  projectId: "frunch-forest",
-  storageBucket: "frunch-forest.firebasestorage.app",
-  messagingSenderId: "616838806867",
-  appId: "1:616838806867:web:7397adccd51f3f41d5f5a6",
-  measurementId: "G-HTK2QB1SWH",
-};
-
-// NOTE: if the rest of the app already has a shared Firebase app
-// instance (e.g. the services/firebaseProducts.js used by Home.jsx),
-// swap this out for that instead of initializing a second app here.
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
 
 const EMPTY_NEW_PRODUCT = {
   slug: "",

@@ -97,7 +97,6 @@ export async function loadFestivalsFromGoogleCalendar() {
 
     sessionStorage.setItem(CACHE_KEY, JSON.stringify({ savedAt: Date.now(), festivals }));
 
-    console.log(`Loaded ${festivals.length} festivals from Google Calendar.`);
     return festivals;
   } catch (error) {
     console.warn("Google Calendar unavailable — using local festival calendar.", error);

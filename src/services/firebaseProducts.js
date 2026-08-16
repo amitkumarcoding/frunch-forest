@@ -26,10 +26,6 @@ export async function loadProductsFromFirestore() {
     );
 
     if (snapshot.empty) {
-      console.log(
-        'Firestore products collection is empty.'
-      );
-
       return null;
     }
 
@@ -42,10 +38,6 @@ export async function loadProductsFromFirestore() {
         image: normalizeImagePath(data.image),
       };
     });
-
-    console.log(
-      `Loaded ${Object.keys(products).length} products from Firestore.`
-    );
 
     return products;
 

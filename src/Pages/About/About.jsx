@@ -110,7 +110,7 @@ export default function About() {
           <span className="sec-line"></span>
           <div className="wrap about-grid">
             <div className="about-art reveal">
-              <img src="/image/aboutus/about-us.png" alt="Frunch Forest" />
+              <img src="/image/aboutus/about-us.png" alt="Frunch Forest" loading="lazy" />
               <div className="about-float-badge">
                 <span className="icon-ring">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2 4 6v6c0 5 3.4 8.4 8 10 4.6-1.6 8-5 8-10V6l-8-4Z"></path><path d="m9 12 2 2 4-4"></path></svg>
