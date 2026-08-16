@@ -16,7 +16,6 @@
     cursor:default;
   }
   .product-card:hover{
-    transform:translateY(-6px);
     background:rgba(243,236,224,0.09);
     border-color:rgba(201,151,59,0.5);
     box-shadow:0 26px 44px -22px rgba(0,0,0,0.55);
@@ -41,7 +40,6 @@
     content:"";
     position:absolute; inset:0;
     background:linear-gradient(0deg, rgba(19,42,30,0.9) 0%, rgba(19,42,30,0) 55%);
-    pointer-events:none;
   }
   .product-card .card-body{ padding:14px 20px 16px; }
   .card-details-btn{
@@ -298,3 +296,24 @@
     white-space:nowrap;
     box-shadow:0 2px 5px rgba(0,0,0,0.3);
   }
+
+  /* "See all details" collapsible toggle (used when ProductCard is
+     rendered with the `collapsible` prop, e.g. on the /products grid).
+     Previously only defined in ProductDetails.css, so any page using
+     this card without also happening to load that page's CSS got an
+     unstyled — and because of the raw arrow svg with no size cap,
+     oversized — button. Belongs here with the rest of the card's
+     styling since it's driven by a ProductCard prop, not a page. */
+  .see-all-toggle{
+    display:inline-flex; align-items:center; gap:5px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.7rem; font-weight:700; letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:var(--gold-1,#F1D48A);
+    background:none; border:none; padding:0 0 10px;
+    cursor:pointer;
+    transition:color .2s ease;
+  }
+  .see-all-toggle:hover{ color:var(--parchment,#F3ECE0); }
+  .see-all-toggle svg{ width:11px; height:11px; transition:transform .25s ease; flex-shrink:0; }
+  .see-all-toggle.expanded svg{ transform:rotate(180deg); }
