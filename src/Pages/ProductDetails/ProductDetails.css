@@ -116,6 +116,17 @@ h1.product-name{ font-size:clamp(2.3rem, 4.6vw, 3.3rem); color:var(--forest-dark
 }
 .related-card h3{ font-size:1.1rem; color:var(--forest-dark); margin-bottom:2px; }
 .related-card .rc-hindi{ font-family:'Fraunces', serif; font-style:italic; font-size:0.82rem; color:rgba(34,30,23,0.55); }
+.related-card .rc-out-of-stock{
+  display:block;
+  margin-top:8px;
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.62rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+  color:var(--parchment);
+  background:linear-gradient(135deg,#8a3a3a,#6b2a2a);
+  padding:4px 10px; border-radius:100px;
+  width:fit-content;
+}
+.related-card.out-of-stock .rc-photo img{ opacity:0.55; filter:grayscale(0.3); }
 
 .product-search-wrap{
   margin-bottom:36px;
