@@ -192,7 +192,11 @@ export default function ProductDetails() {
                         <span className="rc-tag">{p.tag}</span>
                         <h3>{p.name}</h3>
                         <span className="rc-hindi">{p.hindi}</span>
-                        {rOutOfStock && <span className="rc-out-of-stock">Out of Stock</span>}
+                        {rOutOfStock ? (
+                          <span className="rc-out-of-stock">Out of Stock</span>
+                        ) : (
+                          <span className="rc-cta">View details →</span>
+                        )}
                       </div>
                     </>
                   );
