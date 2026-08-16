@@ -20,15 +20,9 @@ import {
 import "./Admin.css";
 import SEO from "../../components/SEO/SEO";
 import { FESTIVE_THEMES } from "../../utils/festiveTheme";
+import { ALLOWED_ADMINS } from "../../utils/admins";
 
 const KNOWN_FESTIVAL_KEYS = Object.keys(FESTIVE_THEMES);
-
-// Only these Google accounts may access the admin panel.
-const ALLOWED_ADMINS = [
-  "frunchforest@gmail.com",
-  "amitaquarius13@gmail.com",
-  "bhardwajakash78@gmail.com",
-];
 
 const firebaseConfig = {
   apiKey: "AIzaSyAJOYj9rbjeerHeIuRoi7mqKEUqebfEQT8",

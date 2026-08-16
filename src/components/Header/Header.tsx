@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../services/firebase";
+import { ALLOWED_ADMINS } from "../../utils/admins";
 import "./Header.css";
 
-const catalog = "/resources/frunch-forest-catalog.pdf";
-
-const ALLOWED_ADMINS = [
-  "frunchforest@gmail.com",
-  "amitaquarius13@gmail.com",
-  "bhardwajakash78@gmail.com",
-];
+// Matches the actual file location in /public — it's served from the
+// root, not /resources. (Was previously pointing at a path that 404'd.)
+const catalog = "/frunch-forest-catalog.pdf";
 
 export function DownloadIcon() {
   return (
@@ -29,20 +27,26 @@ export function DownloadIcon() {
   );
 }
 
+// `route: true` entries are real pages and use React Router's <Link>
+// (client-side nav, no full reload). The "/#section" entries jump to an
+// anchor on the home page — those stay as plain <a> tags on purpose:
+// browsers natively scroll to a matching id on load, which is simpler
+// and more reliable here than teaching React Router to scroll-restore
+// a hash after a route change.
 const navLinks = [
-  { label: "About", href: "/about" },
+  { label: "About", href: "/about", route: true },
   { label: "Why Us", href: "/#why" },
-  { label: "Products", href: "/products" },
+  { label: "Products", href: "/products", route: true },
   { label: "Reviews", href: "/#testimonials" },
   { label: "FAQ", href: "/#faq" },
-  { label: "Blog", href: "/blog" },
+  { label: "Blog", href: "/blog", route: true },
   { label: "Contact", href: "/#contact" },
 ];
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [authLabel, setAuthLabel] = useState("Log in");
-  const [authHref, setAuthHref] = useState("./login");
+  const [authHref, setAuthHref] = useState("/login");
 
   useEffect(() => {
     const onScroll = () => {
@@ -79,13 +83,13 @@ function Header() {
         unsubscribe = onAuthStateChanged(auth, (user) => {
           if (!user) {
             setAuthLabel("Log in");
-            setAuthHref("./login");
+            setAuthHref("/login");
             return;
           }
 
           if (ALLOWED_ADMINS.includes(user?.email)) {
             setAuthLabel("Hi, Admin");
-            setAuthHref("./admin");
+            setAuthHref("/admin");
             return;
           }
 
@@ -94,7 +98,7 @@ function Header() {
             rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
 
           setAuthLabel(`Hi, ${label}`);
-          setAuthHref("./account");
+          setAuthHref("/account");
         });
       } catch (error) {
         console.warn("Auth-aware nav unavailable:", error);
@@ -111,7 +115,7 @@ function Header() {
     <>
       <header id="siteHeader">
         <div className="nav">
-          <a className="nav-brand" href="/" aria-label="Frunch Forest — home">
+          <Link className="nav-brand" to="/" aria-label="Frunch Forest — home">
             <span className="brand-mark">
               <img src="/image/logo.png" alt="" width="80" height="80" />
             </span>
@@ -119,14 +123,16 @@ function Header() {
               <span className="brand-name">Frunch Forest</span>
               <span className="brand-tag">Natural Dry Fruits</span>
             </span>
-          </a>
+          </Link>
 
           <nav className="nav-links">
-            {navLinks.map(({ label, href }) => (
-              <a key={label} href={href}>
-                {label}
-              </a>
-            ))}
+            {navLinks.map(({ label, href, route }) =>
+              route ? (
+                <Link key={label} to={href}>{label}</Link>
+              ) : (
+                <a key={label} href={href}>{label}</a>
+              )
+            )}
           </nav>
 
           <div className="nav-actions">
@@ -134,7 +140,7 @@ function Header() {
               <DownloadIcon />
               Download Catalog
             </a>
-            <a className="nav-cta" href={authHref}>{authLabel}</a>
+            <Link className="nav-cta" to={authHref}>{authLabel}</Link>
           </div>
 
           <button
@@ -171,14 +177,23 @@ function Header() {
         </button>
 
         <div className="mobile-menu-links">
-          {navLinks.map(({ label, href }, index) => (
-            <a key={label} href={href} onClick={closeMenu}>
-              <span className="mm-index">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              {label}
-            </a>
-          ))}
+          {navLinks.map(({ label, href, route }, index) =>
+            route ? (
+              <Link key={label} to={href} onClick={closeMenu}>
+                <span className="mm-index">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                {label}
+              </Link>
+            ) : (
+              <a key={label} href={href} onClick={closeMenu}>
+                <span className="mm-index">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                {label}
+              </a>
+            )
+          )}
         </div>
 
         <div className="mobile-menu-actions">
@@ -186,9 +201,9 @@ function Header() {
             <DownloadIcon />
             Download Catalog
           </a>
-          <a className="btn-download" href={authHref} onClick={closeMenu}>
+          <Link className="btn-download" to={authHref} onClick={closeMenu}>
             {authLabel}
-          </a>
+          </Link>
           <a className="btn-primary" href="#contact" onClick={closeMenu}>
             Get in touch →
           </a>

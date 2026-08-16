@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import "./Home.css";
 import { PRODUCTS as LOCAL_PRODUCTS } from "../../data/products";
 import { loadProductsFromFirestore } from "../../services/firebaseProducts";
@@ -32,6 +33,19 @@ function hexToRgba(hex, alpha) {
   const b = num & 255;
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
+
+const FAQS = [
+  { q: "Are Frunch Forest dry fruits preservative-free?", a: "Yes. Our dry fruits are carefully sourced and packed without added preservatives or artificial colours. We focus on fresh, natural quality instead of chemical shortcuts." },
+  { q: "Where are your dry fruits sourced from?", a: "We work with trusted sourcing partners and bring in quality nuts and dry fruits from reliable origins, with a strong focus on freshness, grade and consistency." },
+  { q: "What is the shelf life of your products?", a: "Most products have a shelf life of around 6 to 12 months depending on the item and storage conditions. We recommend keeping them sealed and stored in a cool, dry place." },
+  { q: "How should I store them?", a: "Store the packs in a cool, dry place away from direct sunlight. Once opened, transfer the contents to an airtight container to preserve their crunch and freshness." },
+  { q: "Do you offer COD?", a: "Cash on Delivery availability may vary by location and order value. Please reach out to us directly for the latest options on your delivery area." },
+  { q: "Do you deliver across India?", a: "Yes, we ship across India. Delivery timelines vary by city and pin code, but we aim to make the process smooth and reliable for every order." },
+  { q: "What payment methods do you accept?", a: "We accept common online payment methods for customer convenience. For specific payment options on a particular order, feel free to contact us before checkout." },
+  { q: "Do you offer bulk orders?", a: "Absolutely. We support bulk and wholesale requirements for gifting, weddings, corporate orders and festive occasions. Contact us with your quantity and timeline for a custom quote." },
+  { q: "Can I request custom gifting?", a: "Yes. We can help with gifting assortments and special packaging ideas for occasions such as festivals, weddings, corporate gifting and personal celebrations." },
+  { q: "How can I report a damaged package?", a: "Please contact us within 48 hours of delivery with photos of the package and contents so we can review the issue and assist with a replacement or resolution." },
+];
 
 const PACK_ITEMS = [
   { name: "Almond", img: "/image/packaging/almonds.jpeg" },
@@ -92,6 +106,10 @@ function Home() {
         "--tc-3-wash": hexToRgba(activeTheme.colors[2], 0.14),
       }
     : undefined;
+  // FAQ accordion — only one answer open at a time; clicking the open
+  // question again closes it.
+  const [openFaqIndex, setOpenFaqIndex] = useState(null);
+
   const [activeGiftItem, setActiveGiftItem] = useState("diwali");
   const [giftImgErrors, setGiftImgErrors] = useState({});
 
@@ -411,7 +429,7 @@ function Home() {
               <div className="hero-ctas hero-anim a4">
                 <a className="btn-primary" href="#products">Shop Now →</a>
                 <a className="btn-ghost" href="#products">Explore Products</a>
-                <a className="btn-download" href="/resources/frunch-forest-catalog.pdf" download="/resources/frunch-forest-catalog.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download Catalog</a>
+                <a className="btn-download" href="/frunch-forest-catalog.pdf" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download Catalog</a>
               </div>
               <div className="hero-stats hero-anim a5">
                 <div className="stat"><b data-count="5" data-suffix="+">5+</b><span>Core products</span></div>
@@ -503,9 +521,9 @@ function Home() {
               <div className="eyebrow">The range</div>
               <h2>Five staples, done right</h2>
               <p>Every product ships in four pack sizes with the same promise: no preservatives, no additives, quality guaranteed.</p>
-              <a className="btn-primary all-products-btn" href="/products">All Products
+              <Link className="btn-primary all-products-btn" to="/products">All Products
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-              </a>
+              </Link>
             </div>
             <div className="best-sellers reveal">
               <div className="best-seller-item">
@@ -539,9 +557,9 @@ function Home() {
             </div>
 
             <div className="see-all-products-wrap reveal">
-              <a className="btn-primary see-all-products-btn" href="/products">See All Products
+              <Link className="btn-primary see-all-products-btn" to="/products">See All Products
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-              </a>
+              </Link>
             </div>
           </div>
         </section>
@@ -968,7 +986,7 @@ function Home() {
                 <span>No Preservatives</span>
                 <span>Hygienically Packed</span>
               </div>
-              <p className="certs-link"><a href="./about.html#compliance">See our licence &amp; registration numbers →</a></p>
+              <p className="certs-link"><Link to="/about#compliance">See our licence &amp; registration numbers →</Link></p>
             </div>
           </div>
         </section>
@@ -981,96 +999,28 @@ function Home() {
               <p>Everything you need to know before you order. Can't find your answer? Reach out and we'll help directly.</p>
             </div>
             <div className="faq-list">
-              <div className="faq-item reveal">
-                <button className="faq-question" aria-expanded="false">
-                  <span>Are Frunch Forest dry fruits preservative-free?</span>
-                  <span className="faq-icon">+</span>
-                </button>
-                <div className="faq-answer">
-                  <p>Yes. Our dry fruits are carefully sourced and packed without added preservatives or artificial colours. We focus on fresh, natural quality instead of chemical shortcuts.</p>
-                </div>
-              </div>
-              <div className="faq-item reveal">
-                <button className="faq-question" aria-expanded="false">
-                  <span>Where are your dry fruits sourced from?</span>
-                  <span className="faq-icon">+</span>
-                </button>
-                <div className="faq-answer">
-                  <p>We work with trusted sourcing partners and bring in quality nuts and dry fruits from reliable origins, with a strong focus on freshness, grade and consistency.</p>
-                </div>
-              </div>
-              <div className="faq-item reveal">
-                <button className="faq-question" aria-expanded="false">
-                  <span>What is the shelf life of your products?</span>
-                  <span className="faq-icon">+</span>
-                </button>
-                <div className="faq-answer">
-                  <p>Most products have a shelf life of around 6 to 12 months depending on the item and storage conditions. We recommend keeping them sealed and stored in a cool, dry place.</p>
-                </div>
-              </div>
-              <div className="faq-item reveal">
-                <button className="faq-question" aria-expanded="false">
-                  <span>How should I store them?</span>
-                  <span className="faq-icon">+</span>
-                </button>
-                <div className="faq-answer">
-                  <p>Store the packs in a cool, dry place away from direct sunlight. Once opened, transfer the contents to an airtight container to preserve their crunch and freshness.</p>
-                </div>
-              </div>
-              <div className="faq-item reveal">
-                <button className="faq-question" aria-expanded="false">
-                  <span>Do you offer COD?</span>
-                  <span className="faq-icon">+</span>
-                </button>
-                <div className="faq-answer">
-                  <p>Cash on Delivery availability may vary by location and order value. Please reach out to us directly for the latest options on your delivery area.</p>
-                </div>
-              </div>
-              <div className="faq-item reveal">
-                <button className="faq-question" aria-expanded="false">
-                  <span>Do you deliver across India?</span>
-                  <span className="faq-icon">+</span>
-                </button>
-                <div className="faq-answer">
-                  <p>Yes, we ship across India. Delivery timelines vary by city and pin code, but we aim to make the process smooth and reliable for every order.</p>
-                </div>
-              </div>
-              <div className="faq-item reveal">
-                <button className="faq-question" aria-expanded="false">
-                  <span>What payment methods do you accept?</span>
-                  <span className="faq-icon">+</span>
-                </button>
-                <div className="faq-answer">
-                  <p>We accept common online payment methods for customer convenience. For specific payment options on a particular order, feel free to contact us before checkout.</p>
-                </div>
-              </div>
-              <div className="faq-item reveal">
-                <button className="faq-question" aria-expanded="false">
-                  <span>Do you offer bulk orders?</span>
-                  <span className="faq-icon">+</span>
-                </button>
-                <div className="faq-answer">
-                  <p>Absolutely. We support bulk and wholesale requirements for gifting, weddings, corporate orders and festive occasions. Contact us with your quantity and timeline for a custom quote.</p>
-                </div>
-              </div>
-              <div className="faq-item reveal">
-                <button className="faq-question" aria-expanded="false">
-                  <span>Can I request custom gifting?</span>
-                  <span className="faq-icon">+</span>
-                </button>
-                <div className="faq-answer">
-                  <p>Yes. We can help with gifting assortments and special packaging ideas for occasions such as festivals, weddings, corporate gifting and personal celebrations.</p>
-                </div>
-              </div>
-              <div className="faq-item reveal">
-                <button className="faq-question" aria-expanded="false">
-                  <span>How can I report a damaged package?</span>
-                  <span className="faq-icon">+</span>
-                </button>
-                <div className="faq-answer">
-                  <p>Please contact us within 48 hours of delivery with photos of the package and contents so we can review the issue and assist with a replacement or resolution.</p>
-                </div>
-              </div>
+              {FAQS.map((item, i) => {
+                const isOpen = openFaqIndex === i;
+                return (
+                  <div key={item.q} className={`faq-item reveal${isOpen ? ' open' : ''}`}>
+                    <button
+                      type="button"
+                      className="faq-question"
+                      aria-expanded={isOpen}
+                      onClick={() => setOpenFaqIndex(isOpen ? null : i)}
+                    >
+                      <span>{item.q}</span>
+                      <span className="faq-icon">+</span>
+                    </button>
+                    <div
+                      className="faq-answer"
+                      style={{ maxHeight: isOpen ? '400px' : undefined }}
+                    >
+                      <p>{item.a}</p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>

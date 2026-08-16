@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ScrollToHash from "./components/ScrollToHash.jsx";
+import NotFound from "./Pages/NotFound/NotFound.jsx";
 import Home from "./Pages/Home/Home.jsx";
 import About from "./Pages/About/About.jsx";
 import Account from "./Pages/Account/Account.jsx";
@@ -18,6 +20,7 @@ import Admin from "./Pages/Admin/Admin.jsx";
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToHash />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
@@ -33,6 +36,7 @@ function App() {
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/testimonials" element={<Testimonials />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
