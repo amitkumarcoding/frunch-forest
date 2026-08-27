@@ -42,15 +42,15 @@ export async function loadOffersFromFirestore() {
         if (!data.title) return null;
         return {
           id: docSnap.id,
-          title: data.title,
-          description: data.description || '',
-          discount: data.discount || '',
-          code: data.code || '',
-          image: normalizeImagePath(data.image) || '',
-          link: data.link || '',
-          active: data.active !== false,
-          startDate: data.startDate || '',
-          endDate: data.endDate || '',
+          title: typeof data.title === 'string' ? data.title : '',
+          description: typeof data.description === 'string' ? data.description : '',
+          discount: typeof data.discount === 'string' ? data.discount : '',
+          code: typeof data.code === 'string' ? data.code : '',
+          image: typeof data.image === 'string' ? normalizeImagePath(data.image) : '',
+          link: typeof data.link === 'string' ? data.link : '',
+          active: data.active !== false && data.active !== "false" && data.active !== 0,
+          startDate: typeof data.startDate === 'string' ? data.startDate : '',
+          endDate: typeof data.endDate === 'string' ? data.endDate : '',
           priority: typeof data.priority === 'number' ? data.priority : 10,
         };
       })

@@ -297,7 +297,7 @@ function Home() {
       io.disconnect();
       sectionIO.disconnect();
     };
-  }, [products]);
+  }, [products, openFaqIndex]);
 
   // Keep the original scroll progress + scroll-to-top behaviour.
   useEffect(() => {
@@ -1049,7 +1049,7 @@ function Home() {
                     </button>
                     <div
                       className="faq-answer"
-                      style={{ maxHeight: isOpen ? '400px' : undefined }}
+                      style={{ maxHeight: isOpen ? '800px' : '0' }}
                     >
                       <p>{item.a}</p>
                     </div>

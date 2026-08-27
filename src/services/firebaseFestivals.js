@@ -25,11 +25,11 @@ export async function loadFestivalOverridesFromFirestore() {
         if (!data.date || !data.key || !data.text) return null;
         return {
           id: docSnap.id,
-          date: data.date,
-          key: data.key,
-          text: data.text,
-          eyebrow: data.eyebrow || 'Wishing you a wonderful day',
-          emoji: data.emoji || '🎉',
+          date: typeof data.date === 'string' ? data.date : '',
+          key: typeof data.key === 'string' ? data.key : '',
+          text: typeof data.text === 'string' ? data.text : '',
+          eyebrow: typeof data.eyebrow === 'string' ? data.eyebrow : 'Wishing you a wonderful day',
+          emoji: typeof data.emoji === 'string' ? data.emoji : '🎉',
           priority: typeof data.priority === 'number' ? data.priority : 10,
         };
       })
