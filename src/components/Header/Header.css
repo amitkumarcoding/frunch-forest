@@ -109,6 +109,44 @@
   }
   .nav-cta:hover::before{ transform:translateX(120%); }
 
+  /* ---------- header: dark variant (evening / night hero) ----------
+     Applied via Header's `dark` prop (see Home.jsx: !isDaylight) so the
+     header blends into the hero instead of leaving a hard pale/black
+     seam at the nav boundary. */
+  header.header--dark{
+    background:rgba(19,28,20,0.62);
+    border-bottom-color:rgba(241,212,138,0.14);
+    box-shadow:0 1px 0 rgba(255,255,255,0.04) inset, 0 10px 34px -22px rgba(0,0,0,0.55);
+  }
+  header.header--dark.scrolled{
+    background:rgba(15,22,16,0.82);
+    box-shadow:0 1px 0 rgba(255,255,255,0.05) inset, 0 14px 30px -16px rgba(0,0,0,0.6);
+    border-bottom-color:rgba(241,212,138,0.22);
+  }
+  header.header--dark .brand-mark{
+    background:linear-gradient(160deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+    box-shadow:0 4px 14px -6px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(241,212,138,0.22);
+  }
+  header.header--dark .brand-name{ color:var(--parchment); }
+  header.header--dark .brand-tag{ color:var(--gold-1); opacity:0.8; }
+  header.header--dark .nav-links a{ color:var(--parchment); opacity:0.68; }
+  header.header--dark .nav-links a:hover,
+  header.header--dark .nav-links a:focus-visible{
+    opacity:1; color:var(--gold-1);
+    background:rgba(241,212,138,0.14);
+  }
+  header.header--dark .nav-burger{
+    border-color:rgba(241,212,138,0.2);
+    background:linear-gradient(160deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03));
+    box-shadow:0 4px 14px -6px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.08);
+  }
+  header.header--dark .nav-burger:hover{
+    background:rgba(241,212,138,0.18); border-color:rgba(241,212,138,0.45);
+  }
+  header.header--dark .burger-line{ background:var(--parchment); }
+  header.header--dark .nav-burger.open{ background:var(--forest-dark); border-color:var(--forest-dark); }
+  header.header--dark .nav-burger.open .burger-line{ background:var(--gold-1); }
+
   /* ---------- mobile hamburger ---------- */
   .nav-burger{
     display:none;

@@ -87,6 +87,12 @@ function Home() {
   const active = festive || timeGreeting;
   const activeTheme = isFestival ? getFestiveTheme(active.key) : getTimeTheme(active.key);
   const ActiveIcon = isFestival ? getFestiveIcon(active.key) : getTimeIcon(active.key);
+  // Hero mode — festivals always keep the dark aurora look. Otherwise each
+  // time slot gets its own background (see .hero--morning/afternoon/evening/
+  // night in Home.css); morning + afternoon additionally get the shared
+  // "daylight" text/UI treatment (dark text on a light background).
+  const heroMode = isFestival ? "dark" : active.key;
+  const isDaylight = heroMode === "morning" || heroMode === "afternoon";
   const festiveVars = activeTheme
     ? {
         "--tc-1": activeTheme.colors[0],
@@ -375,10 +381,15 @@ function Home() {
         <FestiveWelcomeOverlay festive={festive} theme={activeTheme} Icon={ActiveIcon} />
       )}
 
-      <Header />
+      <Header dark={!isDaylight} />
 
       <main id="main">
-        <section className="hero" id="heroSection" style={festiveVars}>
+        <section className={`hero hero--${heroMode}${isDaylight ? " hero--daylight" : ""}`} id="heroSection" style={festiveVars}>
+          <div className="hero-mesh" aria-hidden="true"></div>
+          <div className="hero-grid-overlay" aria-hidden="true"></div>
+          <div className="hero-orb hero-orb-1" aria-hidden="true"></div>
+          <div className="hero-orb hero-orb-2" aria-hidden="true"></div>
+          <div className="hero-orb hero-orb-3" aria-hidden="true"></div>
           {active && (
             <div
               className="hero-festive-layer"
@@ -408,7 +419,7 @@ function Home() {
             </div>
           )}
           <div className="wrap hero-grid hero-inner">
-            <div>
+            <div className="hero-copy">
               {active && (
                 <div className="festive-banner hero-anim a1" data-festival={active.key}>
                   <span className="festive-banner-ambient" aria-hidden="true"></span>
@@ -437,13 +448,32 @@ function Home() {
                 <a className="btn-download" href="/frunch-forest-catalog.pdf" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Download Catalog</a>
               </div>
               <div className="hero-stats hero-anim a5">
-                <div className="stat"><b data-count="5" data-suffix="+">5+</b><span>Core products</span></div>
-                <div className="stat"><b data-count="4">8</b><span>Pack sizes each</span></div>
-                <div className="stat"><b data-count="0">0</b><span>Preservatives added</span></div>
-                <div className="stat"><b>FSSAI</b><span>&amp; GST licensed</span></div>
+                <div className="stat">
+                  <span className="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C8 6 4 9 4 14a8 8 0 0 0 16 0c0-5-4-8-8-12Z"/></svg></span>
+                  <span className="stat-copy"><b data-count="5" data-suffix="+">5+</b><span>Core products</span></span>
+                </div>
+                <div className="stat">
+                  <span className="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8 12 3 3 8l9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span>
+                  <span className="stat-copy"><b data-count="4">8</b><span>Pack sizes each</span></span>
+                </div>
+                <div className="stat">
+                  <span className="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+                  <span className="stat-copy"><b data-count="0">0</b><span>Preservatives added</span></span>
+                </div>
+                <div className="stat">
+                  <span className="stat-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="9" r="6"/><path d="m8.5 14-1.5 7 5-3 5 3-1.5-7"/></svg></span>
+                  <span className="stat-copy"><b>FSSAI</b><span>&amp; GST licensed</span></span>
+                </div>
               </div>
             </div>
             <div className="hero-visual hero-anim a6">
+              <div className="hero-visual-card" aria-hidden="true">
+                <span className="hvc-corner tl"></span>
+                <span className="hvc-corner tr"></span>
+                <span className="hvc-corner bl"></span>
+                <span className="hvc-corner br"></span>
+              </div>
+              <div className="hero-visual-ring" aria-hidden="true"></div>
               <div className="fruit-chip chip-almond" aria-hidden="true">
                 <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                   <defs>

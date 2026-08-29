@@ -150,26 +150,49 @@
   @keyframes marquee{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
   @media (prefers-reduced-motion: reduce){ .marquee-track{ animation:none; } }
 
-  /* ---------- hero ---------- */
+  /* ---------- hero (premium dark aurora redesign) ---------- */
   .hero{
     position:relative;
-    padding:88px 0 0;
+    min-height:calc(100dvh - 84px);
+    display:flex; align-items:center;
+    padding:28px 0;
     overflow:hidden;
-    /* Default (non-festive) fallback, matching the original subtle
-       gold/forest wash. Overridden inline via festiveVars (set from
-       festiveTheme.js) whenever a festival is active, so the whole hero
-       background picks up that occasion's colours automatically. Kept
-       deliberately lighter than --tc-1-a/2-a/3-a (used by the top strip
-       below) since this wash covers the full hero, not just an 88px band. */
-    --tc-1-wash: rgba(201,151,59,0.10);
-    --tc-2-wash: rgba(62,124,74,0.18);
-    --tc-3-wash: rgba(201,151,59,0.14);
+    isolation:isolate;
+    /* Time-of-day / festival colours (--tc-1-a/2-a/3-a, set inline from
+       timeTheme.js / festiveTheme.js) drive the wash directly, so the
+       hero visibly shifts mood between morning/afternoon/evening/night
+       instead of disappearing into the dark base. */
     background:
-      radial-gradient(600px 500px at var(--mx,80%) var(--my,10%), var(--tc-1-wash), transparent 60%),
-      radial-gradient(ellipse 900px 500px at 82% -10%, var(--tc-2-wash), transparent 60%),
-      radial-gradient(ellipse 700px 500px at -5% 100%, var(--tc-3-wash), transparent 55%),
-      linear-gradient(180deg, rgba(243,236,224,0.94) 0%, rgba(243,236,224,0.86) 55%, var(--parchment) 100%);
+      radial-gradient(900px 620px at var(--mx,80%) var(--my,10%), var(--tc-1-a, rgba(241,212,138,0.3)), transparent 62%),
+      radial-gradient(ellipse 1000px 640px at 84% -8%, var(--tc-2-a, rgba(143,191,110,0.3)), transparent 62%),
+      radial-gradient(ellipse 800px 560px at -4% 102%, var(--tc-3-a, rgba(201,151,59,0.24)), transparent 58%),
+      linear-gradient(165deg, #0B1B12 0%, #132A1E 46%, #0F2318 100%);
   }
+  /* soft diagonal sheen across the whole panel, above the gradient wash */
+  .hero-mesh{
+    position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:linear-gradient(115deg, rgba(255,255,255,0.05) 0%, transparent 30%, transparent 70%, rgba(241,212,138,0.05) 100%);
+  }
+  /* fine futuristic grid, fading toward the edges */
+  .hero-grid-overlay{
+    position:absolute; inset:0; z-index:0; pointer-events:none; opacity:0.5;
+    background-image:
+      linear-gradient(rgba(241,236,224,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(241,236,224,0.06) 1px, transparent 1px);
+    background-size:46px 46px;
+    -webkit-mask-image:radial-gradient(ellipse 80% 65% at 50% 20%, #000 40%, transparent 92%);
+    mask-image:radial-gradient(ellipse 80% 65% at 50% 20%, #000 40%, transparent 92%);
+  }
+  .hero-orb{
+    position:absolute; z-index:0; pointer-events:none; border-radius:50%;
+    filter:blur(60px); opacity:0.55; will-change:transform;
+    animation:orbDrift 14s ease-in-out infinite;
+  }
+  .hero-orb-1{ width:360px; height:360px; top:-120px; right:6%; background:radial-gradient(circle, rgba(241,212,138,0.45), transparent 70%); }
+  .hero-orb-2{ width:300px; height:300px; bottom:-100px; left:2%; background:radial-gradient(circle, rgba(143,191,110,0.4), transparent 70%); animation-delay:2.4s; }
+  .hero-orb-3{ width:220px; height:220px; top:38%; left:46%; background:radial-gradient(circle, rgba(201,151,59,0.35), transparent 70%); animation-delay:4.8s; }
+  @keyframes orbDrift{ 0%,100%{ transform:translate(0,0); } 50%{ transform:translate(-18px,18px); } }
+  @media (prefers-reduced-motion: reduce){ .hero-orb{ animation:none; } }
   /* ---------- festive hero moment — themed backdrop + drifting particles ---------- */
   /* container height matches .hero's fixed 88px top padding — the
      actual empty strip — so the effect stays confined above the badge
@@ -327,7 +350,7 @@
   .festive-banner{
     position:relative;
     display:inline-flex; align-items:center; gap:12px;
-    margin-bottom:24px;
+    margin-bottom:14px;
     padding:8px 16px 8px 8px;
     border-radius:100px;
     background:
@@ -579,7 +602,10 @@
     gap:56px;
     align-items:center;
   }
-  @media (max-width:900px){ .hero-grid{ grid-template-columns:1fr; gap:40px; } }
+  @media (max-width:900px){
+    .hero{ min-height:auto; padding:32px 0 40px; }
+    .hero-grid{ grid-template-columns:1fr; gap:40px; }
+  }
 
   @keyframes riseIn{
     from{ opacity:0; transform:translateY(26px); }
@@ -600,50 +626,177 @@
     .hero-anim{ opacity:1; animation:none; }
   }
 
+  .hero-copy{ position:relative; z-index:2; }
+  .hero .eyebrow{
+    color:var(--gold-1);
+    border-color:rgba(241,212,138,0.35);
+    background:rgba(241,236,224,0.06);
+    backdrop-filter:blur(6px);
+    margin-bottom:14px;
+  }
   .hero h1{
-    font-size:clamp(2.8rem, 6vw, 4.6rem);
-    margin-bottom:20px;
+    font-size:clamp(2.2rem, 5vw, 3.9rem);
+    margin-bottom:12px;
+    color:var(--parchment);
+    text-shadow:0 2px 40px rgba(0,0,0,0.25);
   }
   .hero h1 em{
     font-family:'Fraunces', serif;
     font-style:italic; font-weight:500;
     text-transform:none;
-    color:var(--forest-mid);
+    background:linear-gradient(120deg, var(--gold-2), var(--gold-1) 45%, var(--forest-light));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
     display:block;
     font-size:0.5em;
     letter-spacing:0;
-    margin-top:6px;
+    margin-top:4px;
   }
   .hero p.lede{
     max-width:480px;
-    font-size:1.08rem;
-    color:rgba(34,30,23,0.78);
-    margin-bottom:34px;
+    font-size:1.02rem;
+    color:rgba(243,236,224,0.72);
+    margin-bottom:22px;
   }
-  .hero-ctas{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:38px; }
+  .hero-ctas{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:24px; }
+  .hero .btn-primary{
+    background:linear-gradient(120deg, var(--gold-3), var(--gold-1) 50%, var(--gold-2));
+    color:var(--forest-dark);
+    box-shadow:0 1px 0 rgba(255,255,255,0.35) inset, 0 16px 34px -14px rgba(241,212,138,0.55);
+  }
+  .hero .btn-primary::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.55) 48%, transparent 66%);
+    translate:-140% 0;
+    transition:translate .6s ease;
+  }
+  .hero .btn-primary:hover::after{ translate:140% 0; }
+  .hero .btn-primary:hover{
+    background:linear-gradient(120deg, var(--gold-2), var(--gold-1) 50%, var(--gold-3));
+    box-shadow:0 22px 44px -14px rgba(241,212,138,0.75);
+    transform:translateY(-3px);
+  }
+  .hero .btn-ghost{
+    color:var(--parchment);
+    letter-spacing:0.02em;
+    border:1.5px solid rgba(243,236,224,0.4);
+    background:linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+    backdrop-filter:blur(10px);
+    box-shadow:0 1px 0 rgba(255,255,255,0.14) inset, 0 10px 24px -16px rgba(0,0,0,0.6);
+    transition:transform .25s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;
+  }
+  .hero .btn-ghost:hover{
+    background:linear-gradient(180deg, rgba(241,212,138,0.22), rgba(241,212,138,0.06));
+    border-color:rgba(241,212,138,0.75);
+    transform:translateY(-3px);
+    box-shadow:0 1px 0 rgba(255,255,255,0.18) inset, 0 16px 32px -16px rgba(0,0,0,0.6);
+  }
+  .hero .btn-download{
+    color:var(--parchment);
+    letter-spacing:0.03em;
+    border:1.5px solid rgba(241,212,138,0.4);
+    background:linear-gradient(180deg, rgba(241,212,138,0.16), rgba(241,212,138,0.03));
+    backdrop-filter:blur(10px);
+    box-shadow:0 1px 0 rgba(255,255,255,0.1) inset, 0 10px 24px -16px rgba(0,0,0,0.55);
+    transition:transform .25s ease, background .25s ease, box-shadow .25s ease;
+  }
+  .hero .btn-download:hover{
+    background:linear-gradient(180deg, rgba(241,212,138,0.28), rgba(241,212,138,0.08));
+    transform:translateY(-3px);
+    box-shadow:0 1px 0 rgba(255,255,255,0.14) inset, 0 16px 32px -16px rgba(241,212,138,0.4);
+  }
   .hero-stats{
-    display:flex; gap:34px; flex-wrap:wrap;
-    border-top:1px solid var(--paper-line);
-    padding-top:24px;
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:0;
+    border-radius:20px;
+    background:rgba(243,236,224,0.05);
+    border:1px solid rgba(243,236,224,0.12);
+    backdrop-filter:blur(10px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.06), 0 18px 40px -24px rgba(0,0,0,0.6);
+    overflow:hidden;
   }
+  .hero-stats .stat{
+    display:flex; align-items:center; gap:10px;
+    padding:16px 14px;
+    position:relative;
+    transition:background .25s ease;
+  }
+  .hero-stats .stat:hover{ background:rgba(241,212,138,0.05); }
+  .hero-stats .stat:not(:first-child)::before{
+    content:"";
+    position:absolute; left:0; top:16%; bottom:16%; width:1px;
+    background:rgba(243,236,224,0.14);
+  }
+  .stat-ico{
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    width:32px; height:32px;
+    border-radius:10px;
+    background:rgba(241,212,138,0.1);
+    border:1px solid rgba(241,212,138,0.25);
+    color:var(--gold-1);
+  }
+  .stat-ico svg{ width:16px; height:16px; }
+  .stat-copy{ display:flex; flex-direction:column; gap:1px; min-width:0; }
   .hero-stats .stat b{
-    display:block; font-family:'Anton', sans-serif; font-size:1.5rem; color:var(--forest-dark);
+    display:block; font-family:'Anton', sans-serif; font-size:1.24rem; line-height:1;
+    background:linear-gradient(120deg, var(--gold-1), var(--parchment));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
   }
   .hero-stats .stat span{
-    font-size:0.78rem; color:rgba(34,30,23,0.6); font-weight:600; text-transform:uppercase; letter-spacing:0.03em;
+    font-size:0.66rem; color:rgba(243,236,224,0.6); font-weight:600; text-transform:uppercase; letter-spacing:0.02em;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  @media (max-width:640px){
+    .hero-stats{ grid-template-columns:repeat(2, 1fr); }
+    .hero-stats .stat:nth-child(2n+1)::before{ display:none; }
+    .hero-stats .stat:nth-child(n+3){ border-top:1px solid rgba(243,236,224,0.14); }
+    .hero-stats .stat span{ white-space:normal; }
   }
 
   .hero-visual{
     position:relative;
+    z-index:2;
     display:flex; align-items:center; justify-content:center;
   }
+  /* glass frame sitting behind the medallion + orbiting chips */
+  .hero-visual-card{
+    position:absolute; z-index:0;
+    top:50%; left:50%; translate:-50% -50%;
+    width:min(452px, 46vh, 100%);
+    aspect-ratio:1;
+    border-radius:32px;
+    background:rgba(243,236,224,0.04);
+    border:1px solid rgba(243,236,224,0.12);
+    backdrop-filter:blur(10px);
+    rotate:45deg;
+  }
+  .hvc-corner{
+    position:absolute; width:18px; height:18px;
+    border:1.5px solid rgba(241,212,138,0.55);
+  }
+  .hvc-corner.tl{ top:-1px; left:-1px; border-right:none; border-bottom:none; border-radius:8px 0 0 0; }
+  .hvc-corner.tr{ top:-1px; right:-1px; border-left:none; border-bottom:none; border-radius:0 8px 0 0; }
+  .hvc-corner.bl{ bottom:-1px; left:-1px; border-right:none; border-top:none; border-radius:0 0 0 8px; }
+  .hvc-corner.br{ bottom:-1px; right:-1px; border-left:none; border-top:none; border-radius:0 0 8px 0; }
+  .hero-visual-ring{
+    position:absolute; z-index:0;
+    top:50%; left:50%; translate:-50% -50%;
+    width:min(354px, 36vh, 92%);
+    aspect-ratio:1;
+    border-radius:50%;
+    border:1px dashed rgba(241,212,138,0.3);
+    animation:spin 50s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce){ .hero-visual-ring{ animation:none; } }
   .hero-badge{
-    position:relative;
-    width:min(420px, 100%);
+    position:relative; z-index:1;
+    width:min(380px, 38vh, 100%);
     aspect-ratio:1;
     border-radius:50%;
     overflow:hidden;
-    box-shadow:0 30px 60px -20px rgba(19,42,30,0.4), inset 0 0 0 1px rgba(19,42,30,0.08);
+    box-shadow:0 30px 70px -20px rgba(0,0,0,0.55), 0 0 0 1px rgba(241,212,138,0.15), inset 0 0 0 1px rgba(19,42,30,0.08);
     animation:float 6s ease-in-out infinite;
     will-change:transform;
     flex-shrink:0;
@@ -682,7 +835,7 @@
     border-radius:50%;
     background:radial-gradient(circle at 35% 30%, #fff, var(--parchment-deep) 75%);
     display:flex; align-items:center; justify-content:center;
-    box-shadow:0 14px 30px -10px rgba(19,42,30,0.5);
+    box-shadow:0 0 0 6px rgba(241,212,138,0.12), 0 20px 40px -10px rgba(0,0,0,0.6);
     z-index:2;
   }
   .hero-badge .badge-mark::before{
@@ -697,10 +850,13 @@
   .hero-badge .badge-mark img{ width:58%; position:relative; z-index:1; }
   .hero-tag{
     position:absolute; top:2%; left:-10%; bottom:auto;
-    background:var(--forest-dark); color:var(--parchment);
+    background:rgba(19,42,30,0.75);
+    border:1px solid rgba(241,212,138,0.3);
+    backdrop-filter:blur(8px);
+    color:var(--parchment);
     padding:10px 16px; border-radius:14px;
     font-family:'JetBrains Mono',monospace; font-size:0.75rem; font-weight:600;
-    box-shadow:0 12px 24px -8px rgba(0,0,0,0.35);
+    box-shadow:0 12px 24px -8px rgba(0,0,0,0.5);
     animation:bob 5s ease-in-out infinite;
     will-change:transform;
     z-index:4;
@@ -732,7 +888,7 @@
     width:88px; height:88px;
     border-radius:50%;
     background:radial-gradient(circle at 32% 26%, #fffdf7, var(--parchment) 68%, var(--parchment-deep) 100%);
-    box-shadow:0 16px 30px -12px rgba(19,42,30,0.4), 0 0 0 5px rgba(243,236,224,0.55), inset 0 0 0 1px rgba(255,255,255,0.7);
+    box-shadow:0 16px 34px -12px rgba(0,0,0,0.55), 0 0 0 5px rgba(19,42,30,0.55), 0 0 0 6px rgba(241,212,138,0.2), inset 0 0 0 1px rgba(255,255,255,0.7);
     display:flex; align-items:center; justify-content:center;
     padding:18px;
     z-index:3;
@@ -795,6 +951,114 @@
   .badge-sparkle.sp1{ width:8px; height:8px; top:14%; right:20%; animation-delay:.2s; }
   .badge-sparkle.sp2{ width:5px; height:5px; bottom:20%; left:16%; animation-delay:1.4s; }
   .badge-sparkle.sp3{ width:6px; height:6px; top:24%; left:24%; animation-delay:2.2s; }
+
+  /* ---------- hero: daylight text/UI treatment (morning + afternoon) ----------
+     Placed after all the dark-mode hero rules above so, at equal
+     specificity, source order lets these win whenever .hero--daylight
+     is applied (see isDaylight in Home.jsx). Each slot still gets its
+     own background further down — morning/afternoon/evening/night. */
+  .hero--daylight{
+    background:linear-gradient(180deg, rgba(243,236,224,0.96) 0%, rgba(243,236,224,0.88) 55%, var(--parchment) 100%);
+  }
+  .hero--daylight .hero-grid-overlay{
+    background-image:
+      linear-gradient(rgba(34,30,23,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,30,23,0.05) 1px, transparent 1px);
+  }
+  .hero--daylight .hero-mesh{
+    background:linear-gradient(115deg, rgba(255,255,255,0.35) 0%, transparent 30%, transparent 70%, rgba(201,151,59,0.08) 100%);
+  }
+  .hero--daylight .eyebrow{
+    color:var(--forest-mid);
+    border-color:rgba(62,124,74,0.35);
+    background:rgba(62,124,74,0.06);
+  }
+  .hero--daylight h1{ color:var(--forest-dark); text-shadow:none; }
+  .hero--daylight h1 em{
+    background:linear-gradient(120deg, var(--gold-3), var(--gold-2) 45%, var(--forest-mid));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero--daylight p.lede{ color:rgba(34,30,23,0.78); }
+  .hero--daylight .btn-ghost{
+    color:var(--forest-dark);
+    border-color:rgba(19,42,30,0.22);
+    background:rgba(255,255,255,0.5);
+  }
+  .hero--daylight .btn-ghost:hover{ background:rgba(255,255,255,0.8); border-color:rgba(19,42,30,0.4); }
+  .hero--daylight .btn-download{
+    color:var(--forest-dark);
+    border-color:rgba(201,151,59,0.35);
+    background:rgba(201,151,59,0.08);
+  }
+  .hero--daylight .btn-download:hover{ background:rgba(201,151,59,0.18); }
+  .hero--daylight .hero-stats{
+    background:rgba(255,255,255,0.55);
+    border-color:rgba(19,42,30,0.1);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.6), 0 18px 40px -26px rgba(19,42,30,0.3);
+  }
+  .hero--daylight .hero-stats .stat:hover{ background:rgba(201,151,59,0.08); }
+  .hero--daylight .hero-stats .stat:not(:first-child)::before{ background:rgba(19,42,30,0.12); }
+  .hero--daylight .stat-ico{
+    background:rgba(62,124,74,0.08);
+    border-color:rgba(62,124,74,0.25);
+    color:var(--forest-mid);
+  }
+  .hero--daylight .hero-stats .stat b{
+    background:linear-gradient(120deg, var(--gold-3), var(--forest-dark));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero--daylight .hero-stats .stat span{ color:rgba(34,30,23,0.6); }
+  .hero--daylight .hero-visual-card{
+    background:rgba(255,255,255,0.35);
+    border-color:rgba(19,42,30,0.1);
+  }
+  .hero--daylight .hvc-corner{ border-color:rgba(201,151,59,0.5); }
+  .hero--daylight .hero-visual-ring{ border-color:rgba(201,151,59,0.35); }
+  .hero--daylight .hero-badge{
+    box-shadow:0 30px 60px -20px rgba(19,42,30,0.4), 0 0 0 1px rgba(201,151,59,0.18), inset 0 0 0 1px rgba(19,42,30,0.08);
+  }
+  .hero--daylight .fruit-chip{
+    box-shadow:0 16px 30px -12px rgba(19,42,30,0.35), 0 0 0 5px rgba(243,236,224,0.7), inset 0 0 0 1px rgba(255,255,255,0.8);
+  }
+
+  /* ---------- hero: night mode extras — true black, not just dark green ---------- */
+  .hero--night .hero-mesh{
+    background:linear-gradient(115deg, rgba(255,255,255,0.03) 0%, transparent 30%, transparent 70%, rgba(241,212,138,0.03) 100%);
+  }
+  .hero--night .hero-orb{ opacity:0.35; }
+
+  /* ---------- per-time-slot backgrounds — morning / afternoon / evening / night ----------
+     Same specificity as .hero and .hero--daylight above; placed last so
+     these win and each slot reads as a distinct colour, not just a
+     light/dark split. */
+  .hero--morning{
+    background:
+      radial-gradient(900px 620px at var(--mx,80%) var(--my,10%), var(--tc-1-a, rgba(247,200,115,0.42)), transparent 62%),
+      radial-gradient(ellipse 1000px 640px at 84% -8%, var(--tc-2-a, rgba(241,166,92,0.3)), transparent 62%),
+      radial-gradient(ellipse 800px 560px at -4% 102%, var(--tc-3-a, rgba(62,124,74,0.2)), transparent 58%),
+      linear-gradient(180deg, #FFF8EC 0%, #FBEFD9 55%, var(--parchment) 100%);
+  }
+  .hero--afternoon{
+    background:
+      radial-gradient(900px 620px at var(--mx,80%) var(--my,10%), var(--tc-1-a, rgba(246,211,101,0.4)), transparent 62%),
+      radial-gradient(ellipse 1000px 640px at 84% -8%, var(--tc-2-a, rgba(241,212,138,0.32)), transparent 62%),
+      radial-gradient(ellipse 800px 560px at -4% 102%, var(--tc-3-a, rgba(62,124,74,0.22)), transparent 58%),
+      linear-gradient(180deg, rgba(243,236,224,0.96) 0%, rgba(243,236,224,0.88) 55%, var(--parchment) 100%);
+  }
+  .hero--evening{
+    background:
+      radial-gradient(900px 620px at var(--mx,80%) var(--my,10%), var(--tc-1-a, rgba(232,131,76,0.34)), transparent 62%),
+      radial-gradient(ellipse 1000px 640px at 84% -8%, var(--tc-2-a, rgba(201,151,59,0.26)), transparent 62%),
+      radial-gradient(ellipse 800px 560px at -4% 102%, var(--tc-3-a, rgba(62,124,74,0.22)), transparent 58%),
+      linear-gradient(165deg, #1B2A1D 0%, #3A2A1C 46%, #14201A 100%);
+  }
+  .hero--night{
+    background:
+      radial-gradient(900px 620px at var(--mx,80%) var(--my,10%), var(--tc-1-a, rgba(31,58,95,0.28)), transparent 62%),
+      radial-gradient(ellipse 1000px 640px at 84% -8%, var(--tc-2-a, rgba(201,151,59,0.16)), transparent 62%),
+      radial-gradient(ellipse 800px 560px at -4% 102%, var(--tc-3-a, rgba(62,124,74,0.14)), transparent 58%),
+      linear-gradient(165deg, #050807 0%, #0A0D0C 46%, #060807 100%);
+  }
   @keyframes sparkleTwinkle{
     0%,100%{ opacity:0; scale:0.5; }
     50%{ opacity:1; scale:1.15; }

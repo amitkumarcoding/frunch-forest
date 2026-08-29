@@ -41,7 +41,7 @@ const navLinks = [
   { label: "Contact", href: "/#contact" },
 ];
 
-function Header() {
+function Header({ dark = false }: { dark?: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [authLabel, setAuthLabel] = useState("Log in");
   const [authHref, setAuthHref] = useState("/login");
@@ -115,7 +115,7 @@ function Header() {
 
   return (
     <>
-      <header id="siteHeader">
+      <header id="siteHeader" className={dark ? "header--dark" : ""}>
         <div className="nav">
           <Link className="nav-brand" to="/" aria-label="Frunch Forest — home">
             <span className="brand-mark">
