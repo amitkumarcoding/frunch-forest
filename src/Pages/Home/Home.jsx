@@ -387,7 +387,13 @@ function Home() {
       <main id="main">
         <section className={`hero hero--${heroMode}${isDaylight ? " hero--daylight" : ""}`} id="heroSection" style={festiveVars}>
           {heroMode === "night" ? (
-            <MoonScene />
+            <>
+              <div className="hero-mesh" aria-hidden="true"></div>
+              <div className="hero-grid-overlay" aria-hidden="true"></div>
+              <MoonScene />
+              <div className="hero-noise" aria-hidden="true"></div>
+              <div className="hero-vignette" aria-hidden="true"></div>
+            </>
           ) : (
             <>
               <div className="hero-mesh" aria-hidden="true"></div>
@@ -395,6 +401,7 @@ function Home() {
               <div className="hero-orb hero-orb-1" aria-hidden="true"></div>
               <div className="hero-orb hero-orb-2" aria-hidden="true"></div>
               <div className="hero-orb hero-orb-3" aria-hidden="true"></div>
+              <div className="hero-noise" aria-hidden="true"></div>
             </>
           )}
           {active && heroMode !== "night" && (

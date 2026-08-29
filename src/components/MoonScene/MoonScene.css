@@ -1,6 +1,12 @@
 .moon-scene{
+  /* Full-hero canvas now, not a clipped corner widget — the moon sits
+     top-right within the wider camera frustum (see MoonCanvas.jsx),
+     and clouds are free to drift across the entire section instead of
+     being trapped inside a small masked circle. */
   position:absolute;
   inset:0;
+  width:100%;
+  height:100%;
   overflow:hidden;
   pointer-events:none;
   z-index:1;
