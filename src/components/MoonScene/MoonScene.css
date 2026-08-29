@@ -1,0 +1,10 @@
+.moon-scene{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:1;
+}
+@media (prefers-reduced-motion: reduce){
+  .moon-scene{ display:none; }
+}

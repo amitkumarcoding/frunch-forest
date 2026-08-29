@@ -17,6 +17,7 @@ import FestivalOffers from "../../components/FestivalOffers/FestivalOffers";
 import FestiveParticles from "../../components/FestiveParticles";
 import FestiveWelcomeOverlay from "../../components/FestiveWelcomeOverlay";
 import FestiveGarland from "../../components/FestiveGarland";
+import MoonScene from "../../components/MoonScene/MoonScene";
 
 // Converts "#RRGGBB" (or "#RGB") to an rgba() string with the given alpha.
 // Used instead of CSS color-mix() for the festive backdrop wash, since
@@ -385,12 +386,18 @@ function Home() {
 
       <main id="main">
         <section className={`hero hero--${heroMode}${isDaylight ? " hero--daylight" : ""}`} id="heroSection" style={festiveVars}>
-          <div className="hero-mesh" aria-hidden="true"></div>
-          <div className="hero-grid-overlay" aria-hidden="true"></div>
-          <div className="hero-orb hero-orb-1" aria-hidden="true"></div>
-          <div className="hero-orb hero-orb-2" aria-hidden="true"></div>
-          <div className="hero-orb hero-orb-3" aria-hidden="true"></div>
-          {active && (
+          {heroMode === "night" ? (
+            <MoonScene />
+          ) : (
+            <>
+              <div className="hero-mesh" aria-hidden="true"></div>
+              <div className="hero-grid-overlay" aria-hidden="true"></div>
+              <div className="hero-orb hero-orb-1" aria-hidden="true"></div>
+              <div className="hero-orb hero-orb-2" aria-hidden="true"></div>
+              <div className="hero-orb hero-orb-3" aria-hidden="true"></div>
+            </>
+          )}
+          {active && heroMode !== "night" && (
             <div
               className="hero-festive-layer"
               aria-hidden="true"
@@ -408,7 +415,7 @@ function Home() {
               <div className="indep-grain"></div>
             </div>
           )}
-          {active && active.key !== "independence-day" && active.key !== "republic-day" && ActiveIcon && (
+          {active && heroMode !== "night" && active.key !== "independence-day" && active.key !== "republic-day" && ActiveIcon && (
             <div className="festive-emblem-decor" aria-hidden="true">
               <div className="festive-emblem-glow"></div>
               {/* eslint-disable-next-line react-hooks/static-components -- ActiveIcon is a lookup into a module-level map, same key always yields the same stable component reference */}
