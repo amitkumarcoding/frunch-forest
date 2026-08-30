@@ -27,6 +27,24 @@ function makeGlowTexture() {
   return new CanvasTexture(canvas);
 }
 
+// Tapered gradient strip used as the shooting-star trail — transparent
+// at the tail end, opaque at the head — instead of a flat-opacity
+// rectangle, so the streak reads as a comet trail rather than a bar.
+function makeTrailTexture() {
+  const w = 128, h = 8;
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  const g = ctx.createLinearGradient(0, 0, w, 0);
+  g.addColorStop(0, "rgba(255,255,255,0)");
+  g.addColorStop(0.7, "rgba(255,255,255,0.5)");
+  g.addColorStop(1, "rgba(255,255,255,1)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w, h);
+  return new CanvasTexture(canvas);
+}
+
 // Real NASA-derived moon texture, shaded by a directional "sun" plus
 // a faint cool fill, with a bump map from the same texture so craters
 // actually respond to light instead of looking painted on.
@@ -217,11 +235,20 @@ function DriftingClouds() {
 // pattern would read as fake immediately. Single thin additive-blend
 // plane that fades in fast, fades out slower, then goes idle for a
 // random 6–18s before the next one.
+const METEOR_TINTS = ["#f4f7ff", "#dce8ff", "#e8fff2"];
+
 function ShootingStar({ phaseOffset = 0 }) {
   const { viewport } = useThree();
-  const meshRef = useRef();
-  const materialRef = useRef();
-  const stateRef = useRef({ active: false, t: 0, nextDelay: 3 + phaseOffset, startX: 0, startY: 0, angle: 0 });
+  const groupRef = useRef();
+  const trailMeshRef = useRef();
+  const trailMatRef = useRef();
+  const headMatRef = useRef();
+  const [trailTex] = useState(makeTrailTexture);
+  const [glowTex] = useState(makeGlowTexture);
+  const stateRef = useRef({
+    active: false, t: 0, duration: 0.75, length: 0.7,
+    nextDelay: 3 + phaseOffset, startX: 0, startY: 0, angle: 0, seed: 0, color: METEOR_TINTS[0],
+  });
 
   useFrame((_, delta) => {
     const s = stateRef.current;
@@ -230,44 +257,122 @@ function ShootingStar({ phaseOffset = 0 }) {
       if (s.nextDelay <= 0) {
         s.active = true;
         s.t = 0;
-        // Start somewhere in the upper portion of the sky, travelling
-        // down-and-across at a shallow angle like a real meteor.
+        // Every meteor gets its own duration/length/tint instead of one
+        // fixed template — a real shower never repeats the same streak.
+        s.duration = 0.55 + Math.random() * 0.5;
+        s.length = 0.55 + Math.random() * 0.75;
         s.startX = -viewport.width / 2 - 1 + Math.random() * viewport.width * 0.6;
-        s.startY = viewport.height * 0.15 + Math.random() * viewport.height * 0.25;
-        s.angle = -0.3 - Math.random() * 0.25;
+        s.startY = viewport.height * 0.12 + Math.random() * viewport.height * 0.3;
+        s.angle = -0.26 - Math.random() * 0.32;
+        s.seed = Math.random() * 10;
+        s.color = METEOR_TINTS[Math.floor(Math.random() * METEOR_TINTS.length)];
+        if (trailMatRef.current) trailMatRef.current.color.set(s.color);
+        if (headMatRef.current) headMatRef.current.color.set(s.color);
       }
-      if (meshRef.current) meshRef.current.visible = false;
+      if (groupRef.current) groupRef.current.visible = false;
       return;
     }
 
     s.t += delta;
-    const duration = 0.75;
-    const progress = s.t / duration;
+    const progress = s.t / s.duration;
     if (progress >= 1) {
       s.active = false;
-      s.nextDelay = 6 + Math.random() * 12;
-      if (meshRef.current) meshRef.current.visible = false;
+      s.nextDelay = 6 + Math.random() * 14;
+      if (groupRef.current) groupRef.current.visible = false;
       return;
     }
 
-    if (meshRef.current) {
-      meshRef.current.visible = true;
-      const dist = progress * 5.5;
-      meshRef.current.position.set(s.startX + Math.cos(s.angle) * dist, s.startY + Math.sin(s.angle) * dist, 3);
-      meshRef.current.rotation.z = s.angle;
+    // Ease-out rather than constant linear speed — a meteor visibly
+    // decelerating (vs. a robotic constant-velocity streak) is what
+    // reads as smooth/real instead of animated.
+    const eased = 1 - Math.pow(1 - progress, 2);
+    const dist = eased * 6;
+
+    if (groupRef.current) {
+      groupRef.current.visible = true;
+      groupRef.current.position.set(s.startX + Math.cos(s.angle) * dist, s.startY + Math.sin(s.angle) * dist, 3);
+      groupRef.current.rotation.z = s.angle;
     }
-    if (materialRef.current) {
-      const fadeIn = Math.min(1, progress / 0.12);
-      const fadeOut = 1 - Math.max(0, (progress - 0.12) / 0.88);
-      materialRef.current.opacity = fadeIn * fadeOut * 0.85;
+    if (trailMeshRef.current) {
+      trailMeshRef.current.scale.x = s.length;
+      trailMeshRef.current.position.x = -s.length / 2;
     }
+
+    // Fast bright entry, slow fade-out, plus a couple of tiny burn
+    // flickers rather than one perfectly smooth flare.
+    const fadeIn = Math.min(1, progress / 0.08);
+    const fadeOut = 1 - Math.max(0, (progress - 0.15) / 0.85);
+    const flicker = 1 - 0.15 * Math.max(0, Math.sin((progress + s.seed) * 40));
+    const brightness = fadeIn * fadeOut * flicker;
+
+    if (trailMatRef.current) trailMatRef.current.opacity = brightness * 0.75;
+    if (headMatRef.current) headMatRef.current.opacity = brightness;
   });
 
   return (
-    <mesh ref={meshRef} visible={false}>
-      <planeGeometry args={[0.7, 0.018]} />
-      <meshBasicMaterial ref={materialRef} color="#f4f7ff" transparent opacity={0} blending={AdditiveBlending} depthWrite={false} />
-    </mesh>
+    <group ref={groupRef} visible={false}>
+      <mesh ref={trailMeshRef}>
+        <planeGeometry args={[1, 0.028]} />
+        <meshBasicMaterial ref={trailMatRef} map={trailTex} transparent opacity={0} blending={AdditiveBlending} depthWrite={false} />
+      </mesh>
+      <sprite scale={[0.16, 0.16, 1]}>
+        <spriteMaterial ref={headMatRef} map={glowTex} transparent opacity={0} blending={AdditiveBlending} depthWrite={false} />
+      </sprite>
+    </group>
+  );
+}
+
+// A distant satellite: a single steady pinprick crossing at constant
+// velocity (no acceleration, no trail — unlike a meteor), with an
+// occasional brief brighten to mimic a solar-panel glint. Loops
+// continuously on a long random cooldown since satellites are a
+// far more common night-sky sight than meteors.
+function Satellite() {
+  const { viewport } = useThree();
+  const ref = useRef();
+  const matRef = useRef();
+  const [glowTex] = useState(makeGlowTexture);
+  const stateRef = useRef({ active: false, t: 0, duration: 12, nextDelay: 8, y: 0, dir: 1 });
+
+  useFrame((_, delta) => {
+    const s = stateRef.current;
+    if (!s.active) {
+      s.nextDelay -= delta;
+      if (s.nextDelay <= 0) {
+        s.active = true;
+        s.t = 0;
+        s.duration = 9 + Math.random() * 8;
+        s.y = (Math.random() * 0.6 + 0.05) * viewport.height - viewport.height / 2;
+        s.dir = Math.random() < 0.5 ? 1 : -1;
+      }
+      if (ref.current) ref.current.visible = false;
+      return;
+    }
+
+    s.t += delta;
+    const progress = s.t / s.duration;
+    if (progress >= 1) {
+      s.active = false;
+      s.nextDelay = 25 + Math.random() * 50;
+      if (ref.current) ref.current.visible = false;
+      return;
+    }
+
+    const span = viewport.width + 2;
+    const x = s.dir > 0 ? -span / 2 + progress * span : span / 2 - progress * span;
+    if (ref.current) {
+      ref.current.visible = true;
+      ref.current.position.set(x, s.y, 3);
+    }
+    const edgeFade = Math.min(1, Math.min(progress, 1 - progress) / 0.06);
+    const glint = 1 + 0.5 * Math.max(0, Math.sin(progress * 22));
+    if (matRef.current) matRef.current.opacity = edgeFade * 0.45 * Math.min(1.3, glint);
+  });
+
+  return (
+    <sprite ref={ref} visible={false} scale={[0.05, 0.05, 1]}>
+      <spriteMaterial ref={matRef} map={glowTex} color="#eef3ff" transparent opacity={0} blending={AdditiveBlending} depthWrite={false} />
+    </sprite>
   );
 }
 
@@ -311,6 +416,7 @@ function Scene() {
           lockstep. */}
       <ShootingStar phaseOffset={2} />
       <ShootingStar phaseOffset={9} />
+      <Satellite />
       <DriftingClouds />
     </>
   );
