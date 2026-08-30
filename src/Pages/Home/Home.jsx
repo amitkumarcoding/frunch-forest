@@ -88,12 +88,13 @@ function Home() {
   const active = festive || timeGreeting;
   const activeTheme = isFestival ? getFestiveTheme(active.key) : getTimeTheme(active.key);
   const ActiveIcon = isFestival ? getFestiveIcon(active.key) : getTimeIcon(active.key);
-  // Hero mode — festivals always keep the dark aurora look. Otherwise each
-  // time slot gets its own background (see .hero--morning/afternoon/evening/
-  // night in Home.css); morning + afternoon additionally get the shared
-  // "daylight" text/UI treatment (dark text on a light background).
+  // Hero mode — festivals always keep the dark aurora look. Otherwise
+  // there are only two visual states now: "daylight" (morning,
+  // afternoon, evening — all share one light background and the
+  // matching dark-text/light-UI treatment) and "night" (its own dark
+  // theme). See .hero--morning/afternoon/evening/night in Home.css.
   const heroMode = isFestival ? "dark" : active.key;
-  const isDaylight = heroMode === "morning" || heroMode === "afternoon";
+  const isDaylight = heroMode === "morning" || heroMode === "afternoon" || heroMode === "evening";
   const festiveVars = activeTheme
     ? {
         "--tc-1": activeTheme.colors[0],

@@ -996,7 +996,11 @@
     border-color:rgba(19,42,30,0.22);
     background:rgba(255,255,255,0.5);
   }
-  .hero--daylight .btn-ghost:hover{ background:rgba(255,255,255,0.8); border-color:rgba(19,42,30,0.4); }
+  .hero--daylight .btn-ghost:hover{
+    color:var(--forest-dark);
+    background:rgba(255,255,255,0.8);
+    border-color:rgba(19,42,30,0.4);
+  }
   .hero--daylight .btn-download{
     color:var(--forest-dark);
     border-color:rgba(201,151,59,0.35);
@@ -1039,45 +1043,30 @@
   }
   .hero--night .hero-orb{ opacity:0.35; }
 
-  /* ---------- per-time-slot backgrounds — morning / afternoon / evening / night ----------
-     Same specificity as .hero and .hero--daylight above; placed last so
-     these win and each slot reads as a distinct colour, not just a
-     light/dark split. */
-  .hero--morning{
+  /* ---------- per-time-slot backgrounds — day (morning/afternoon/
+     evening share one look) vs night ----------
+     Same specificity as .hero and .hero--daylight above; placed last
+     so these win. Only two visually distinct states: day and night —
+     afternoon/evening intentionally reuse morning's exact background
+     instead of each having their own gradient. */
+  .hero--morning, .hero--afternoon, .hero--evening{
     background:
       radial-gradient(900px 620px at var(--mx,80%) var(--my,10%), var(--tc-1-a, rgba(247,200,115,0.42)), transparent 62%),
       radial-gradient(ellipse 1000px 640px at 84% -8%, var(--tc-2-a, rgba(241,166,92,0.3)), transparent 62%),
       radial-gradient(ellipse 800px 560px at -4% 102%, var(--tc-3-a, rgba(62,124,74,0.2)), transparent 58%),
       linear-gradient(180deg, #FFF8EC 0%, #FBEFD9 55%, var(--parchment) 100%);
   }
-  .hero--afternoon{
-    background:
-      radial-gradient(900px 620px at var(--mx,80%) var(--my,10%), var(--tc-1-a, rgba(246,211,101,0.4)), transparent 62%),
-      radial-gradient(ellipse 1000px 640px at 84% -8%, var(--tc-2-a, rgba(241,212,138,0.32)), transparent 62%),
-      radial-gradient(ellipse 800px 560px at -4% 102%, var(--tc-3-a, rgba(62,124,74,0.22)), transparent 58%),
-      linear-gradient(180deg, rgba(243,236,224,0.96) 0%, rgba(243,236,224,0.88) 55%, var(--parchment) 100%);
-  }
-  .hero--evening{
-    background:
-      radial-gradient(900px 620px at var(--mx,80%) var(--my,10%), var(--tc-1-a, rgba(232,131,76,0.34)), transparent 62%),
-      radial-gradient(ellipse 1000px 640px at 84% -8%, var(--tc-2-a, rgba(201,151,59,0.26)), transparent 62%),
-      radial-gradient(ellipse 800px 560px at -4% 102%, var(--tc-3-a, rgba(62,124,74,0.22)), transparent 58%),
-      linear-gradient(165deg, #1B2A1D 0%, #3A2A1C 46%, #14201A 100%);
-  }
   .hero--night{
-    /* extra deep-indigo + amber-horizon washes layered under the
-       existing theme radials give the flat near-black base real depth —
-       a faint "nebula" glow behind the moon and a warm glow near the
-       skyline, instead of one flat charcoal gradient. Base swapped
-       from a brownish charcoal to a true deep-navy black — real clear
-       night sky reads cool/blue-black, not warm-brown. */
+    /* Pure near-black now, not a tinted navy/charcoal — the colored
+       washes (indigo nebula, amber horizon, green) are kept only as
+       a faint trace so the moon/stars still have some atmosphere,
+       instead of driving the overall tone. */
     background:
-      radial-gradient(900px 620px at var(--mx,80%) var(--my,10%), var(--tc-1-a, rgba(31,58,95,0.28)), transparent 62%),
-      radial-gradient(ellipse 1000px 640px at 84% -8%, var(--tc-2-a, rgba(201,151,59,0.14)), transparent 62%),
-      radial-gradient(ellipse 800px 560px at -4% 102%, var(--tc-3-a, rgba(62,124,74,0.12)), transparent 58%),
-      radial-gradient(1200px 820px at 82% 4%, rgba(70,92,148,0.24), transparent 66%),
-      radial-gradient(ellipse 900px 420px at 20% 108%, rgba(201,151,59,0.08), transparent 70%),
-      linear-gradient(165deg, #04070C 0%, #070B12 46%, #05080D 100%);
+      radial-gradient(900px 620px at var(--mx,80%) var(--my,10%), var(--tc-1-a, rgba(20,28,40,0.14)), transparent 62%),
+      radial-gradient(ellipse 1000px 640px at 84% -8%, var(--tc-2-a, rgba(60,50,20,0.06)), transparent 62%),
+      radial-gradient(ellipse 800px 560px at -4% 102%, var(--tc-3-a, rgba(20,40,26,0.06)), transparent 58%),
+      radial-gradient(1200px 820px at 82% 4%, rgba(30,36,52,0.12), transparent 66%),
+      linear-gradient(165deg, #000000 0%, #030304 46%, #000000 100%);
   }
   .hero--night .hero-vignette{
     background:radial-gradient(ellipse 100% 90% at 78% 26%, transparent 40%, rgba(2,5,4,0.6) 100%);
