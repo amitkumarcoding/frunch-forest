@@ -108,8 +108,8 @@ function Moon() {
       // 0.78->0.72) so the smaller-but-still-relatively-wide glow
       // sprite doesn't clip past the left/bottom edge of a tight
       // portrait frame.
-      const xFrac = 0.85 - (1 - scale) * 0.18;
-      const yFrac = 0.78 - (1 - scale) * 0.14;
+      const xFrac = 0.85 - (1 - scale) * 0.22;
+      const yFrac = 0.78 - (1 - scale) * 0.34;
       groupRef.current.position.x = (vp.width / 2) * xFrac;
       groupRef.current.position.y = (vp.height / 2) * yFrac;
     }
