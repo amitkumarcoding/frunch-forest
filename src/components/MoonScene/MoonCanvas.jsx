@@ -108,8 +108,12 @@ function Moon() {
       // 0.78->0.72) so the smaller-but-still-relatively-wide glow
       // sprite doesn't clip past the left/bottom edge of a tight
       // portrait frame.
-      const xFrac = 0.85 - (1 - scale) * 0.22;
-      const yFrac = 0.78 - (1 - scale) * 0.34;
+      // Keep the moon pinned near the top-right corner on every screen
+      // size. Desktop base stays exactly 0.85/0.78 (confirmed good) —
+      // on mobile (scale<1) the fractions move UP toward the corner
+      // instead of down toward the paragraph text below the headline.
+      const xFrac = 0.85 + (1 - scale) * 0.05;
+      const yFrac = 0.78 + (1 - scale) * 0.12;
       groupRef.current.position.x = (vp.width / 2) * xFrac;
       groupRef.current.position.y = (vp.height / 2) * yFrac;
     }
