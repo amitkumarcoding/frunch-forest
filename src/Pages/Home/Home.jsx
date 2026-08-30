@@ -453,7 +453,6 @@ function Home() {
                   </span>
                 </div>
               )}
-              <div className="eyebrow hero-anim a1"><span className="dot"></span> Handpicked · Farm-fresh · Pan-India delivery</div>
               <h1 className="hero-anim a2">Natural dry fruits,<em>a crunch of nature in every bite</em></h1>
               <p className="lede hero-anim a3">Frunch Forest brings almonds, cashews, walnuts, raisins and fox nuts from farm to your table — no preservatives, no shortcuts, just honest quality in every pack.</p>
               <div className="hero-ctas hero-anim a4">

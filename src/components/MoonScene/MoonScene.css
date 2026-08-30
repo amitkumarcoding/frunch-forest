@@ -10,6 +10,14 @@
   overflow:hidden;
   pointer-events:none;
   z-index:1;
+  /* Stars are scattered across the whole camera frustum, which put
+     stray star points deep into the lower hero content area (behind
+     the product wheel/buttons) where a "sky" doesn't belong. Fading
+     the canvas out toward the bottom keeps the moon/star field
+     confined to the upper sky band and reads as sky-meeting-ground
+     instead of stray white dots over the content. */
+  -webkit-mask-image:linear-gradient(to bottom, black 0%, black 55%, transparent 88%);
+  mask-image:linear-gradient(to bottom, black 0%, black 55%, transparent 88%);
 }
 @media (prefers-reduced-motion: reduce){
   .moon-scene{ display:none; }
