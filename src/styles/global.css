@@ -22,7 +22,14 @@
     text-decoration:none; transition:top .2s ease;
   }
   .skip-link:focus{ top:12px; }
-  html{scroll-behavior:smooth;}
+  html{
+    scroll-behavior:smooth;
+    /* iOS Safari doesn't give momentum ("inertia") scrolling by
+       default inside the page unless this is set — without it,
+       scrolling can feel stiff/stepped on mobile even though desktop
+       feels fine. */
+    -webkit-overflow-scrolling:touch;
+  }
   body{
     background:var(--parchment);
     color:var(--ink);
@@ -30,6 +37,10 @@
     line-height:1.55;
     overflow-x:hidden;
     position:relative;
+    /* Stops a hard bounce-past-the-edge scroll from chaining into a
+       jarring rubber-band snap — the biggest source of "scrolling
+       feels janky" complaints on mobile Safari/Chrome. */
+    overscroll-behavior-y:contain;
   }
   /* subtle premium grain, sits above everything, never blocks clicks */
   body::before{
