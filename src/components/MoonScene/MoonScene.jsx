@@ -11,13 +11,11 @@ export default function MoonScene() {
         <img className="cloud" src={CLOUD_URL} alt="" />
         <img className="cloud2" src={CLOUD_URL} alt="" />
         <img className="cloud3" src={CLOUD_URL} alt="" />
-        <div className="star" />
-        <div className="star star-2" />
-        <div className="star star-3" />
-        <div className="star star-4" />
-        <div className="star star-5" />
-        <div className="star star-6" />
-        <div className="star star-7" />
+        <div className="moon-stars" />
+        <div className="moon-twinkle moon-twinkle-1" />
+        <div className="moon-twinkle moon-twinkle-2" />
+        <div className="moon-twinkle moon-twinkle-3" />
+        <div className="moon-twinkle moon-twinkle-4" />
       </div>
     </div>
   );

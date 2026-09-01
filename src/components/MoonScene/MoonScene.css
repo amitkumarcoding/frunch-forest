@@ -36,13 +36,18 @@
   top: 45%;
   left: 55%;
   width: 90%;
-   opacity: 0.3;
+  opacity: 0.3;
   transform: translate(-50%, -50%);
   animation: moon-cloud 15s infinite;
 }
 
 .moon-scene .cloud2 {
- display: none;
+  position: absolute;
+  top: 30%;
+  left: 60%;
+  width: 70%;
+  transform: translate(-20%, -30%);
+  animation: moon-cloud 20s infinite;
   opacity: 0.3;
 }
 
@@ -56,23 +61,44 @@
   animation: moon-cloud 26s infinite;
 }
 
-.moon-scene .star {
+.moon-scene .moon-stars,
+.moon-scene .moon-twinkle {
   position: absolute;
-  top: 10%;
-  left: 10%;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
   border-radius: 50%;
-  width: 10px;
-  height: 10px;
-  animation: moon-star 6s infinite;
-  background-color: #fff;
+  background: transparent;
 }
 
-.moon-scene .star-2 { top: 20%; left: 40%; width: 5px; height: 5px; }
-.moon-scene .star-3 { top: 30%; left: 20%; width: 5px; height: 5px; }
-.moon-scene .star-4 { top: 70%; left: 15%; width: 3px; height: 3px; }
-.moon-scene .star-5 { top: 30%; left: 65%; width: 5px; height: 5px; }
-.moon-scene .star-6 { top: 20%; left: 85%; width: 10px; height: 10px; }
-.moon-scene .star-7 { top: 85%; left: 75%; width: 10px; height: 10px; }
+.moon-scene .moon-stars {
+  box-shadow: 463px 573px #fff, 194px 189px #fff, 96px 457px #fff, 42px 609px #fff, 638px 15px #fff, 605px 200px #fff, 678px 87px #fff, 724px 260px #fff, 576px 110px #fff, 17px 0px #fff, 429px 74px #fff, 318px 340px #fff, 723px 103px #fff, 192px 458px #fff, 392px 119px #fff, 311px 20px #fff, 102px 43px #fff, 336px 303px #fff, 877px 476px #fff, 823px 524px #fff, 310px 145px #fff, 405px 463px #fff, 851px 541px #fff, 614px 30px #fff, 531px 239px #fff, 468px 670px #fff, 322px 235px #fff, 410px 110px #fff, 218px 214px #fff, 579px 644px #fff;
+  opacity: 0.55;
+}
+
+.moon-scene .moon-twinkle-1 {
+  box-shadow: 900px 247px #fff, 651px 248px #fff, 15px 419px #fff, 11px 61px #fff, 521px 195px #fff, 404px 430px #fff, 215px 191px #fff, 149px 218px #fff, 395px 75px #fff, 15px 615px #fff, 462px 520px #fff, 487px 644px #fff, 92px 551px #fff, 669px 630px #fff, 64px 60px #fff, 796px 475px #fff, 655px 301px #fff, 284px 416px #fff, 525px 295px #fff, 866px 297px #fff;
+  animation: moon-twinkle-fade 2.6s ease-in-out infinite;
+}
+
+.moon-scene .moon-twinkle-2 {
+  box-shadow: 53px 481px #fff, 203px 276px #fff, 776px 120px #fff, 476px 498px #fff, 749px 134px #fff, 217px 0px #fff, 403px 616px #fff, 452px 264px #fff, 76px 92px #fff, 377px 380px #fff, 875px 601px #fff, 628px 190px #fff, 829px 649px #fff, 665px 161px #fff, 36px 194px #fff, 334px 451px #fff, 511px 4px #fff, 564px 85px #fff, 30px 71px #fff, 395px 68px #fff;
+  animation: moon-twinkle-fade 3.4s ease-in-out infinite;
+  animation-delay: 0.7s;
+}
+
+.moon-scene .moon-twinkle-3 {
+  box-shadow: 384px 406px #fff, 344px 89px #fff, 137px 252px #fff, 181px 572px #fff, 429px 659px #fff, 276px 606px #fff, 657px 590px #fff, 9px 624px #fff, 213px 596px #fff, 637px 464px #fff;
+  animation: moon-twinkle-fade 4.1s ease-in-out infinite;
+  animation-delay: 1.4s;
+}
+
+.moon-scene .moon-twinkle-4 {
+  box-shadow: 638px 15px #fff, 96px 457px #fff, 851px 541px #fff, 218px 214px #fff, 749px 134px #fff, 30px 71px #fff, 429px 659px #fff, 213px 596px #fff, 651px 248px #fff, 469px 74px #fff;
+  animation: moon-twinkle-fade 2.2s ease-in-out infinite;
+  animation-delay: 2.1s;
+}
 
 @keyframes moon-glow {
   0% { filter: brightness(1.4) drop-shadow(0 0 150px rgba(100, 100, 100, 1)) drop-shadow(0 0 30px rgba(100, 100, 100, 1)); }
@@ -85,22 +111,25 @@
   100% { transform: translate(-150%, -50%); }
 }
 
-@keyframes moon-star {
-  0% { box-shadow: 0px 0px 8px white, 0px 0px 21px white, 0px 0px 15px white; }
-  50% { box-shadow: 0px 0px 3px white, 0px 0px 15px white, 0px 0px 5px white; }
-  100% { box-shadow: 0px 0px 8px white, 0px 0px 21px white, 0px 0px 15px white; }
+@keyframes moon-cloud-mobile {
+  0% { transform: translate(85vw, -50%); }
+  100% { transform: translate(-105vw, -50%); }
+}
+
+@keyframes moon-twinkle-fade {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .moon-scene { display: none; }
+  .moon-scene .moon-twinkle { animation: none; opacity: 0.5; }
 }
-
-
 
 @media (max-width: 900px) {
   .moon-scene .moon {
-       top: 20%;
-      left: 88%;
+    top: 20%;
+    left: 88%;
     width: 30%;
     height: 30%;
   }
@@ -108,26 +137,17 @@
 
 @media (max-width: 640px) {
   .moon-scene .moon {
-        top: 20%;
+    top: 20%;
     left: 88%;
     width: 30%;
     height: 30%;
   }
-}
 
-@media (max-width: 480px) {
-  .moon-scene .moon {
-    top: 20%;
-     left: 88%;
-    width: 30%;
-    height: 30%;
+  .moon-scene .cloud,
+  .moon-scene .cloud2,
+  .moon-scene .cloud3 {
+    animation-name: moon-cloud-mobile;
   }
-}
-
-
-@keyframes moon-cloud-mobile {
-  0% { transform: translate(85vw, -50%); }
-  100% { transform: translate(-105vw, -50%); }
 }
 
 @media (max-width: 480px) {
@@ -135,5 +155,12 @@
     width: 78%;
     height: 28%;
     max-height: 240px;
+  }
+
+  .moon-scene .moon {
+    top: 20%;
+    left: 88%;
+    width: 30%;
+    height: 30%;
   }
 }
