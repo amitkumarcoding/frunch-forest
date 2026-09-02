@@ -18,6 +18,7 @@ import FestiveParticles from "../../components/FestiveParticles";
 import FestiveWelcomeOverlay from "../../components/FestiveWelcomeOverlay";
 import FestiveGarland from "../../components/FestiveGarland";
 import MoonScene from "../../components/MoonScene/MoonScene";
+import WeatherOverlay from "../../components/WeatherOverlay/WeatherOverlay";
 
 // Converts "#RRGGBB" (or "#RGB") to an rgba() string with the given alpha.
 // Used instead of CSS color-mix() for the festive backdrop wash, since
@@ -387,6 +388,7 @@ function Home() {
 
       <main id="main">
         <section className={`hero hero--${heroMode}${isDaylight ? " hero--daylight" : ""}`} id="heroSection" style={festiveVars}>
+          {/* <WeatherOverlay /> */}
           {heroMode === "night" ? (
             <>
               <div className="hero-mesh" aria-hidden="true"></div>
