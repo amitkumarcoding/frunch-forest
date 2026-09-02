@@ -38,7 +38,7 @@
   width: 90%;
   opacity: 0.3;
   transform: translate(-50%, -50%);
-  animation: moon-cloud 15s infinite;
+  animation: moon-cloud 40s infinite;
 }
 
 .moon-scene .cloud2 {
@@ -47,7 +47,7 @@
   left: 60%;
   width: 70%;
   transform: translate(-20%, -30%);
-  animation: moon-cloud 20s infinite;
+  animation: moon-cloud 55s infinite;
   opacity: 0.3;
 }
 
@@ -58,7 +58,7 @@
   left: 60%;
   width: 45%;
   transform: translate(-20%, -30%);
-  animation: moon-cloud 26s infinite;
+  animation: moon-cloud 70s infinite;
 }
 
 .moon-scene .moon-stars,
