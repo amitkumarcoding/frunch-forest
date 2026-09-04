@@ -14,7 +14,6 @@ const BUY_NOW_WHATSAPP_NUMBER = "919582122419";
 
 export default function ProductCard({
   product,
-  collapsible = false,
   favorite = false,
   onToggleFavorite,
   badges = [],
@@ -25,13 +24,9 @@ export default function ProductCard({
       : 0
   );
   const [showNutrients, setShowNutrients] = useState(false);
-  const [expanded, setExpanded] = useState(false);
   const outOfStock = isOutOfStock(product);
   const pack = product.packs[packIdx];
   const discount = Math.round(((pack.mrp - pack.price) / pack.mrp) * 100);
-  const perUnit = (pack.price / parseInt(pack.size)) * 100;
-
-  const visibleBullets = collapsible && !expanded ? product.bullets.slice(0, 1) : product.bullets;
 
   // Matches the original site's WhatsApp deep-link behaviour (see
   // bindProductCardEvents() -> "Buy Now" handler in index.html).
@@ -48,7 +43,19 @@ export default function ProductCard({
 
   return (
     <div className={`product-card${product.bestSeller ? ' featured' : ''}${outOfStock ? ' out-of-stock' : ''}`}>
+      {/*
+        `.card-photo` is intentionally NOT clipped (overflow is on the
+        `.card-photo-media` layer below instead). The nutrient toggle's
+        tooltip and the overlay both need to render past the photo's
+        edge; when they lived inside the same overflow:hidden box as
+        the image, the tooltip got cut off instead of floating over
+        the card.
+      */}
       <div className="card-photo">
+        <div className="card-photo-media">
+          <img src={product.image} alt={product.name} loading="lazy" />
+        </div>
+
         {badges.length > 0 && (
           <div className="card-badges">
             {badges.map((key) => {
@@ -58,12 +65,13 @@ export default function ProductCard({
             })}
           </div>
         )}
-        <img src={product.image} alt={product.name} loading="lazy" />
+
         <button
           type="button"
           className="nutrient-toggle"
           onClick={() => setShowNutrients((v) => !v)}
           aria-label="Show nutrients"
+          aria-expanded={showNutrients}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
@@ -71,6 +79,7 @@ export default function ProductCard({
             <line x1="12" y1="8" x2="12.01" y2="8"></line>
           </svg>
         </button>
+
         <div className={`nutrient-overlay${showNutrients ? ' active' : ''}`}>
           <h4>Nutrients (per 100g)</h4>
           <ul>
@@ -80,9 +89,11 @@ export default function ProductCard({
           </ul>
           <p className="nutrient-basis">Approximate values</p>
         </div>
+
         {product.bestSeller && (
           <div className="best-strip">{product.bestSellerLabel}</div>
         )}
+
         {onToggleFavorite && (
           <button
             type="button"
@@ -103,19 +114,10 @@ export default function ProductCard({
       </div>
 
       <div className="card-body">
-        <div className="tag">{product.tag}</div>
-        <h3>{product.name}</h3>
+        <div className="card-heading">
+          <h3>{product.name}</h3>
+        </div>
         <span className="hi">{product.hindi}</span>
-
-        <ul>
-          {visibleBullets.map((b) => <li key={b}>{b}</li>)}
-        </ul>
-        {collapsible && product.bullets.length > 1 && (
-          <button type="button" className={`see-all-toggle${expanded ? ' expanded' : ''}`} onClick={() => setExpanded((v) => !v)}>
-            {expanded ? 'See less ' : 'See all details '}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
-          </button>
-        )}
 
         <div className="card-price">
           <span className="price-now">₹{pack.price}</span>
@@ -124,7 +126,6 @@ export default function ProductCard({
             {outOfStock ? 'Out of Stock' : `${discount}% OFF`}
           </span>
         </div>
-        <p className="tax-note">Inclusive of all taxes</p>
 
         <div className="pack-sizes">
           {product.packs.map((p, i) => (
@@ -134,15 +135,14 @@ export default function ProductCard({
               className={`pack-size-btn${i === packIdx ? ' active' : ''}${p.bestValue ? ' best-value' : ''}`}
               disabled={outOfStock}
               onClick={() => setPackIdx(i)}
+              title={p.bestValue ? `${p.size} · Best value` : p.size}
             >
-              {p.bestValue && <span className="best-value-tag">Best value</span>}
               {p.size}
             </button>
           ))}
         </div>
-        <p className="per-unit-price">≈ ₹{perUnit.toFixed(1)} per 100g</p>
 
-        <div className="card-actions">
+        <div className={`card-actions${outOfStock ? ' out-of-stock-actions' : ''}`}>
           <button
             type="button"
             className={`card-buy-now-btn${outOfStock ? ' is-disabled' : ''}`}
@@ -150,22 +150,18 @@ export default function ProductCard({
             onClick={handleBuyNow}
           >
             {!outOfStock && (
-              <img src="https://cdn.simpleicons.org/whatsapp/132A1E" alt="" width="16" height="16" />
+              <img src="https://cdn.simpleicons.org/whatsapp/132A1E" alt="" width="14" height="14" />
             )}
             {outOfStock ? 'Out of Stock' : 'Buy Now'}
           </button>
-          <Link
-            className={`card-details-btn${outOfStock ? ' is-disabled' : ''}`}
-            to={outOfStock ? '#' : `/products/${product.slug}`}
-            aria-disabled={outOfStock}
-            tabIndex={outOfStock ? -1 : 0}
-            onClick={(e) => {
-              if (!outOfStock) return;
-              e.preventDefault();
-            }}
-          >
-            {outOfStock ? 'Out of stock' : 'View details →'}
-          </Link>
+          {/* Details link only renders in stock — when sold out, "Buy
+              Now" collapsing into a single "Out of Stock" status button
+              reads cleaner than pairing it with a second, dead button. */}
+          {!outOfStock && (
+            <Link className="card-details-btn" to={`/products/${product.slug}`}>
+              Details →
+            </Link>
+          )}
         </div>
       </div>
     </div>

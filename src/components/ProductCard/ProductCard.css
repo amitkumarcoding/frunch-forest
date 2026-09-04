@@ -1,326 +1,343 @@
 .product-grid{
-    display:grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap:22px;
-  }
-  @media (max-width:900px){ .product-grid{ grid-template-columns:repeat(2,1fr); } }
-  @media (max-width:600px){ .product-grid{ grid-template-columns:1fr; } }
-  .product-card{
-    background:rgba(243,236,224,0.05);
-    border:1px solid rgba(243,236,224,0.14);
-    border-radius:20px;
-    overflow:hidden;
-    transition:transform .35s ease, background .35s ease, border-color .35s ease, box-shadow .35s ease;
-    transform-style:preserve-3d;
-    will-change:transform;
-    cursor:default;
-  }
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:20px;
+}
+@media (max-width:900px){ .product-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:600px){ .product-grid{ grid-template-columns:1fr; } }
+
+.product-card{
+  background:rgba(243,236,224,0.05);
+  border:1px solid rgba(243,236,224,0.14);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 1px 0 rgba(243,236,224,0.06) inset, 0 18px 36px -26px rgba(6,16,11,0.75);
+  transition:transform .35s cubic-bezier(.22,.61,.36,1), background .3s ease, border-color .3s ease, box-shadow .35s cubic-bezier(.22,.61,.36,1);
+  cursor:default;
+  display:flex;
+  flex-direction:column;
+}
+@media (hover:hover){
   .product-card:hover{
     background:rgba(243,236,224,0.09);
     border-color:rgba(201,151,59,0.5);
-    box-shadow:0 26px 44px -22px rgba(0,0,0,0.55);
+    box-shadow:0 1px 0 rgba(243,236,224,0.08) inset, 0 26px 44px -22px rgba(6,16,11,0.7);
+    transform:translateY(-4px);
   }
-  .product-card.featured{ position:relative; }
-  .product-card.featured::before{
-    content:"";
-    position:absolute; inset:-1px; border-radius:20px; z-index:-1;
-    background:linear-gradient(135deg, var(--gold-1), transparent 30%, transparent 70%, var(--gold-2));
-    opacity:0; transition:opacity .4s ease;
-  }
-  .product-card.featured:hover::before{ opacity:1; }
-  .product-card:hover .card-photo img{ transform:scale(1.06); }
-  .product-card .card-photo{
-    position:relative; aspect-ratio:3/2; overflow:hidden;
-  }
-  .product-card .card-photo img{
-    width:100%; height:100%; object-fit:cover;
-    transition:transform .5s ease;
-  }
-  .product-card .card-photo::after{
-    content:"";
-    position:absolute; inset:0;
-    background:linear-gradient(0deg, rgba(19,42,30,0.9) 0%, rgba(19,42,30,0) 55%);
-  }
-  .product-card .card-body{ padding:14px 20px 16px; }
-  .card-details-btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:6px;
-    margin-top:6px; width:100%;
-    background:var(--forest-dark); color:var(--parchment);
-    padding:8px 18px; border-radius:100px; font-size:0.85rem; font-weight:700;
-    text-decoration:none; letter-spacing:0.02em; cursor:pointer;
-    transition:transform .2s ease, background .2s ease;
-  }
-  .card-details-btn:hover{ transform:translateY(-2px); background:var(--forest-mid); }
-  .card-details-btn.is-disabled{
-    background:rgba(19,42,30,0.35);
-    color:rgba(243,236,224,0.55);
-    cursor:not-allowed;
-    pointer-events:none;
-  }
-  .card-details-btn.is-disabled:hover{ transform:none; background:rgba(19,42,30,0.35); }
-  .product-card .tag{
-    font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.08em;
-    color:var(--amber); text-transform:uppercase; font-weight:700; margin-bottom:6px; display:inline-block;
-  }
-  .product-card h3{
-    color:var(--parchment); font-size:1.25rem; margin-bottom:1px;
-  }
-  .product-card .hi{
-    font-family:'Fraunces', serif; font-style:italic; font-weight:500;
-    text-transform:none; color:var(--gold-1); font-size:0.9rem;
-    letter-spacing:0.015em;
-    display:flex; align-items:center; gap:8px;
-    margin:2px 0 8px;
-  }
-  .product-card .hi::before{
-    content:"";
-    width:16px; height:1px; flex-shrink:0;
-    background:linear-gradient(90deg, var(--gold-3), var(--gold-1));
-  }
-  .product-card .hi::after{
-    content:"";
-    flex:1 1 auto; height:1px;
-    background:linear-gradient(90deg, rgba(241,212,138,0.35), rgba(241,212,138,0));
-  }
-  .product-card ul{ list-style:none; margin-bottom:8px; }
-  .product-card ul li{
-    font-size:0.83rem; line-height:1.35; color:rgba(243,236,224,0.75);
-    padding-left:16px; position:relative; margin-bottom:3px;
-  }
-  .product-card ul li::before{
-    content:"";
-    position:absolute; left:0; top:8px;
-    width:6px; height:6px; border-radius:50%;
-    background:var(--forest-light);
-  }
-  .pack-sizes{
-    display:flex; flex-wrap:wrap; gap:6px;
-  }
-  .pack-sizes span{
-    font-family:'JetBrains Mono', monospace; font-size:0.72rem;
-    border:1px solid rgba(243,236,224,0.25); color:rgba(243,236,224,0.85);
-    padding:4px 9px; border-radius:100px;
-  }
-  .product-card.featured{
-    background:linear-gradient(160deg, rgba(201,151,59,0.16), rgba(243,236,224,0.05));
-    border-color:rgba(201,151,59,0.45);
-  }
-  .best-strip{
-    position:absolute; bottom:12px; left:12px; z-index:2;
-    display:flex; align-items:center; gap:6px;
-    max-width:calc(100% - 68px); /* keep clear of the nutrient-toggle icon (42px + offsets) */
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    background:linear-gradient(120deg, var(--gold-3), var(--gold-1) 55%, var(--gold-2));
-    color:var(--forest-dark);
-    font-family:'JetBrains Mono', monospace; font-size:0.72rem;
-    /* 700 isn't a loaded weight for JetBrains Mono (only 400/600 are
-       imported) — the browser was faking it via synthetic bold, which
-       distorted glyphs at this size + letter-spacing and made the "S"
-       in SELLER visually vanish. 600 is a real loaded weight. */
-    font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
-    font-synthesis:none;
-    padding:6px 12px; border-radius:100px;
-    opacity:1; visibility:visible;
-    box-shadow:0 6px 16px -6px rgba(201,151,59,0.5);
-    transition:opacity .25s ease, box-shadow .25s ease, background .25s ease;
-  }
-  /* NOTE: intentionally no `transform` here. .product-card already has
-     transform-style:preserve-3d + will-change:transform for its own
-     hover-lift; a *nested* transform on this badge fights that 3D
-     compositing context and corrupts/clips the text glyphs in Chrome
-     (this is what was eating the "S" in "SELLER"). Glow-only feedback
-     avoids that entirely while still reading as a hover response. */
-  .product-card:hover .best-strip{
-    box-shadow:0 10px 22px -8px rgba(201,151,59,0.65);
-  }
-  .best-strip:hover{
-    background:linear-gradient(120deg, var(--gold-2), var(--gold-1) 55%, var(--gold-3));
-    box-shadow:0 12px 26px -8px rgba(201,151,59,0.75);
-  }
+}
+.product-card.featured{ position:relative; }
+.product-card.featured::before{
+  content:"";
+  position:absolute; inset:-1px; border-radius:17px; z-index:-1;
+  background:linear-gradient(135deg, var(--gold-1), transparent 30%, transparent 70%, var(--gold-2));
+  opacity:0; transition:opacity .4s ease;
+}
+.product-card.featured:hover::before{ opacity:1; }
+.product-card:hover .card-photo-media img{ transform:scale(1.06); }
 
-  /* ---------- nutrient reveal toggle ("i" button) ---------- */
-  .nutrient-toggle{
-    position:absolute; top:12px; right:12px; z-index:4;
-    width:42px; height:42px;
-    border-radius:50%;
-    background:rgba(19,42,30,0.88); backdrop-filter:blur(6px);
-    border:1px solid rgba(243,236,224,0.35);
-    display:flex; align-items:center; justify-content:center;
-    color:var(--gold-1); cursor:pointer;
-    transition:transform .25s ease, border-color .25s ease, background .25s ease;
-  }
-  .nutrient-toggle::after{
-    content:"Tap for nutrients";
-    position:absolute; top:50%; right:100%; transform:translate(-8px,-50%);
-    background:rgba(19,42,30,0.95);
-    color:rgba(243,236,224,0.95);
-    font-size:0.76rem; letter-spacing:0.04em;
-    padding:8px 12px; border-radius:999px;
-    white-space:nowrap; border:1px solid rgba(243,236,224,0.16);
-    box-shadow:0 14px 36px -24px rgba(0,0,0,0.45);
-    opacity:1; pointer-events:none;
-    transition:opacity .25s ease, transform .25s ease;
-  }
-  .nutrient-toggle:hover{ transform:scale(1.08); border-color:var(--gold-1); background:rgba(19,42,30,0.95); }
-  .nutrient-toggle:hover::after{ transform:translate(-12px,-50%); }
-  .nutrient-toggle svg{ width:18px; height:18px; pointer-events:none; }
-  .nutrient-overlay{
-    position:absolute; inset:0; z-index:2;
-    display:flex; flex-direction:column; justify-content:center;
-    padding:20px 22px;
-    opacity:0; pointer-events:none;
-    transform:scale(0.96);
-    transition:opacity .4s ease, transform .4s ease;
-    background:radial-gradient(circle at 50% 50%, rgba(201,151,59,0.32), rgba(19,42,30,0.95) 72%);
-    overflow:hidden;
-  }
-  .nutrient-overlay::before{
-    content:"";
-    position:absolute; inset:0;
-    background:radial-gradient(circle at 50% 50%, rgba(241,212,138,0.22), transparent 62%);
-    pointer-events:none;
-  }
-  .nutrient-overlay.active{ opacity:1; pointer-events:auto; transform:scale(1); z-index:3; }
-  .nutrient-overlay.active ~ .best-strip{ opacity:0; visibility:hidden; transition:opacity .25s ease; }
-  .nutrient-overlay h4{
-    font-family:'JetBrains Mono', monospace; text-transform:uppercase; letter-spacing:0.08em;
-    font-size:0.7rem; color:var(--gold-1); margin-bottom:10px; position:relative;
-  }
-  .nutrient-overlay ul{ list-style:none; position:relative; margin-bottom:0; }
-  .nutrient-overlay ul li{
-    display:flex; justify-content:space-between; align-items:center;
-    font-size:0.86rem; color:var(--parchment);
-    padding:5px 0; margin-bottom:0;
-    border-bottom:1px dashed rgba(243,236,224,0.16);
-  }
-  .nutrient-overlay ul li::before{ content:none; }
-  .nutrient-overlay ul li span{ color:var(--gold-1); font-family:'JetBrains Mono', monospace; font-size:0.82rem; }
-  .nutrient-overlay .nutrient-basis{
-    position:relative; margin-top:10px; font-size:0.68rem;
-    color:rgba(243,236,224,0.55); font-style:italic;
-  }
+/* ---------- photo ----------
+   FIXED height, not aspect-ratio — aspect-ratio ties photo height to
+   card width, so it changes with however many columns end up in a
+   row. A fixed px height keeps row height predictable regardless of
+   column count, which is what lets two full rows (6 cards) fit on
+   one screen.
 
-/* Inline styles migrated from the original HTML */
+   `.card-photo` clips (overflow:hidden) — this is what keeps the
+   nutrient overlay, the zoomed image, and the tooltip contained inside
+   the card. An earlier pass removed this to stop the tooltip clipping,
+   which broke worse: the overlay's content (heading + rows + footnote)
+   is taller than the fixed photo height, and with nothing clipping it,
+   the centered content spilled out both above AND below the card,
+   overlapping the row above it. Clipping is back; the overlay itself
+   is now sized/aligned to actually fit inside the box instead (see
+   `.nutrient-overlay` below), with a scroll fallback as a safety net
+   for products with more nutrient rows. */
+.product-card .card-photo{
+  position:relative; height:168px; overflow:hidden; flex-shrink:0;
+}
+.product-card .card-photo-media{
+  position:absolute; inset:0; z-index:0;
+}
+.product-card .card-photo-media img{
+  width:100%; height:100%; object-fit:cover;
+  /* Light shared color grade so photos shot in different lighting
+     (warm almonds vs. neutral cashews) read as one cohesive catalog
+     rather than mismatched stock photography. */
+  filter:saturate(1.06) contrast(1.03) brightness(0.98) sepia(0.04);
+  transition:transform .6s cubic-bezier(.22,.61,.36,1);
+}
+.product-card .card-photo-media::after{
+  content:"";
+  position:absolute; inset:0;
+  background:linear-gradient(0deg, rgba(19,42,30,0.88) 0%, rgba(19,42,30,0) 52%);
+}
 
-  /* --- Price & discount UI (product cards) --- */
-  .card-price{
-    display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
-    margin:10px 0 4px;
-  }
-  .price-now{
-    font-family:'JetBrains Mono', monospace;
-    font-weight:700;
-    font-size:1.35rem;
-    letter-spacing:0.01em;
-    color:var(--gold-1,#F1D48A);
-  }
-  .price-mrp{
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.92rem;
-    color:rgba(243,236,224,0.45);
-    text-decoration:line-through;
-  }
-  .discount-badge{
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.7rem;
-    font-weight:700;
-    color:#fff;
-    background:linear-gradient(135deg, var(--forest-mid,#3E7C4A), #2c5c38);
-    padding:3px 10px;
-    border-radius:20px;
-    letter-spacing:0.03em;
-    box-shadow:0 2px 6px rgba(0,0,0,0.25);
-  }
-  .tax-note{
-    font-size:0.75rem;
-    color:rgba(243,236,224,0.4);
-    margin:0 0 12px;
-  }
-  .per-unit-price{
-    font-size:0.75rem;
-    color:rgba(243,236,224,0.45);
-    margin:10px 0 0;
-    font-family:'JetBrains Mono', monospace;
-  }
-  .pack-sizes{ display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
-  .pack-size-btn{
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.82rem;
-    font-weight:600;
-    background:rgba(243,236,224,0.08);
-    border:1px solid rgba(243,236,224,0.25);
-    color:var(--parchment,#F3ECE0);
-    padding:7px 14px;
-    border-radius:8px;
-    cursor:pointer;
-    transition:background .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;
-    position:relative;
-  }
-  .pack-size-btn:hover{ border-color:var(--gold-2,#C9973B); background:rgba(243,236,224,0.14); }
-  .pack-size-btn.active{
-    background:var(--gold-2,#C9973B);
-    border-color:var(--gold-2,#C9973B);
-    color:var(--forest-dark,#132A1E);
-    box-shadow:0 3px 10px rgba(201,151,59,0.35);
-  }
-  .pack-size-btn.best-value{ border-color:rgba(241,212,138,0.6); }
-  .card-actions{ display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:14px; }
-  .card-buy-now-btn{
-    width:100%;
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    font-family:'Manrope', sans-serif;
-    font-size:0.9rem;
-    font-weight:700;
-    color:var(--forest-dark,#132A1E);
-    background:linear-gradient(135deg, var(--gold-1,#F1D48A), var(--gold-2,#C9973B));
-    border:none;
-    padding:12px 20px;
-    border-radius:10px;
-    cursor:pointer;
-    letter-spacing:0.02em;
-    box-shadow:0 4px 14px rgba(201,151,59,0.35);
-    transition:transform .2s ease, box-shadow .2s ease, filter .2s ease;
-  }
-  .card-buy-now-btn:hover{ transform:translateY(-2px); box-shadow:0 6px 18px rgba(201,151,59,0.45); filter:brightness(1.05); }
-  .card-buy-now-btn svg,.card-buy-now-btn img{ width:16px; height:16px; flex:none; }
-  .card-buy-now-btn.is-disabled{
-    background:rgba(243,236,224,0.15);
-    color:rgba(243,236,224,0.5);
-    box-shadow:none; cursor:not-allowed;
-  }
-  .card-buy-now-btn.is-disabled:hover{ transform:none; box-shadow:none; filter:none; }
-  .discount-badge.out-of-stock-badge{ background:linear-gradient(135deg,#8a3a3a,#6b2a2a); }
-  .product-card.out-of-stock .card-photo img{ opacity:0.55; filter:grayscale(0.4); }
-  .product-card.out-of-stock .pack-size-btn{ opacity:0.5; cursor:not-allowed; }
-  .card-actions .card-details-btn{ margin:0; }
-  .pack-size-btn .best-value-tag{
-    position:absolute; top:-11px; left:50%;
-    transform:translateX(-50%);
-    background:var(--gold-1,#F1D48A); color:var(--forest-dark,#132A1E);
-    font-size:0.52rem; font-weight:700;
-    padding:2px 7px; border-radius:20px;
-    letter-spacing:0.02em;
-    white-space:nowrap;
-    box-shadow:0 2px 5px rgba(0,0,0,0.3);
-  }
+.product-card .card-body{
+  padding:14px 16px 16px; display:flex; flex-direction:column;
+  gap:2px;
+  /* Explicit solid background so the body can never pick up a tinted
+     background from .product-card.featured (or any leftover version
+     of that rule) — it always sits on top, opaque. */
+  background:#132A1E;
+  border-top:1px solid rgba(241,212,138,0.14);
+}
 
-  /* "See all details" collapsible toggle (used when ProductCard is
-     rendered with the `collapsible` prop, e.g. on the /products grid).
-     Previously only defined in ProductDetails.css, so any page using
-     this card without also happening to load that page's CSS got an
-     unstyled — and because of the raw arrow svg with no size cap,
-     oversized — button. Belongs here with the rest of the card's
-     styling since it's driven by a ProductCard prop, not a page. */
-  .see-all-toggle{
-    display:inline-flex; align-items:center; gap:5px;
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.7rem; font-weight:700; letter-spacing:0.04em;
-    text-transform:uppercase;
-    color:var(--gold-1,#F1D48A);
-    background:none; border:none; padding:0 0 10px;
-    cursor:pointer;
-    transition:color .2s ease;
+/* ---------- name + tag share one line instead of two ---------- */
+.card-heading{
+  display:flex; align-items:baseline;
+}
+.product-card h3{
+  color:var(--parchment); font-size:1.08rem; font-weight:600; line-height:1.25;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.product-card .hi{
+  font-family:'Fraunces', serif; font-style:italic; font-weight:500;
+  text-transform:none; color:var(--gold-1); font-size:0.8rem;
+  letter-spacing:0.015em;
+  display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  margin:2px 0 9px;
+}
+
+.pack-sizes{
+  display:flex; flex-wrap:wrap; gap:7px; margin-top:8px;
+}
+
+/* ---------- nutrient reveal toggle ("i" button) ---------- */
+.nutrient-toggle{
+  position:absolute; top:10px; right:10px; z-index:4;
+  width:32px; height:32px;
+  border-radius:50%;
+  background:rgba(19,42,30,0.88); backdrop-filter:blur(6px);
+  border:1px solid rgba(243,236,224,0.35);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--gold-1); cursor:pointer;
+  transition:transform .25s ease, border-color .25s ease, background .25s ease, box-shadow .25s ease;
+}
+.nutrient-toggle::after{
+  content:"Tap for nutrients";
+  position:absolute; top:50%; right:calc(100% + 10px); transform:translate(6px,-50%);
+  background:rgba(19,42,30,0.97);
+  color:rgba(243,236,224,0.95);
+  font-size:0.72rem; letter-spacing:0.02em;
+  padding:7px 11px; border-radius:999px;
+  white-space:nowrap; border:1px solid rgba(243,236,224,0.16);
+  box-shadow:0 14px 30px -18px rgba(0,0,0,0.6);
+  /* Hidden until hover — six of these on screen at once (two full
+     rows) read as clutter rather than a helpful hint; revealing it
+     on interaction keeps the resting grid calm and turns it into a
+     small discovery instead of a static label everyone sees. */
+  opacity:0; pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+}
+@media (hover:hover){
+  .nutrient-toggle:hover{ transform:scale(1.08); border-color:var(--gold-1); background:rgba(19,42,30,0.95); box-shadow:0 6px 16px -6px rgba(0,0,0,0.5); }
+  .nutrient-toggle:hover::after{ opacity:1; transform:translate(0,-50%); }
+}
+.nutrient-toggle:focus-visible{ outline:2px solid var(--gold-1); outline-offset:2px; }
+.nutrient-toggle svg{ width:14px; height:14px; pointer-events:none; }
+
+.nutrient-overlay{
+  position:absolute; inset:0; z-index:2;
+  display:flex; flex-direction:column; justify-content:flex-start;
+  padding:14px 18px;
+  opacity:0; pointer-events:none;
+  transform:scale(0.97);
+  transition:opacity .35s cubic-bezier(.22,.61,.36,1), transform .35s cubic-bezier(.22,.61,.36,1);
+  background:radial-gradient(circle at 50% 50%, rgba(201,151,59,0.32), rgba(19,42,30,0.96) 72%);
+  overflow-y:auto; /* fallback for products with more nutrient rows than fit; nothing below clips outward */
+  scrollbar-width:none;
+}
+.nutrient-overlay::-webkit-scrollbar{ display:none; }
+.nutrient-overlay::before{
+  content:"";
+  position:absolute; inset:0;
+  background:radial-gradient(circle at 50% 50%, rgba(241,212,138,0.22), transparent 62%);
+  pointer-events:none;
+}
+.nutrient-overlay.active{ opacity:1; pointer-events:auto; transform:scale(1); z-index:3; }
+.nutrient-overlay.active ~ .best-strip{ opacity:0; visibility:hidden; transition:opacity .25s ease; }
+.nutrient-overlay h4{
+  font-family:'JetBrains Mono', monospace; letter-spacing:0.06em;
+  font-size:0.64rem; color:var(--gold-1); margin-bottom:6px; position:relative; flex-shrink:0;
+}
+.nutrient-overlay ul{ list-style:none; position:relative; margin-bottom:0; flex-shrink:0; }
+.nutrient-overlay ul li{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:0.78rem; color:var(--parchment);
+  padding:3px 0; margin-bottom:0;
+  border-bottom:1px dashed rgba(243,236,224,0.16);
+}
+.nutrient-overlay ul li::before{ content:none; }
+.nutrient-overlay ul li span{ color:var(--gold-1); font-family:'JetBrains Mono', monospace; font-size:0.74rem; }
+.nutrient-overlay .nutrient-basis{
+  position:relative; margin-top:6px; font-size:0.62rem;
+  color:rgba(243,236,224,0.55); font-style:italic; flex-shrink:0;
+}
+
+.best-strip{
+  position:absolute; bottom:10px; left:10px; z-index:2;
+  display:flex; align-items:center; gap:6px;
+  max-width:calc(100% - 54px); /* keep clear of the nutrient-toggle icon (32px + offsets) */
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  background:linear-gradient(120deg, var(--gold-3), var(--gold-1) 55%, var(--gold-2));
+  color:var(--forest-dark);
+  font-family:'JetBrains Mono', monospace; font-size:0.68rem;
+  /* 700 isn't a loaded weight for JetBrains Mono (only 400/600 are
+     imported) — the browser was faking it via synthetic bold, which
+     distorted glyphs at this size + letter-spacing and made the "S"
+     in SELLER visually vanish. 600 is a real loaded weight. */
+  font-weight:600; letter-spacing:0.05em;
+  font-synthesis:none;
+  padding:5px 10px; border-radius:100px;
+  opacity:1; visibility:visible;
+  box-shadow:0 6px 16px -6px rgba(201,151,59,0.5);
+  transition:opacity .25s ease, box-shadow .25s ease, background .25s ease;
+}
+/* NOTE: intentionally no `transform` here. A nested transform on this
+   badge, layered on top of the card's own hover-lift transform, fights
+   compositing in Chrome and corrupts/clips the text glyphs (this is
+   what was eating the "S" in "SELLER"). Glow-only feedback avoids that
+   entirely while still reading as a hover response. */
+.product-card:hover .best-strip{
+  box-shadow:0 10px 22px -8px rgba(201,151,59,0.65);
+}
+.best-strip:hover{
+  background:linear-gradient(120deg, var(--gold-2), var(--gold-1) 55%, var(--gold-3));
+  box-shadow:0 12px 26px -8px rgba(201,151,59,0.75);
+}
+
+.product-card.featured{
+  border-color:rgba(201,151,59,0.45);
+}
+
+/* --- Price & discount UI --- */
+.card-price{
+  display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+  margin:6px 0 0;
+}
+.price-now{
+  font-family:'JetBrains Mono', monospace;
+  font-weight:700;
+  font-size:1.18rem;
+  letter-spacing:0.01em;
+  color:var(--gold-1,#F1D48A);
+}
+.price-mrp{
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.8rem;
+  color:rgba(243,236,224,0.45);
+  text-decoration:line-through;
+}
+.discount-badge{
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.64rem;
+  font-weight:700;
+  color:#fff;
+  background:linear-gradient(135deg, var(--forest-mid,#3E7C4A), #2c5c38);
+  padding:3px 8px;
+  border-radius:20px;
+  letter-spacing:0.02em;
+  box-shadow:0 2px 6px rgba(0,0,0,0.25);
+}
+.discount-badge.out-of-stock-badge{ background:linear-gradient(135deg,#8a3a3a,#6b2a2a); }
+
+.pack-size-btn{
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.72rem;
+  font-weight:600;
+  background:rgba(243,236,224,0.08);
+  border:1px solid rgba(243,236,224,0.25);
+  color:var(--parchment,#F3ECE0);
+  padding:6px 12px;
+  border-radius:999px;
+  cursor:pointer;
+  position:relative;
+  transition:background .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.pack-size-btn:hover{ border-color:var(--gold-2,#C9973B); background:rgba(243,236,224,0.14); transform:translateY(-1px); }
+.pack-size-btn:focus-visible{ outline:2px solid var(--gold-1); outline-offset:2px; }
+.pack-size-btn.active{
+  background:var(--gold-2,#C9973B);
+  border-color:var(--gold-2,#C9973B);
+  color:var(--forest-dark,#132A1E);
+  box-shadow:0 3px 10px rgba(201,151,59,0.35);
+}
+/* "Best value" indicator: a pinned, absolutely-positioned dot rather
+   than an inline span sitting next to the size text — an empty span
+   as a flex item beside a text node doesn't reliably keep a fixed
+   square box across browsers (it was rendering as a stretched oval).
+   An absolutely-positioned ::after sidesteps that entirely. */
+.pack-size-btn.best-value{ padding-right:18px; }
+.pack-size-btn.best-value::after{
+  content:"";
+  position:absolute;
+  top:50%; right:8px;
+  width:5px; height:5px;
+  margin-top:-2.5px;
+  border-radius:50%;
+  background:var(--gold-1,#F1D48A);
+  box-shadow:0 0 0 2px rgba(241,212,138,0.25);
+}
+.pack-size-btn.active.best-value::after{ background:var(--forest-dark,#132A1E); box-shadow:none; }
+
+.card-actions{ display:flex; align-items:stretch; gap:6px; margin-top:12px; }
+.card-actions .card-buy-now-btn{ flex:1; margin:0; }
+.card-actions .card-details-btn{ flex:none; margin:0; }
+/* Out of stock: a single full-width status button reads cleaner than
+   "Out of Stock" sitting next to a second, functionally-dead button. */
+.card-actions.out-of-stock-actions .card-buy-now-btn{ flex:1; }
+
+.card-buy-now-btn{
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  font-family:'Manrope', sans-serif;
+  font-size:0.82rem;
+  font-weight:700;
+  color:var(--forest-dark,#132A1E);
+  background:linear-gradient(135deg, var(--gold-1,#F1D48A), var(--gold-2,#C9973B));
+  border:none;
+  padding:10px 12px;
+  border-radius:9px;
+  cursor:pointer;
+  letter-spacing:0.01em;
+  box-shadow:0 6px 16px -4px rgba(201,151,59,0.45);
+  transition:transform .2s ease, box-shadow .2s ease, filter .2s ease;
+}
+.card-buy-now-btn:hover{ transform:translateY(-2px); box-shadow:0 10px 22px -6px rgba(201,151,59,0.55); filter:brightness(1.05); }
+.card-buy-now-btn:focus-visible{ outline:2px solid var(--parchment); outline-offset:2px; }
+.card-buy-now-btn svg,.card-buy-now-btn img{ width:14px; height:14px; flex:none; }
+.card-buy-now-btn.is-disabled{
+  background:rgba(243,236,224,0.15);
+  color:rgba(243,236,224,0.5);
+  box-shadow:none; cursor:not-allowed;
+}
+.card-buy-now-btn.is-disabled:hover{ transform:none; box-shadow:none; filter:none; }
+
+.card-details-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:4px;
+  /* Ghost text link, not a boxed button — Buy Now is the one action
+     this card wants you to take; Details competing for the same
+     visual weight blurred that hierarchy. */
+  background:transparent; color:var(--gold-1,#F1D48A);
+  border:none;
+  padding:10px 10px; font-size:0.8rem; font-weight:700;
+  text-decoration:none; letter-spacing:0.01em; cursor:pointer; white-space:nowrap;
+  transition:color .2s ease, transform .2s ease;
+}
+.card-details-btn:hover{ color:var(--parchment); transform:translateX(2px); }
+.card-details-btn:focus-visible{ outline:2px solid var(--gold-1); outline-offset:2px; }
+.card-details-btn.is-disabled{
+  color:rgba(243,236,224,0.35);
+  cursor:not-allowed;
+  pointer-events:none;
+}
+.card-details-btn.is-disabled:hover{ transform:none; }
+
+.product-card.out-of-stock .card-photo-media img{ opacity:0.55; filter:grayscale(0.4); }
+.product-card.out-of-stock .pack-size-btn{ opacity:0.5; cursor:not-allowed; }
+
+@media (prefers-reduced-motion: reduce){
+  .product-card, .card-photo-media img, .nutrient-toggle, .nutrient-toggle::after,
+  .nutrient-overlay, .best-strip, .pack-size-btn, .card-buy-now-btn, .card-details-btn{
+    transition:none !important;
   }
-  .see-all-toggle:hover{ color:var(--parchment,#F3ECE0); }
-  .see-all-toggle svg{ width:11px; height:11px; transition:transform .25s ease; flex-shrink:0; }
-  .see-all-toggle.expanded svg{ transform:rotate(180deg); }
+}
