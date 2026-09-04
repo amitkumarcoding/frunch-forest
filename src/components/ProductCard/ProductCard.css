@@ -7,11 +7,11 @@
 @media (max-width:600px){ .product-grid{ grid-template-columns:1fr; } }
 
 .product-card{
-  background:rgba(243,236,224,0.05);
-  border:1px solid rgba(243,236,224,0.14);
-  border-radius:16px;
+  background:linear-gradient(160deg, rgba(243,236,224,0.07), rgba(243,236,224,0.03));
+  border:1px solid rgba(243,236,224,0.13);
+  border-radius:14px;
   overflow:hidden;
-  box-shadow:0 1px 0 rgba(243,236,224,0.06) inset, 0 18px 36px -26px rgba(6,16,11,0.75);
+  box-shadow:0 1px 0 rgba(243,236,224,0.06) inset, 0 20px 40px -28px rgba(4,12,8,0.85);
   transition:transform .35s cubic-bezier(.22,.61,.36,1), background .3s ease, border-color .3s ease, box-shadow .35s cubic-bezier(.22,.61,.36,1);
   cursor:default;
   display:flex;
@@ -19,16 +19,16 @@
 }
 @media (hover:hover){
   .product-card:hover{
-    background:rgba(243,236,224,0.09);
+    background:linear-gradient(160deg, rgba(243,236,224,0.11), rgba(243,236,224,0.04));
     border-color:rgba(201,151,59,0.5);
-    box-shadow:0 1px 0 rgba(243,236,224,0.08) inset, 0 26px 44px -22px rgba(6,16,11,0.7);
+    box-shadow:0 1px 0 rgba(243,236,224,0.08) inset, 0 28px 48px -24px rgba(4,12,8,0.8);
     transform:translateY(-4px);
   }
 }
 .product-card.featured{ position:relative; }
 .product-card.featured::before{
   content:"";
-  position:absolute; inset:-1px; border-radius:17px; z-index:-1;
+  position:absolute; inset:-1px; border-radius:15px; z-index:-1;
   background:linear-gradient(135deg, var(--gold-1), transparent 30%, transparent 70%, var(--gold-2));
   opacity:0; transition:opacity .4s ease;
 }
@@ -73,13 +73,28 @@
 }
 
 .product-card .card-body{
-  padding:14px 16px 16px; display:flex; flex-direction:column;
+  position:relative;
+  padding:16px 16px 16px; display:flex; flex-direction:column;
   gap:2px;
-  /* Explicit solid background so the body can never pick up a tinted
-     background from .product-card.featured (or any leftover version
-     of that rule) — it always sits on top, opaque. */
-  background:#132A1E;
-  border-top:1px solid rgba(241,212,138,0.14);
+  /* Explicit solid gradient (both stops opaque) so the body can never
+     pick up a tinted background from .product-card.featured (or any
+     leftover version of that rule) — it always sits on top, opaque.
+     A faint grain layer adds a paper-like material feel without
+     costing an image asset. */
+  background-color:#132A1E;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(241,212,138,0.05), transparent 45%),
+    radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size:auto, 3px 3px;
+}
+/* Ticket-perforation seam instead of a plain rule — crisp, evenly
+   spaced dashes via a gradient (border-style:dashed renders unevenly
+   across browsers), reinforcing the "each card is a product ticket"
+   idea that carries through to the dashed price divider below. */
+.product-card .card-body::before{
+  content:"";
+  position:absolute; top:0; left:16px; right:16px; height:1px;
+  background-image:repeating-linear-gradient(90deg, rgba(241,212,138,0.4) 0 5px, transparent 5px 10px);
 }
 
 /* ---------- name + tag share one line instead of two ---------- */
@@ -87,15 +102,16 @@
   display:flex; align-items:baseline;
 }
 .product-card h3{
-  color:var(--parchment); font-size:1.08rem; font-weight:600; line-height:1.25;
+  color:var(--parchment); font-size:1.1rem; font-weight:600; line-height:1.25;
+  letter-spacing:0.01em;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .product-card .hi{
   font-family:'Fraunces', serif; font-style:italic; font-weight:500;
   text-transform:none; color:var(--gold-1); font-size:0.8rem;
-  letter-spacing:0.015em;
+  letter-spacing:0.02em;
   display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  margin:2px 0 9px;
+  margin:2px 0 11px;
 }
 
 .pack-sizes{
@@ -213,31 +229,52 @@
 /* --- Price & discount UI --- */
 .card-price{
   display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
-  margin:6px 0 0;
+  margin:0;
+  padding-top:11px;
+  /* Echoes the photo/body seam — a dashed ledger rule separating the
+     product's identity (name, Hindi name) from its commerce details
+     (price, sizes), like a line item on a paper ticket. */
+  background-image:repeating-linear-gradient(90deg, rgba(241,212,138,0.28) 0 5px, transparent 5px 10px);
+  background-position:top;
+  background-repeat:no-repeat;
+  background-size:100% 1px;
 }
 .price-now{
   font-family:'JetBrains Mono', monospace;
   font-weight:700;
-  font-size:1.18rem;
-  letter-spacing:0.01em;
+  font-size:1.3rem;
+  letter-spacing:0;
   color:var(--gold-1,#F1D48A);
 }
 .price-mrp{
   font-family:'JetBrains Mono', monospace;
   font-size:0.8rem;
-  color:rgba(243,236,224,0.45);
+  color:rgba(243,236,224,0.4);
   text-decoration:line-through;
 }
 .discount-badge{
+  position:relative;
   font-family:'JetBrains Mono', monospace;
   font-size:0.64rem;
   font-weight:700;
   color:#fff;
   background:linear-gradient(135deg, var(--forest-mid,#3E7C4A), #2c5c38);
-  padding:3px 8px;
+  padding:3px 9px 3px 17px;
   border-radius:20px;
   letter-spacing:0.02em;
   box-shadow:0 2px 6px rgba(0,0,0,0.25);
+}
+/* A small punched "hole" near the left edge — the tag reads as
+   ticket-stub stock rather than a generic status pill. The hole
+   color matches `.card-body`'s own solid background, which is a
+   guaranteed constant here (unlike the photo behind other badges),
+   so this is safe regardless of card state. */
+.discount-badge::before{
+  content:"";
+  position:absolute; left:6px; top:50%; transform:translateY(-50%);
+  width:4px; height:4px; border-radius:50%;
+  background:#132A1E;
+  box-shadow:0 0 0 1px rgba(255,255,255,0.4);
 }
 .discount-badge.out-of-stock-badge{ background:linear-gradient(135deg,#8a3a3a,#6b2a2a); }
 
@@ -288,6 +325,7 @@
 .card-actions.out-of-stock-actions .card-buy-now-btn{ flex:1; }
 
 .card-buy-now-btn{
+  position:relative;
   display:flex; align-items:center; justify-content:center; gap:6px;
   font-family:'Manrope', sans-serif;
   font-size:0.82rem;
@@ -296,13 +334,14 @@
   background:linear-gradient(135deg, var(--gold-1,#F1D48A), var(--gold-2,#C9973B));
   border:none;
   padding:10px 12px;
-  border-radius:9px;
+  border-radius:8px;
   cursor:pointer;
-  letter-spacing:0.01em;
-  box-shadow:0 6px 16px -4px rgba(201,151,59,0.45);
+  letter-spacing:0.02em;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.5), 0 6px 16px -4px rgba(201,151,59,0.45);
   transition:transform .2s ease, box-shadow .2s ease, filter .2s ease;
+  overflow:hidden;
 }
-.card-buy-now-btn:hover{ transform:translateY(-2px); box-shadow:0 10px 22px -6px rgba(201,151,59,0.55); filter:brightness(1.05); }
+.card-buy-now-btn:hover{ transform:translateY(-2px); box-shadow:inset 0 1px 0 rgba(255,255,255,0.6), 0 10px 22px -6px rgba(201,151,59,0.55); filter:brightness(1.05); }
 .card-buy-now-btn:focus-visible{ outline:2px solid var(--parchment); outline-offset:2px; }
 .card-buy-now-btn svg,.card-buy-now-btn img{ width:14px; height:14px; flex:none; }
 .card-buy-now-btn.is-disabled{
