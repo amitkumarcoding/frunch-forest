@@ -7,28 +7,40 @@
 @media (max-width:600px){ .product-grid{ grid-template-columns:1fr; } }
 
 .product-card{
-  background:linear-gradient(160deg, rgba(243,236,224,0.07), rgba(243,236,224,0.03));
-  border:1px solid rgba(243,236,224,0.13);
-  border-radius:14px;
+  /* The card's own background never actually showed before this: the
+     photo and body sit flush against every edge with no gap, so any
+     tint painted here was fully covered by its children. A few px of
+     visible "mat" (like the border around a mounted photograph) fixes
+     that — it separates the card from the page by its own warm color,
+     not by hoping the page happens to contrast with a dark shadow. */
+  padding:4px;
+  background:linear-gradient(160deg, rgba(241,212,138,0.16), rgba(201,151,59,0.06));
+  border:1px solid rgba(241,212,138,0.28);
+  border-radius:16px;
   overflow:hidden;
-  box-shadow:0 1px 0 rgba(243,236,224,0.06) inset, 0 20px 40px -28px rgba(4,12,8,0.85);
-  transition:transform .35s cubic-bezier(.22,.61,.36,1), background .3s ease, border-color .3s ease, box-shadow .35s cubic-bezier(.22,.61,.36,1);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    0 1px 0 rgba(0,0,0,0.5),
+    0 22px 40px -24px rgba(0,0,0,0.9);
+  transition:transform .35s cubic-bezier(.22,.61,.36,1), border-color .3s ease, box-shadow .35s cubic-bezier(.22,.61,.36,1);
   cursor:default;
   display:flex;
   flex-direction:column;
 }
 @media (hover:hover){
   .product-card:hover{
-    background:linear-gradient(160deg, rgba(243,236,224,0.11), rgba(243,236,224,0.04));
-    border-color:rgba(201,151,59,0.5);
-    box-shadow:0 1px 0 rgba(243,236,224,0.08) inset, 0 28px 48px -24px rgba(4,12,8,0.8);
+    border-color:rgba(241,212,138,0.5);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.14),
+      0 1px 0 rgba(0,0,0,0.5),
+      0 30px 50px -22px rgba(0,0,0,0.85);
     transform:translateY(-4px);
   }
 }
 .product-card.featured{ position:relative; }
 .product-card.featured::before{
   content:"";
-  position:absolute; inset:-1px; border-radius:15px; z-index:-1;
+  position:absolute; inset:-1px; border-radius:17px; z-index:-1;
   background:linear-gradient(135deg, var(--gold-1), transparent 30%, transparent 70%, var(--gold-2));
   opacity:0; transition:opacity .4s ease;
 }
@@ -54,6 +66,7 @@
    for products with more nutrient rows. */
 .product-card .card-photo{
   position:relative; height:168px; overflow:hidden; flex-shrink:0;
+  border-radius:12px 12px 0 0;
 }
 .product-card .card-photo-media{
   position:absolute; inset:0; z-index:0;
@@ -76,6 +89,7 @@
   position:relative;
   padding:16px 16px 16px; display:flex; flex-direction:column;
   gap:2px;
+  border-radius:0 0 12px 12px;
   /* Explicit solid gradient (both stops opaque) so the body can never
      pick up a tinted background from .product-card.featured (or any
      leftover version of that rule) — it always sits on top, opaque.
@@ -97,7 +111,7 @@
   background-image:repeating-linear-gradient(90deg, rgba(241,212,138,0.4) 0 5px, transparent 5px 10px);
 }
 
-/* ---------- name + tag share one line instead of two ---------- */
+/* ---------- name ---------- */
 .card-heading{
   display:flex; align-items:baseline;
 }
@@ -282,22 +296,24 @@
   font-family:'JetBrains Mono', monospace;
   font-size:0.72rem;
   font-weight:600;
-  background:rgba(243,236,224,0.08);
-  border:1px solid rgba(243,236,224,0.25);
+  letter-spacing:0.02em;
+  background:rgba(241,212,138,0.07);
+  border:1px solid rgba(241,212,138,0.22);
   color:var(--parchment,#F3ECE0);
   padding:6px 12px;
   border-radius:999px;
   cursor:pointer;
   position:relative;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);
   transition:background .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease, transform .2s ease;
 }
-.pack-size-btn:hover{ border-color:var(--gold-2,#C9973B); background:rgba(243,236,224,0.14); transform:translateY(-1px); }
+.pack-size-btn:hover{ border-color:var(--gold-2,#C9973B); background:rgba(241,212,138,0.14); transform:translateY(-1px); }
 .pack-size-btn:focus-visible{ outline:2px solid var(--gold-1); outline-offset:2px; }
 .pack-size-btn.active{
-  background:var(--gold-2,#C9973B);
+  background:linear-gradient(135deg, var(--gold-1,#F1D48A), var(--gold-2,#C9973B));
   border-color:var(--gold-2,#C9973B);
   color:var(--forest-dark,#132A1E);
-  box-shadow:0 3px 10px rgba(201,151,59,0.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 3px 10px rgba(201,151,59,0.35);
 }
 /* "Best value" indicator: a pinned, absolutely-positioned dot rather
    than an inline span sitting next to the size text — an empty span
