@@ -568,13 +568,54 @@ function Home() {
         <section id="products">
           <span className="sec-line"></span>
           <div className="wrap">
-            <div className="section-head reveal">
-              <div className="eyebrow">The range</div>
-              <h2>Five staples, done right</h2>
-              <p>Every product ships in four pack sizes with the same promise: no preservatives, no additives, quality guaranteed.</p>
-              <Link className="btn-primary all-products-btn" to="/products">All Products
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-              </Link>
+            <div className="section-head range-head reveal">
+              <div className="range-head-copy">
+                <div className="eyebrow"><span className="dot"></span>The Range</div>
+                <h2>Five staples,<br /><span className="accent-serif">done right</span></h2>
+                <p>Every product ships in four pack sizes with the same promise: no preservatives, no additives, quality guaranteed.</p>
+
+                <ul className="range-trust-row">
+                  <li className="range-trust-pill">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                    No preservatives
+                  </li>
+                  <li className="range-trust-pill">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                    No additives
+                  </li>
+                  <li className="range-trust-pill">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                    Quality guaranteed
+                  </li>
+                </ul>
+
+                <Link className="btn-primary all-products-btn" to="/products">All Products
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </Link>
+              </div>
+
+              <div className="range-head-visual" aria-hidden="true">
+                <div className="range-stat-card">
+                  <div className="range-stat">
+                    <strong>05</strong>
+                    <span>Flagship staples</span>
+                  </div>
+                  <div className="range-stat-divider"></div>
+                  <div className="range-stat">
+                    <strong>04</strong>
+                    <span>Pack sizes, each</span>
+                  </div>
+                  <div className="range-stat-divider"></div>
+                  <div className="range-stat">
+                    <strong>0%</strong>
+                    <span>Preservatives, ever</span>
+                  </div>
+                </div>
+                <div className="range-seal">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2 4 6v6c0 5 3.4 8.4 8 10 4.6-1.6 8-5 8-10V6l-8-4Z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                  <span>Quality<br />Guaranteed</span>
+                </div>
+              </div>
             </div>
             <div className="best-sellers reveal">
               <div className="best-seller-item">
@@ -602,7 +643,7 @@ function Home() {
             {/* <div className="product-grid" id="productGrid"></div> */}
             <div className="product-grid">
 
-              {products.map((product) => (
+              {products.slice(0, 8).map((product) => (
                 <ProductCard key={product.slug} product={product} />
               ))}
             </div>

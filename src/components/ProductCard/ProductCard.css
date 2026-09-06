@@ -1,254 +1,126 @@
 .product-grid{
   display:grid;
-  grid-template-columns:repeat(3, 1fr);
-  gap:20px;
+  grid-template-columns:repeat(4, 1fr);
+  gap:24px;
 }
-@media (max-width:900px){ .product-grid{ grid-template-columns:repeat(2,1fr); } }
-@media (max-width:600px){ .product-grid{ grid-template-columns:1fr; } }
+@media (max-width:900px){ .product-grid{ grid-template-columns:repeat(2,1fr); gap:16px; } }
+@media (max-width:480px){ .product-grid{ gap:10px; } }
 
 .product-card{
-  /* The card's own background never actually showed before this: the
-     photo and body sit flush against every edge with no gap, so any
-     tint painted here was fully covered by its children. A few px of
-     visible "mat" (like the border around a mounted photograph) fixes
-     that — it separates the card from the page by its own warm color,
-     not by hoping the page happens to contrast with a dark shadow. */
-  padding:4px;
-  background:linear-gradient(160deg, rgba(241,212,138,0.16), rgba(201,151,59,0.06));
-  border:1px solid rgba(241,212,138,0.28);
-  border-radius:16px;
+  /* Enhanced premium feel with increased padding and refined shadows */
+  padding:6px;
+  background:linear-gradient(160deg, rgba(241,212,138,0.12), rgba(201,151,59,0.04));
+  border:1px solid rgba(241,212,138,0.32);
+  border-radius:20px;
   overflow:hidden;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.1),
-    0 1px 0 rgba(0,0,0,0.5),
-    0 22px 40px -24px rgba(0,0,0,0.9);
-  transition:transform .35s cubic-bezier(.22,.61,.36,1), border-color .3s ease, box-shadow .35s cubic-bezier(.22,.61,.36,1);
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 4px 6px -2px rgba(0,0,0,0.1),
+    0 12px 24px -4px rgba(0,0,0,0.12);
+  transition:transform .4s cubic-bezier(.22,.61,.36,1), border-color .3s ease, box-shadow .4s cubic-bezier(.22,.61,.36,1);
   cursor:default;
   display:flex;
   flex-direction:column;
+  position:relative;
+  isolation:isolate;
 }
 @media (hover:hover){
   .product-card:hover{
-    border-color:rgba(241,212,138,0.5);
+    border-color:rgba(241,212,138,0.4);
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.14),
-      0 1px 0 rgba(0,0,0,0.5),
-      0 30px 50px -22px rgba(0,0,0,0.85);
-    transform:translateY(-4px);
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      0 8px 12px -2px rgba(0,0,0,0.15),
+      0 20px 32px -6px rgba(0,0,0,0.18);
+    transform:translateY(-6px);
   }
 }
 .product-card.featured{ position:relative; }
 .product-card.featured::before{
   content:"";
-  position:absolute; inset:-1px; border-radius:17px; z-index:-1;
+  position:absolute; inset:-2px; border-radius:22px; z-index:-1;
   background:linear-gradient(135deg, var(--gold-1), transparent 30%, transparent 70%, var(--gold-2));
   opacity:0; transition:opacity .4s ease;
 }
-.product-card.featured:hover::before{ opacity:1; }
-.product-card:hover .card-photo-media img{ transform:scale(1.06); }
+.product-card.featured:hover::before{ opacity:0.15; }
+.product-card:hover .card-photo-media img{ transform:scale(1.04); }
 
-/* ---------- photo ----------
-   FIXED height, not aspect-ratio — aspect-ratio ties photo height to
-   card width, so it changes with however many columns end up in a
-   row. A fixed px height keeps row height predictable regardless of
-   column count, which is what lets two full rows (6 cards) fit on
-   one screen.
-
-   `.card-photo` clips (overflow:hidden) — this is what keeps the
-   nutrient overlay, the zoomed image, and the tooltip contained inside
-   the card. An earlier pass removed this to stop the tooltip clipping,
-   which broke worse: the overlay's content (heading + rows + footnote)
-   is taller than the fixed photo height, and with nothing clipping it,
-   the centered content spilled out both above AND below the card,
-   overlapping the row above it. Clipping is back; the overlay itself
-   is now sized/aligned to actually fit inside the box instead (see
-   `.nutrient-overlay` below), with a scroll fallback as a safety net
-   for products with more nutrient rows. */
+/* ---------- photo ---------- */
 .product-card .card-photo{
-  position:relative; height:168px; overflow:hidden; flex-shrink:0;
-  border-radius:12px 12px 0 0;
+  position:relative; height:150px; overflow:hidden; flex-shrink:0;
+  border-radius:16px 16px 0 0;
 }
 .product-card .card-photo-media{
   position:absolute; inset:0; z-index:0;
 }
 .product-card .card-photo-media img{
   width:100%; height:100%; object-fit:cover;
-  /* Light shared color grade so photos shot in different lighting
-     (warm almonds vs. neutral cashews) read as one cohesive catalog
-     rather than mismatched stock photography. */
-  filter:saturate(1.06) contrast(1.03) brightness(0.98) sepia(0.04);
-  transition:transform .6s cubic-bezier(.22,.61,.36,1);
+  filter:saturate(1.04) contrast(1.02) brightness(0.99) sepia(0.02);
+  transition:transform .8s cubic-bezier(.22,.61,.36,1);
 }
 .product-card .card-photo-media::after{
   content:"";
   position:absolute; inset:0;
-  background:linear-gradient(0deg, rgba(19,42,30,0.88) 0%, rgba(19,42,30,0) 52%);
+  background:linear-gradient(0deg, rgba(19,42,30,0.85) 0%, rgba(19,42,30,0) 48%);
 }
 
+/* ---------- body ---------- */
 .product-card .card-body{
   position:relative;
-  padding:16px 16px 16px; display:flex; flex-direction:column;
-  gap:2px;
-  border-radius:0 0 12px 12px;
-  /* Explicit solid gradient (both stops opaque) so the body can never
-     pick up a tinted background from .product-card.featured (or any
-     leftover version of that rule) — it always sits on top, opaque.
-     A faint grain layer adds a paper-like material feel without
-     costing an image asset. */
+  padding:16px 18px 18px; display:flex; flex-direction:column;
+  gap:3px;
+  border-radius:0 0 16px 16px;
   background-color:#132A1E;
   background-image:
-    radial-gradient(circle at 12% 8%, rgba(241,212,138,0.05), transparent 45%),
-    radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
-  background-size:auto, 3px 3px;
+    radial-gradient(circle at 12% 8%, rgba(241,212,138,0.03), transparent 40%),
+    radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size:auto, 4px 4px;
 }
-/* Ticket-perforation seam instead of a plain rule — crisp, evenly
-   spaced dashes via a gradient (border-style:dashed renders unevenly
-   across browsers), reinforcing the "each card is a product ticket"
-   idea that carries through to the dashed price divider below. */
 .product-card .card-body::before{
   content:"";
-  position:absolute; top:0; left:16px; right:16px; height:1px;
-  background-image:repeating-linear-gradient(90deg, rgba(241,212,138,0.4) 0 5px, transparent 5px 10px);
+  position:absolute; top:0; left:18px; right:18px; height:1px;
+  background-image:repeating-linear-gradient(90deg, rgba(241,212,138,0.3) 0 6px, transparent 6px 12px);
 }
 
 /* ---------- name ---------- */
 .card-heading{
-  display:flex; align-items:baseline;
+  display:flex; align-items:baseline; justify-content:space-between;
+  gap:8px;
+  margin-bottom:2px;
 }
 .product-card h3{
-  color:var(--parchment); font-size:1.1rem; font-weight:600; line-height:1.25;
-  letter-spacing:0.01em;
+  color:var(--parchment); font-size:1.2rem; font-weight:400; line-height:1.25;
+  letter-spacing:0.02em;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  min-width:0;
 }
 .product-card .hi{
   font-family:'Fraunces', serif; font-style:italic; font-weight:500;
-  text-transform:none; color:var(--gold-1); font-size:0.8rem;
-  letter-spacing:0.02em;
+  text-transform:none; color:var(--gold-1); font-size:0.85rem;
+  letter-spacing:0.015em;
   display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  margin:2px 0 11px;
+  margin:2px 0 8px;
 }
 
-.pack-sizes{
-  display:flex; flex-wrap:wrap; gap:7px; margin-top:8px;
+/* ---------- highlight pill (sits in the heading row, right of the name) ---------- */
+.card-highlight{
+  flex:none;
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.64rem;
+  letter-spacing:0.02em;
+  color:rgba(243,236,224,0.6);
+  background:rgba(241,212,138,0.07);
+  border:1px solid rgba(241,212,138,0.16);
+  padding:3px 8px;
+  border-radius:999px;
+  white-space:nowrap;
 }
 
-/* ---------- nutrient reveal toggle ("i" button) ---------- */
-.nutrient-toggle{
-  position:absolute; top:10px; right:10px; z-index:4;
-  width:32px; height:32px;
-  border-radius:50%;
-  background:rgba(19,42,30,0.88); backdrop-filter:blur(6px);
-  border:1px solid rgba(243,236,224,0.35);
-  display:flex; align-items:center; justify-content:center;
-  color:var(--gold-1); cursor:pointer;
-  transition:transform .25s ease, border-color .25s ease, background .25s ease, box-shadow .25s ease;
-}
-.nutrient-toggle::after{
-  content:"Tap for nutrients";
-  position:absolute; top:50%; right:calc(100% + 10px); transform:translate(6px,-50%);
-  background:rgba(19,42,30,0.97);
-  color:rgba(243,236,224,0.95);
-  font-size:0.72rem; letter-spacing:0.02em;
-  padding:7px 11px; border-radius:999px;
-  white-space:nowrap; border:1px solid rgba(243,236,224,0.16);
-  box-shadow:0 14px 30px -18px rgba(0,0,0,0.6);
-  /* Hidden until hover — six of these on screen at once (two full
-     rows) read as clutter rather than a helpful hint; revealing it
-     on interaction keeps the resting grid calm and turns it into a
-     small discovery instead of a static label everyone sees. */
-  opacity:0; pointer-events:none;
-  transition:opacity .25s ease, transform .25s ease;
-}
-@media (hover:hover){
-  .nutrient-toggle:hover{ transform:scale(1.08); border-color:var(--gold-1); background:rgba(19,42,30,0.95); box-shadow:0 6px 16px -6px rgba(0,0,0,0.5); }
-  .nutrient-toggle:hover::after{ opacity:1; transform:translate(0,-50%); }
-}
-.nutrient-toggle:focus-visible{ outline:2px solid var(--gold-1); outline-offset:2px; }
-.nutrient-toggle svg{ width:14px; height:14px; pointer-events:none; }
-
-.nutrient-overlay{
-  position:absolute; inset:0; z-index:2;
-  display:flex; flex-direction:column; justify-content:flex-start;
-  padding:14px 18px;
-  opacity:0; pointer-events:none;
-  transform:scale(0.97);
-  transition:opacity .35s cubic-bezier(.22,.61,.36,1), transform .35s cubic-bezier(.22,.61,.36,1);
-  background:radial-gradient(circle at 50% 50%, rgba(201,151,59,0.32), rgba(19,42,30,0.96) 72%);
-  overflow-y:auto; /* fallback for products with more nutrient rows than fit; nothing below clips outward */
-  scrollbar-width:none;
-}
-.nutrient-overlay::-webkit-scrollbar{ display:none; }
-.nutrient-overlay::before{
-  content:"";
-  position:absolute; inset:0;
-  background:radial-gradient(circle at 50% 50%, rgba(241,212,138,0.22), transparent 62%);
-  pointer-events:none;
-}
-.nutrient-overlay.active{ opacity:1; pointer-events:auto; transform:scale(1); z-index:3; }
-.nutrient-overlay.active ~ .best-strip{ opacity:0; visibility:hidden; transition:opacity .25s ease; }
-.nutrient-overlay h4{
-  font-family:'JetBrains Mono', monospace; letter-spacing:0.06em;
-  font-size:0.64rem; color:var(--gold-1); margin-bottom:6px; position:relative; flex-shrink:0;
-}
-.nutrient-overlay ul{ list-style:none; position:relative; margin-bottom:0; flex-shrink:0; }
-.nutrient-overlay ul li{
-  display:flex; justify-content:space-between; align-items:center;
-  font-size:0.78rem; color:var(--parchment);
-  padding:3px 0; margin-bottom:0;
-  border-bottom:1px dashed rgba(243,236,224,0.16);
-}
-.nutrient-overlay ul li::before{ content:none; }
-.nutrient-overlay ul li span{ color:var(--gold-1); font-family:'JetBrains Mono', monospace; font-size:0.74rem; }
-.nutrient-overlay .nutrient-basis{
-  position:relative; margin-top:6px; font-size:0.62rem;
-  color:rgba(243,236,224,0.55); font-style:italic; flex-shrink:0;
-}
-
-.best-strip{
-  position:absolute; bottom:10px; left:10px; z-index:2;
-  display:flex; align-items:center; gap:6px;
-  max-width:calc(100% - 54px); /* keep clear of the nutrient-toggle icon (32px + offsets) */
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  background:linear-gradient(120deg, var(--gold-3), var(--gold-1) 55%, var(--gold-2));
-  color:var(--forest-dark);
-  font-family:'JetBrains Mono', monospace; font-size:0.68rem;
-  /* 700 isn't a loaded weight for JetBrains Mono (only 400/600 are
-     imported) — the browser was faking it via synthetic bold, which
-     distorted glyphs at this size + letter-spacing and made the "S"
-     in SELLER visually vanish. 600 is a real loaded weight. */
-  font-weight:600; letter-spacing:0.05em;
-  font-synthesis:none;
-  padding:5px 10px; border-radius:100px;
-  opacity:1; visibility:visible;
-  box-shadow:0 6px 16px -6px rgba(201,151,59,0.5);
-  transition:opacity .25s ease, box-shadow .25s ease, background .25s ease;
-}
-/* NOTE: intentionally no `transform` here. A nested transform on this
-   badge, layered on top of the card's own hover-lift transform, fights
-   compositing in Chrome and corrupts/clips the text glyphs (this is
-   what was eating the "S" in "SELLER"). Glow-only feedback avoids that
-   entirely while still reading as a hover response. */
-.product-card:hover .best-strip{
-  box-shadow:0 10px 22px -8px rgba(201,151,59,0.65);
-}
-.best-strip:hover{
-  background:linear-gradient(120deg, var(--gold-2), var(--gold-1) 55%, var(--gold-3));
-  box-shadow:0 12px 26px -8px rgba(201,151,59,0.75);
-}
-
-.product-card.featured{
-  border-color:rgba(201,151,59,0.45);
-}
-
-/* --- Price & discount UI --- */
+/* ---------- price ---------- */
 .card-price{
-  display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+  display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
   margin:0;
-  padding-top:11px;
-  /* Echoes the photo/body seam — a dashed ledger rule separating the
-     product's identity (name, Hindi name) from its commerce details
-     (price, sizes), like a line item on a paper ticket. */
-  background-image:repeating-linear-gradient(90deg, rgba(241,212,138,0.28) 0 5px, transparent 5px 10px);
+  padding-top:10px;
+  background-image:repeating-linear-gradient(90deg, rgba(241,212,138,0.25) 0 6px, transparent 6px 12px);
   background-position:top;
   background-repeat:no-repeat;
   background-size:100% 1px;
@@ -256,143 +128,359 @@
 .price-now{
   font-family:'JetBrains Mono', monospace;
   font-weight:700;
-  font-size:1.3rem;
-  letter-spacing:0;
+  font-size:1.5rem;
+  letter-spacing:-0.01em;
   color:var(--gold-1,#F1D48A);
 }
 .price-mrp{
   font-family:'JetBrains Mono', monospace;
-  font-size:0.8rem;
-  color:rgba(243,236,224,0.4);
+  font-size:0.85rem;
+  color:rgba(243,236,224,0.35);
   text-decoration:line-through;
 }
 .discount-badge{
   position:relative;
   font-family:'JetBrains Mono', monospace;
-  font-size:0.64rem;
+  font-size:0.68rem;
   font-weight:700;
   color:#fff;
   background:linear-gradient(135deg, var(--forest-mid,#3E7C4A), #2c5c38);
-  padding:3px 9px 3px 17px;
-  border-radius:20px;
-  letter-spacing:0.02em;
-  box-shadow:0 2px 6px rgba(0,0,0,0.25);
+  padding:4px 10px 4px 18px;
+  border-radius:24px;
+  letter-spacing:0.01em;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
 }
-/* A small punched "hole" near the left edge — the tag reads as
-   ticket-stub stock rather than a generic status pill. The hole
-   color matches `.card-body`'s own solid background, which is a
-   guaranteed constant here (unlike the photo behind other badges),
-   so this is safe regardless of card state. */
 .discount-badge::before{
   content:"";
-  position:absolute; left:6px; top:50%; transform:translateY(-50%);
-  width:4px; height:4px; border-radius:50%;
+  position:absolute; left:8px; top:50%; transform:translateY(-50%);
+  width:5px; height:5px; border-radius:50%;
   background:#132A1E;
-  box-shadow:0 0 0 1px rgba(255,255,255,0.4);
+  box-shadow:0 0 0 1px rgba(255,255,255,0.3);
 }
-.discount-badge.out-of-stock-badge{ background:linear-gradient(135deg,#8a3a3a,#6b2a2a); }
 
+/* ---------- pack sizes ---------- */
+.pack-sizes{
+  display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;
+}
 .pack-size-btn{
   font-family:'JetBrains Mono', monospace;
-  font-size:0.72rem;
+  font-size:0.76rem;
   font-weight:600;
-  letter-spacing:0.02em;
-  background:rgba(241,212,138,0.07);
-  border:1px solid rgba(241,212,138,0.22);
+  letter-spacing:0.01em;
+  background:rgba(241,212,138,0.05);
+  border:1px solid rgba(241,212,138,0.18);
   color:var(--parchment,#F3ECE0);
-  padding:6px 12px;
+  padding:7px 14px;
   border-radius:999px;
   cursor:pointer;
   position:relative;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);
-  transition:background .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease, transform .2s ease;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
+  transition:all .2s ease;
 }
-.pack-size-btn:hover{ border-color:var(--gold-2,#C9973B); background:rgba(241,212,138,0.14); transform:translateY(-1px); }
+.pack-size-btn:hover{
+  border-color:var(--gold-2,#C9973B);
+  background:rgba(241,212,138,0.12);
+  transform:translateY(-1px);
+}
 .pack-size-btn:focus-visible{ outline:2px solid var(--gold-1); outline-offset:2px; }
 .pack-size-btn.active{
   background:linear-gradient(135deg, var(--gold-1,#F1D48A), var(--gold-2,#C9973B));
   border-color:var(--gold-2,#C9973B);
   color:var(--forest-dark,#132A1E);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.45), 0 3px 10px rgba(201,151,59,0.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 6px rgba(201,151,59,0.25);
 }
-/* "Best value" indicator: a pinned, absolutely-positioned dot rather
-   than an inline span sitting next to the size text — an empty span
-   as a flex item beside a text node doesn't reliably keep a fixed
-   square box across browsers (it was rendering as a stretched oval).
-   An absolutely-positioned ::after sidesteps that entirely. */
-.pack-size-btn.best-value{ padding-right:18px; }
+.pack-size-btn.best-value{ padding-right:20px; }
 .pack-size-btn.best-value::after{
   content:"";
   position:absolute;
-  top:50%; right:8px;
-  width:5px; height:5px;
-  margin-top:-2.5px;
+  top:50%; right:10px;
+  width:6px; height:6px;
+  margin-top:-3px;
   border-radius:50%;
   background:var(--gold-1,#F1D48A);
-  box-shadow:0 0 0 2px rgba(241,212,138,0.25);
+  box-shadow:0 0 0 2px rgba(241,212,138,0.2);
 }
 .pack-size-btn.active.best-value::after{ background:var(--forest-dark,#132A1E); box-shadow:none; }
 
-.card-actions{ display:flex; align-items:stretch; gap:6px; margin-top:12px; }
+/* ---------- nutrient toggle ---------- */
+.nutrient-toggle{
+  position:absolute; top:14px; right:14px; z-index:4;
+  width:36px; height:36px;
+  border-radius:50%;
+  background:rgba(19,42,30,0.85); backdrop-filter:blur(4px);
+  border:1px solid rgba(243,236,224,0.3);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--gold-1); cursor:pointer;
+  transition:all .25s ease;
+}
+.nutrient-toggle::after{
+  content:"Tap for nutrients";
+  position:absolute; top:50%; right:calc(100% + 12px); transform:translate(8px,-50%);
+  background:rgba(19,42,30,0.96);
+  color:rgba(243,236,224,0.93);
+  font-size:0.7rem; letter-spacing:0.015em;
+  padding:8px 12px; border-radius:50px;
+  white-space:nowrap; border:1px solid rgba(243,236,224,0.15);
+  box-shadow:0 8px 16px -10px rgba(0,0,0,0.4);
+  opacity:0; pointer-events:none;
+  transition:all .25s ease;
+}
+@media (hover:hover){
+  .nutrient-toggle:hover{
+    transform:scale(1.1);
+    border-color:var(--gold-1);
+    background:rgba(19,42,30,0.92);
+    box-shadow:0 4px 10px -4px rgba(0,0,0,0.4);
+  }
+  .nutrient-toggle:hover::after{
+    opacity:1;
+    transform:translate(0,-50%);
+  }
+}
+.nutrient-toggle:focus-visible{ outline:2px solid var(--gold-1); outline-offset:2px; }
+.nutrient-toggle svg{ width:16px; height:16px; pointer-events:none; }
+
+/* ---------- nutrient overlay ---------- */
+.nutrient-overlay{
+  position:absolute; inset:0; z-index:2;
+  display:flex; flex-direction:column; justify-content:flex-start;
+  padding:18px 22px;
+  opacity:0; pointer-events:none;
+  transform:scale(0.96);
+  transition:opacity .4s cubic-bezier(.22,.61,.36,1), transform .4s cubic-bezier(.22,.61,.36,1);
+  background:radial-gradient(circle at 50% 50%, rgba(201,151,59,0.28), rgba(19,42,30,0.94) 70%);
+  overflow-y:auto;
+  scrollbar-width:none;
+}
+.nutrient-overlay::-webkit-scrollbar{ display:none; }
+.nutrient-overlay::before{
+  content:"";
+  position:absolute; inset:0;
+  background:radial-gradient(circle at 50% 50%, rgba(241,212,138,0.18), transparent 58%);
+  pointer-events:none;
+}
+.nutrient-overlay.active{ opacity:1; pointer-events:auto; transform:scale(1); z-index:3; }
+.nutrient-overlay.active ~ .best-strip{ opacity:0; visibility:hidden; transition:opacity .3s ease; }
+.nutrient-overlay h4{
+  font-family:'JetBrains Mono', monospace; letter-spacing:0.05em;
+  font-size:0.68rem; color:var(--gold-1); margin-bottom:8px; position:relative; flex-shrink:0;
+}
+.nutrient-overlay ul{ list-style:none; position:relative; margin-bottom:0; flex-shrink:0; }
+.nutrient-overlay ul li{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:0.82rem; color:var(--parchment);
+  padding:4px 0; margin-bottom:0;
+  border-bottom:1px dashed rgba(243,236,224,0.14);
+}
+.nutrient-overlay ul li::before{ content:none; }
+.nutrient-overlay ul li span{ color:var(--gold-1); font-family:'JetBrains Mono', monospace; font-size:0.78rem; }
+.nutrient-overlay .nutrient-basis{
+  position:relative; margin-top:8px; font-size:0.66rem;
+  color:rgba(243,236,224,0.5); font-style:italic; flex-shrink:0;
+}
+
+/* ---------- best strip ---------- */
+.best-strip{
+  position:absolute; bottom:14px; left:14px; z-index:2;
+  display:flex; align-items:center; gap:8px;
+  max-width:calc(100% - 64px);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  background:linear-gradient(120deg, var(--gold-3), var(--gold-1) 50%, var(--gold-2));
+  color:var(--forest-dark);
+  font-family:'JetBrains Mono', monospace; font-size:0.72rem;
+  font-weight:600; letter-spacing:0.04em;
+  font-synthesis:none;
+  padding:6px 12px; border-radius:50px;
+  opacity:1; visibility:visible;
+  box-shadow:0 4px 10px -4px rgba(201,151,59,0.4);
+  transition:all .25s ease;
+}
+.product-card:hover .best-strip{
+  box-shadow:0 6px 14px -6px rgba(201,151,59,0.5);
+}
+.best-strip:hover{
+  background:linear-gradient(120deg, var(--gold-2), var(--gold-1) 50%, var(--gold-3));
+  box-shadow:0 8px 18px -8px rgba(201,151,59,0.6);
+}
+
+/* ---------- actions ---------- */
+.card-actions{ display:flex; flex-direction:row; align-items:stretch; gap:10px; margin-top:14px; }
 .card-actions .card-buy-now-btn{ flex:1; margin:0; }
 .card-actions .card-details-btn{ flex:none; margin:0; }
-/* Out of stock: a single full-width status button reads cleaner than
-   "Out of Stock" sitting next to a second, functionally-dead button. */
 .card-actions.out-of-stock-actions .card-buy-now-btn{ flex:1; }
 
 .card-buy-now-btn{
   position:relative;
-  display:flex; align-items:center; justify-content:center; gap:6px;
+  display:flex; align-items:center; justify-content:center; gap:8px;
   font-family:'Manrope', sans-serif;
-  font-size:0.82rem;
+  font-size:0.88rem;
   font-weight:700;
-  color:var(--forest-dark,#132A1E);
-  background:linear-gradient(135deg, var(--gold-1,#F1D48A), var(--gold-2,#C9973B));
-  border:none;
-  padding:10px 12px;
-  border-radius:8px;
+  color:var(--gold-1,#F1D48A);
+  background:linear-gradient(160deg, #1a3a28, var(--forest-dark,#132A1E));
+  border:1px solid rgba(241,212,138,0.35);
+  padding:13px 16px;
+  border-radius:14px;
   cursor:pointer;
-  letter-spacing:0.02em;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.5), 0 6px 16px -4px rgba(201,151,59,0.45);
-  transition:transform .2s ease, box-shadow .2s ease, filter .2s ease;
+  letter-spacing:0.01em;
+  white-space:nowrap;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 10px -2px rgba(0,0,0,0.35);
+  transition:all .2s ease;
   overflow:hidden;
 }
-.card-buy-now-btn:hover{ transform:translateY(-2px); box-shadow:inset 0 1px 0 rgba(255,255,255,0.6), 0 10px 22px -6px rgba(201,151,59,0.55); filter:brightness(1.05); }
-.card-buy-now-btn:focus-visible{ outline:2px solid var(--parchment); outline-offset:2px; }
-.card-buy-now-btn svg,.card-buy-now-btn img{ width:14px; height:14px; flex:none; }
+.card-buy-now-btn::before{
+  content:"";
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  background:linear-gradient(90deg, transparent, rgba(241,212,138,0.14), transparent);
+  transform:translateX(-100%);
+  transition:transform .6s ease;
+}
+.card-buy-now-btn:hover::before{
+  transform:translateX(100%);
+}
+.card-buy-now-btn:hover{
+  transform:translateY(-2px);
+  border-color:rgba(241,212,138,0.6);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 16px -4px rgba(0,0,0,0.4);
+}
+.card-buy-now-btn:focus-visible{ outline:2px solid var(--gold-1); outline-offset:2px; }
+.card-buy-now-btn svg,.card-buy-now-btn img{ width:16px; height:16px; flex:none; }
+.card-buy-now-btn .whatsapp-icon{ fill:currentColor; }
 .card-buy-now-btn.is-disabled{
-  background:rgba(243,236,224,0.15);
-  color:rgba(243,236,224,0.5);
+  background:rgba(243,236,224,0.08);
+  color:rgba(243,236,224,0.4);
+  border:1px solid rgba(243,236,224,0.15);
   box-shadow:none; cursor:not-allowed;
 }
-.card-buy-now-btn.is-disabled:hover{ transform:none; box-shadow:none; filter:none; }
+.card-buy-now-btn.is-disabled:hover{ transform:none; border-color:rgba(243,236,224,0.15); box-shadow:none; }
 
 .card-details-btn{
-  display:inline-flex; align-items:center; justify-content:center; gap:4px;
-  /* Ghost text link, not a boxed button — Buy Now is the one action
-     this card wants you to take; Details competing for the same
-     visual weight blurred that hierarchy. */
-  background:transparent; color:var(--gold-1,#F1D48A);
-  border:none;
-  padding:10px 10px; font-size:0.8rem; font-weight:700;
-  text-decoration:none; letter-spacing:0.01em; cursor:pointer; white-space:nowrap;
-  transition:color .2s ease, transform .2s ease;
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  background:rgba(241,212,138,0.06); color:var(--gold-1,#F1D48A);
+  border:1px solid rgba(241,212,138,0.3);
+  padding:13px 16px; font-size:0.86rem; font-weight:700;
+  border-radius:14px;
+  text-decoration:none; letter-spacing:0.008em; cursor:pointer; white-space:nowrap;
+  transition:all .2s ease;
 }
-.card-details-btn:hover{ color:var(--parchment); transform:translateX(2px); }
+.card-details-btn:hover{ color:var(--forest-dark); background:var(--gold-1); border-color:var(--gold-1); transform:translateY(-2px); }
 .card-details-btn:focus-visible{ outline:2px solid var(--gold-1); outline-offset:2px; }
 .card-details-btn.is-disabled{
-  color:rgba(243,236,224,0.35);
+  color:rgba(243,236,224,0.3);
+  border-color:rgba(243,236,224,0.12);
+  background:transparent;
   cursor:not-allowed;
   pointer-events:none;
 }
-.card-details-btn.is-disabled:hover{ transform:none; }
+.card-details-btn.is-disabled:hover{ transform:none; background:transparent; color:rgba(243,236,224,0.3); }
 
-.product-card.out-of-stock .card-photo-media img{ opacity:0.55; filter:grayscale(0.4); }
-.product-card.out-of-stock .pack-size-btn{ opacity:0.5; cursor:not-allowed; }
+/* ---------- out of stock ---------- */
+.product-card.out-of-stock{ border-color:rgba(243,236,224,0.14); }
+.product-card.out-of-stock .card-photo-media img{ opacity:0.5; filter:grayscale(0.3); }
+.product-card.out-of-stock .pack-size-btn{ opacity:0.4; cursor:not-allowed; }
 
+.oos-stamp{
+  position:absolute; top:50%; left:50%; z-index:2;
+  transform:translate(-50%,-50%) rotate(-8deg);
+  border:2px solid rgba(224,122,122,0.85);
+  color:#ffe2e2;
+  background:rgba(19,42,30,0.6);
+  backdrop-filter:blur(2px);
+  font-family:'JetBrains Mono', monospace;
+  font-weight:700;
+  letter-spacing:0.12em;
+  font-size:0.78rem;
+  text-transform:uppercase;
+  padding:6px 14px;
+  border-radius:6px;
+  white-space:nowrap;
+  pointer-events:none;
+}
+
+/* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion: reduce){
   .product-card, .card-photo-media img, .nutrient-toggle, .nutrient-toggle::after,
   .nutrient-overlay, .best-strip, .pack-size-btn, .card-buy-now-btn, .card-details-btn{
     transition:none !important;
   }
+}
+
+/* ---------- favorite button ---------- */
+.fav-btn{
+  position:absolute; top:14px; left:14px; z-index:4;
+  width:36px; height:36px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--parchment); cursor:pointer;
+  transition:all .25s ease;
+}
+.fav-btn:hover{
+  background:rgba(255,255,255,0.15);
+  transform:scale(1.05);
+}
+.fav-btn.active{
+  background:rgba(241,212,138,0.2);
+  border-color:var(--gold-1);
+  color:var(--gold-1);
+  box-shadow:0 0 0 3px rgba(241,212,138,0.15);
+}
+.fab-btn:focus-visible{ outline:2px solid var(--gold-1); outline-offset:2px; }
+.fav-btn svg{ width:18px; height:18px; pointer-events:none; }
+
+/* ---------- badges ---------- */
+.card-badges{
+  position:absolute; top:12px; left:12px; z-index:3;
+  display:flex; gap:8px; flex-wrap:wrap;
+}
+.badge{
+  font-family:'JetBrains Mono', monospace;
+  font-size:0.68rem;
+  font-weight:600;
+  color:#fff;
+  background:rgba(0,0,0,0.4);
+  backdrop-filter:blur(4px);
+  padding:2px 8px;
+  border-radius:12px;
+  letter-spacing:0.01em;
+  box-shadow:0 1px 2px rgba(0,0,0,0.2);
+}
+.badge-combo{ background:linear-gradient(135deg, #ff9e80, #ff6b6b); }
+.badge-popular{ background:linear-gradient(135deg, #ff6b6b, #ff4757); }
+.badge-new{ background:linear-gradient(135deg, #4cc9f0, #43cea2); }
+
+/* ---------- mobile: 2-up grid tightening ----------
+   At phone widths the grid holds 2 cards per row, so each card gets
+   roughly half the space it had before. These rules shrink padding,
+   type, and controls so nothing wraps onto itself or overflows the
+   card — without changing anything at tablet/desktop widths. */
+@media (max-width:600px){
+  .product-card{ border-radius:16px; }
+  .product-card .card-photo{ height:96px; border-radius:12px 12px 0 0; }
+  .product-card .card-body{ padding:10px 10px 12px; gap:1px; border-radius:0 0 12px 12px; }
+  .product-card h3{ font-size:0.82rem; letter-spacing:0.015em; }
+  .product-card .hi{ font-size:0.64rem; margin:1px 0 6px; }
+  .card-price{ gap:5px; padding-top:7px; }
+  .price-now{ font-size:0.95rem; }
+  .price-mrp{ font-size:0.62rem; }
+  .discount-badge{ font-size:0.55rem; padding:2px 7px 2px 12px; }
+  .discount-badge::before{ width:4px; height:4px; left:6px; }
+  .pack-sizes{ gap:4px; margin-top:5px; }
+  .pack-size-btn{ font-size:0.6rem; padding:4px 8px; }
+  .pack-size-btn.best-value{ padding-right:14px; }
+  .pack-size-btn.best-value::after{ right:6px; width:5px; height:5px; margin-top:-2.5px; }
+  .card-actions{ flex-direction:row; align-items:stretch; gap:6px; margin-top:8px; }
+  .card-actions .card-details-btn{ flex:none; }
+  .card-buy-now-btn{ padding:8px 10px; font-size:0.72rem; gap:5px; }
+  .card-buy-now-btn svg,.card-buy-now-btn img{ width:12px; height:12px; }
+  .card-details-btn{ justify-content:center; padding:8px 10px; font-size:0.72rem; border-radius:10px; }
+  .nutrient-toggle{ width:26px; height:26px; top:7px; right:7px; }
+  .nutrient-toggle svg{ width:12px; height:12px; }
+  .fav-btn{ width:26px; height:26px; top:7px; left:7px; }
+  .fav-btn svg{ width:13px; height:13px; }
+  .best-strip{ bottom:6px; left:6px; font-size:0.56rem; padding:4px 8px; max-width:calc(100% - 44px); }
+  .card-badges{ top:7px; left:7px; gap:4px; }
+  .card-badges .badge{ font-size:0.55rem; padding:2px 6px; }
+  .card-highlight{ font-size:0.55rem; padding:2px 6px; }
+  .oos-stamp{ font-size:0.6rem; padding:4px 9px; border-width:1.5px; }
 }
