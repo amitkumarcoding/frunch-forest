@@ -617,6 +617,29 @@ function Home() {
               </div>
             </div>
                         {/* <div className="product-grid" id="productGrid"></div> */}
+            <div className="best-sellers reveal">
+              <div className="best-seller-item">
+                <div>
+                  <strong>🥇 Almonds</strong>
+                  <span>Our most-loved everyday staple</span>
+                </div>
+                <div className="best-seller-badge">1</div>
+              </div>
+              <div className="best-seller-item">
+                <div>
+                  <strong>🥈 Cashews</strong>
+                  <span>Rich, creamy and perfect for gifting</span>
+                </div>
+                <div className="best-seller-badge">2</div>
+              </div>
+              <div className="best-seller-item">
+                <div>
+                  <strong>🥉 Makhana</strong>
+                  <span>A light, crunchy favourite</span>
+                </div>
+                <div className="best-seller-badge">3</div>
+              </div>
+            </div>
             <div className="product-grid">
 
               {products.slice(0, 8).map((product) => (
