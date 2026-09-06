@@ -16,7 +16,7 @@ const BUY_NOW_WHATSAPP_NUMBER = "919582122419";
 function WhatsAppIcon() {
   return (
     <img
-      src="https://cdn.simpleicons.org/whatsapp/FFFFFF"
+      src="https://cdn.simpleicons.org/whatsapp/25D366"
       alt="WhatsApp"
       className="whatsapp-icon"
       width="20"

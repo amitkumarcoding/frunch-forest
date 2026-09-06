@@ -363,7 +363,7 @@
 }
 .card-buy-now-btn > *{ position:relative; z-index:1; }
 .card-buy-now-btn svg,.card-buy-now-btn img{ width:12px; height:12px; flex:none; }
-.card-buy-now-btn .whatsapp-icon{ fill:#25D366; }
+.card-buy-now-btn .whatsapp-icon{ width:20px; height:20px; }
 .card-buy-now-btn.is-disabled{
   background:rgba(243,236,224,0.12);
   color:rgba(243,236,224,0.4);
