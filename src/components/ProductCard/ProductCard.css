@@ -4,29 +4,52 @@
   gap:24px;
 }
 @media (max-width:900px){ .product-grid{ grid-template-columns:repeat(2,1fr); gap:16px; } }
-@media (max-width:480px){ .product-grid{ gap:10px; } }
+/* Below ~480px, 2-up leaves too little room for legible type and
+   comfortable tap targets, so cards go full-width instead. */
+@media (max-width:480px){
+  .product-grid{ grid-template-columns:1fr; gap:14px; }
+}
+@media (max-width:480px){
+  .product-card .card-photo{ height:200px; }
+}
 
 .product-card{
   /* Enhanced premium feel with increased padding and refined shadows */
-  padding:6px;
-  background:linear-gradient(160deg, rgba(241,212,138,0.12), rgba(201,151,59,0.04));
-  border:1px solid rgba(241,212,138,0.32);
+  padding:0;
+  background:var(--forest-dark,#132A1E);
+  border:none;
   border-radius:20px;
   overflow:hidden;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.08),
     0 4px 6px -2px rgba(0,0,0,0.1),
     0 12px 24px -4px rgba(0,0,0,0.12);
-  transition:transform .4s cubic-bezier(.22,.61,.36,1), border-color .3s ease, box-shadow .4s cubic-bezier(.22,.61,.36,1);
+  transition:transform .4s cubic-bezier(.22,.61,.36,1), box-shadow .4s cubic-bezier(.22,.61,.36,1);
   cursor:default;
   display:flex;
   flex-direction:column;
   position:relative;
   isolation:isolate;
 }
+/* Premium hairline border: a soft metallic gradient ring (brightest along
+   the top-left edge, fading toward the corners) rather than a flat single
+   color line. Built with a masked pseudo-element so it sits exactly 1px
+   thick regardless of border-radius. */
+.product-card::after{
+  content:"";
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  border-radius:inherit;
+  padding:1px;
+  background:rgba(241,212,138,0.22);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  opacity:0.7;
+  transition:opacity .4s ease;
+}
 @media (hover:hover){
+  .product-card:hover::after{ opacity:1; }
   .product-card:hover{
-    border-color:rgba(241,212,138,0.4);
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.12),
       0 8px 12px -2px rgba(0,0,0,0.15),
@@ -34,6 +57,7 @@
     transform:translateY(-6px);
   }
 }
+.product-card.out-of-stock::after{ opacity:0.4; }
 .product-card.featured{ position:relative; }
 .product-card.featured::before{
   content:"";
@@ -47,7 +71,7 @@
 /* ---------- photo ---------- */
 .product-card .card-photo{
   position:relative; height:150px; overflow:hidden; flex-shrink:0;
-  border-radius:16px 16px 0 0;
+  border-radius:20px 20px 0 0;
 }
 .product-card .card-photo-media{
   position:absolute; inset:0; z-index:0;
@@ -68,7 +92,7 @@
   position:relative;
   padding:16px 18px 18px; display:flex; flex-direction:column;
   gap:3px;
-  border-radius:0 0 16px 16px;
+  border-radius:0 0 20px 20px;
   background-color:#132A1E;
   background-image:
     radial-gradient(circle at 12% 8%, rgba(241,212,138,0.03), transparent 40%),
@@ -83,8 +107,7 @@
 
 /* ---------- name ---------- */
 .card-heading{
-  display:flex; align-items:baseline; justify-content:space-between;
-  gap:8px;
+  display:flex; align-items:baseline;
   margin-bottom:2px;
 }
 .product-card h3{
@@ -99,20 +122,6 @@
   letter-spacing:0.015em;
   display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   margin:2px 0 8px;
-}
-
-/* ---------- highlight pill (sits in the heading row, right of the name) ---------- */
-.card-highlight{
-  flex:none;
-  font-family:'JetBrains Mono', monospace;
-  font-size:0.64rem;
-  letter-spacing:0.02em;
-  color:rgba(243,236,224,0.6);
-  background:rgba(241,212,138,0.07);
-  border:1px solid rgba(241,212,138,0.16);
-  padding:3px 8px;
-  border-radius:999px;
-  white-space:nowrap;
 }
 
 /* ---------- price ---------- */
@@ -304,7 +313,7 @@
 }
 
 /* ---------- actions ---------- */
-.card-actions{ display:flex; flex-direction:row; align-items:stretch; gap:10px; margin-top:14px; }
+.card-actions{ display:flex; flex-direction:row; align-items:center; gap:4px; margin-top:14px; }
 .card-actions .card-buy-now-btn{ flex:1; margin:0; }
 .card-actions .card-details-btn{ flex:none; margin:0; }
 .card-actions.out-of-stock-actions .card-buy-now-btn{ flex:1; }
@@ -314,23 +323,26 @@
   display:flex; align-items:center; justify-content:center; gap:8px;
   font-family:'Manrope', sans-serif;
   font-size:0.88rem;
-  font-weight:700;
-  color:var(--gold-1,#F1D48A);
-  background:linear-gradient(160deg, #1a3a28, var(--forest-dark,#132A1E));
-  border:1px solid rgba(241,212,138,0.35);
-  padding:13px 16px;
-  border-radius:14px;
+  font-weight:600;
+  color:#241708;
+  background:linear-gradient(160deg, #FBE7B4 0%, var(--gold-1,#F1D48A) 35%, var(--gold-2,#C9973B) 100%);
+  border:1px solid rgba(255,255,255,0.5);
+  padding:12px 18px;
+  border-radius:999px;
   cursor:pointer;
   letter-spacing:0.01em;
   white-space:nowrap;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 10px -2px rgba(0,0,0,0.35);
-  transition:all .2s ease;
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.7),
+    inset 0 -6px 10px -6px rgba(122,80,15,0.35),
+    0 8px 18px -6px rgba(201,151,59,0.5);
+  transition:all .25s ease;
   overflow:hidden;
 }
 .card-buy-now-btn::before{
   content:"";
   position:absolute; top:0; left:0; width:100%; height:100%;
-  background:linear-gradient(90deg, transparent, rgba(241,212,138,0.14), transparent);
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
   transform:translateX(-100%);
   transition:transform .6s ease;
 }
@@ -339,42 +351,52 @@
 }
 .card-buy-now-btn:hover{
   transform:translateY(-2px);
-  border-color:rgba(241,212,138,0.6);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 16px -4px rgba(0,0,0,0.4);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.8),
+    inset 0 -6px 10px -6px rgba(122,80,15,0.4),
+    0 12px 22px -6px rgba(201,151,59,0.6);
 }
-.card-buy-now-btn:focus-visible{ outline:2px solid var(--gold-1); outline-offset:2px; }
-.card-buy-now-btn svg,.card-buy-now-btn img{ width:16px; height:16px; flex:none; }
+.card-buy-now-btn:active{ transform:translateY(0); }
+.card-buy-now-btn:focus-visible{ outline:2px solid var(--parchment); outline-offset:2px; }
+.card-buy-now-btn .btn-icon{
+  display:flex; align-items:center; justify-content:center; flex:none;
+  width:20px; height:20px; border-radius:50%;
+  background:rgba(36,23,8,0.14);
+}
+.card-buy-now-btn svg,.card-buy-now-btn img{ width:12px; height:12px; flex:none; }
 .card-buy-now-btn .whatsapp-icon{ fill:currentColor; }
 .card-buy-now-btn.is-disabled{
-  background:rgba(243,236,224,0.08);
+  background:rgba(243,236,224,0.1);
   color:rgba(243,236,224,0.4);
   border:1px solid rgba(243,236,224,0.15);
   box-shadow:none; cursor:not-allowed;
 }
-.card-buy-now-btn.is-disabled:hover{ transform:none; border-color:rgba(243,236,224,0.15); box-shadow:none; }
+.card-buy-now-btn.is-disabled .btn-icon{ background:rgba(243,236,224,0.08); }
+.card-buy-now-btn.is-disabled:hover{ transform:none; box-shadow:none; }
 
 .card-details-btn{
-  display:inline-flex; align-items:center; justify-content:center; gap:6px;
-  background:rgba(241,212,138,0.06); color:var(--gold-1,#F1D48A);
-  border:1px solid rgba(241,212,138,0.3);
-  padding:13px 16px; font-size:0.86rem; font-weight:700;
-  border-radius:14px;
-  text-decoration:none; letter-spacing:0.008em; cursor:pointer; white-space:nowrap;
-  transition:all .2s ease;
+  display:inline-flex; align-items:center; justify-content:center; gap:5px;
+  background:transparent; color:var(--gold-1,#F1D48A);
+  border:none;
+  padding:12px 10px; font-size:0.88rem; font-weight:600;
+  text-decoration:none; letter-spacing:0.01em; cursor:pointer; white-space:nowrap;
+  transition:color .25s ease, transform .25s ease;
 }
-.card-details-btn:hover{ color:var(--forest-dark); background:var(--gold-1); border-color:var(--gold-1); transform:translateY(-2px); }
-.card-details-btn:focus-visible{ outline:2px solid var(--gold-1); outline-offset:2px; }
+.card-details-btn:hover{
+  color:var(--parchment);
+  transform:translateX(2px);
+}
+.card-details-btn:active{ transform:translateX(0); }
+.card-details-btn:focus-visible{ outline:2px solid var(--gold-1); outline-offset:2px; border-radius:4px; }
 .card-details-btn.is-disabled{
   color:rgba(243,236,224,0.3);
-  border-color:rgba(243,236,224,0.12);
   background:transparent;
   cursor:not-allowed;
   pointer-events:none;
 }
-.card-details-btn.is-disabled:hover{ transform:none; background:transparent; color:rgba(243,236,224,0.3); }
+.card-details-btn.is-disabled:hover{ transform:none; color:rgba(243,236,224,0.3); }
 
 /* ---------- out of stock ---------- */
-.product-card.out-of-stock{ border-color:rgba(243,236,224,0.14); }
 .product-card.out-of-stock .card-photo-media img{ opacity:0.5; filter:grayscale(0.3); }
 .product-card.out-of-stock .pack-size-btn{ opacity:0.4; cursor:not-allowed; }
 
@@ -450,14 +472,16 @@
 .badge-new{ background:linear-gradient(135deg, #4cc9f0, #43cea2); }
 
 /* ---------- mobile: 2-up grid tightening ----------
-   At phone widths the grid holds 2 cards per row, so each card gets
-   roughly half the space it had before. These rules shrink padding,
-   type, and controls so nothing wraps onto itself or overflows the
-   card — without changing anything at tablet/desktop widths. */
-@media (max-width:600px){
+   This range (481-600px) still holds 2 cards per row, so each card
+   gets roughly half the space it had before. These rules shrink
+   padding, type, and controls so nothing wraps onto itself or
+   overflows the card. Below 481px the grid drops to a single column
+   (see .product-grid above), so cards there get the roomier base/
+   desktop sizing instead of this compaction. */
+@media (min-width:481px) and (max-width:600px){
   .product-card{ border-radius:16px; }
-  .product-card .card-photo{ height:96px; border-radius:12px 12px 0 0; }
-  .product-card .card-body{ padding:10px 10px 12px; gap:1px; border-radius:0 0 12px 12px; }
+  .product-card .card-photo{ height:96px; border-radius:16px 16px 0 0; }
+  .product-card .card-body{ padding:10px 10px 12px; gap:1px; border-radius:0 0 16px 16px; }
   .product-card h3{ font-size:0.82rem; letter-spacing:0.015em; }
   .product-card .hi{ font-size:0.64rem; margin:1px 0 6px; }
   .card-price{ gap:5px; padding-top:7px; }
@@ -469,11 +493,12 @@
   .pack-size-btn{ font-size:0.6rem; padding:4px 8px; }
   .pack-size-btn.best-value{ padding-right:14px; }
   .pack-size-btn.best-value::after{ right:6px; width:5px; height:5px; margin-top:-2.5px; }
-  .card-actions{ flex-direction:row; align-items:stretch; gap:6px; margin-top:8px; }
+  .card-actions{ flex-direction:row; align-items:center; gap:4px; margin-top:8px; }
   .card-actions .card-details-btn{ flex:none; }
-  .card-buy-now-btn{ padding:8px 10px; font-size:0.72rem; gap:5px; }
-  .card-buy-now-btn svg,.card-buy-now-btn img{ width:12px; height:12px; }
-  .card-details-btn{ justify-content:center; padding:8px 10px; font-size:0.72rem; border-radius:10px; }
+  .card-buy-now-btn{ padding:9px 12px; font-size:0.72rem; gap:6px; }
+  .card-buy-now-btn .btn-icon{ width:16px; height:16px; }
+  .card-buy-now-btn svg,.card-buy-now-btn img{ width:10px; height:10px; }
+  .card-details-btn{ justify-content:center; padding:6px 6px; font-size:0.68rem; }
   .nutrient-toggle{ width:26px; height:26px; top:7px; right:7px; }
   .nutrient-toggle svg{ width:12px; height:12px; }
   .fav-btn{ width:26px; height:26px; top:7px; left:7px; }
@@ -481,6 +506,5 @@
   .best-strip{ bottom:6px; left:6px; font-size:0.56rem; padding:4px 8px; max-width:calc(100% - 44px); }
   .card-badges{ top:7px; left:7px; gap:4px; }
   .card-badges .badge{ font-size:0.55rem; padding:2px 6px; }
-  .card-highlight{ font-size:0.55rem; padding:2px 6px; }
   .oos-stamp{ font-size:0.6rem; padding:4px 9px; border-width:1.5px; }
 }

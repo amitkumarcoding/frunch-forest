@@ -36,13 +36,6 @@ export default function ProductCard({
   );
   const [showNutrients, setShowNutrients] = useState(false);
   const outOfStock = isOutOfStock(product);
-  // Fills the empty strip under the Hindi name. Prefers an explicit
-  // product.highlight (e.g. "Cold Pressed"); otherwise falls back to
-  // the first nutrition fact we already have, so nothing here is
-  // invented — it's either author-supplied or pulled from real data.
-  const heroNutrient = product.nutrition && product.nutrition[0];
-  const highlightText =
-    product.highlight || (heroNutrient && `${heroNutrient.label}: ${heroNutrient.value}`);
   const pack = product.packs[packIdx];
   const discount = Math.round(((pack.mrp - pack.price) / pack.mrp) * 100);
 
@@ -136,7 +129,6 @@ export default function ProductCard({
       <div className="card-body">
         <div className="card-heading">
           <h3>{product.name}</h3>
-          {highlightText && <span className="card-highlight">{highlightText}</span>}
         </div>
         <span className="hi">{product.hindi}</span>
 
@@ -170,7 +162,11 @@ export default function ProductCard({
             disabled={outOfStock}
             onClick={handleBuyNow}
           >
-            {!outOfStock && <WhatsAppIcon />}
+            {!outOfStock && (
+              <span className="btn-icon">
+                <WhatsAppIcon />
+              </span>
+            )}
             {outOfStock ? 'Out of Stock' : 'Buy Now'}
           </button>
           {/* Details link only renders in stock — when sold out, "Buy
