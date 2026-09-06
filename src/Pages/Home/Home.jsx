@@ -18,7 +18,6 @@ import FestiveParticles from "../../components/FestiveParticles";
 import FestiveWelcomeOverlay from "../../components/FestiveWelcomeOverlay";
 import FestiveGarland from "../../components/FestiveGarland";
 import MoonScene from "../../components/MoonScene/MoonScene";
-import WeatherOverlay from "../../components/WeatherOverlay/WeatherOverlay";
 
 // Converts "#RRGGBB" (or "#RGB") to an rgba() string with the given alpha.
 // Used instead of CSS color-mix() for the festive backdrop wash, since
@@ -640,7 +639,7 @@ function Home() {
                 <div className="best-seller-badge">3</div>
               </div>
             </div>
-            {/* <div className="product-grid" id="productGrid"></div> */}
+                        {/* <div className="product-grid" id="productGrid"></div> */}
             <div className="product-grid">
 
               {products.slice(0, 8).map((product) => (
