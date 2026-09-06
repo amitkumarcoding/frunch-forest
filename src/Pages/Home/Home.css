@@ -1605,19 +1605,19 @@ url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2
 /* Almonds */
 .best-seller-item:nth-child(1) {
   background: rgba(243, 236, 224, 0.06)
-    url("./image/products/almondsBG.png") center / cover no-repeat;
+    url("/image/products/almondsBG.png") center / cover no-repeat;
 }
 
 /* Cashews */
 .best-seller-item:nth-child(2) {
   background: rgba(243, 236, 224, 0.06)
-    url("./image/products/cashewsBG.png") center / cover no-repeat;
+    url("/image/products/cashewsBG.png") center / cover no-repeat;
 }
 
 /* Makhana */
 .best-seller-item:nth-child(3) {
   background: rgba(243, 236, 224, 0.06)
-    url("./image/products/makhanaBG.png") center / cover no-repeat;
+    url("/image/products/makhanaBG.png") center / cover no-repeat;
 }
 
 
