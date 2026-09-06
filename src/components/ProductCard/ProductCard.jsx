@@ -12,14 +12,16 @@ const BADGE_LABELS = {
 // Same WhatsApp number the static site sends "Buy Now" orders to.
 const BUY_NOW_WHATSAPP_NUMBER = "919582122419";
 
-// Inline glyph instead of the old cdn.simpleicons.org <img>: it inherits
-// `currentColor`, so it always matches the button's brand text color
-// (no separate hex to keep in sync, and no external request to fail).
+// Use the same WhatsApp icon as the floating button for consistency
 function WhatsAppIcon() {
   return (
-    <svg className="whatsapp-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 2.5c-5.25 0-9.5 4.25-9.5 9.5 0 1.68.44 3.25 1.2 4.62L2.5 21.5l5.02-1.32a9.44 9.44 0 0 0 4.48 1.14c5.25 0 9.5-4.25 9.5-9.5s-4.25-9.32-9.5-9.32Zm0 17.28a7.7 7.7 0 0 1-3.93-1.08l-.28-.17-2.98.78.8-2.9-.18-.3a7.76 7.76 0 1 1 6.57 3.67Zm4.26-5.82c-.23-.12-1.37-.68-1.58-.75-.21-.08-.37-.12-.52.11-.15.23-.6.75-.74.9-.14.15-.27.17-.5.06-.23-.12-.98-.36-1.87-1.15-.69-.62-1.16-1.38-1.3-1.61-.14-.23-.02-.36.1-.48.1-.1.23-.27.35-.4.11-.14.15-.23.23-.38.08-.15.04-.29-.02-.4-.06-.12-.52-1.25-.71-1.71-.19-.45-.38-.39-.52-.4h-.44c-.15 0-.4.06-.6.29-.21.23-.79.77-.79 1.87s.81 2.17.92 2.32c.11.15 1.6 2.44 3.87 3.43.54.23.96.37 1.29.47.54.17 1.03.15 1.42.09.43-.06 1.37-.56 1.56-1.1.19-.54.19-1 .13-1.1-.06-.1-.21-.15-.44-.27Z"/>
-    </svg>
+    <img
+      src="https://cdn.simpleicons.org/whatsapp/FFFFFF"
+      alt="WhatsApp"
+      className="whatsapp-icon"
+      width="20"
+      height="20"
+    />
   );
 }
 

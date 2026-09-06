@@ -42,6 +42,7 @@
   padding:1px;
   background:rgba(241,212,138,0.22);
   -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;
   mask-composite:exclude;
   opacity:0.7;
@@ -323,56 +324,52 @@
   display:flex; align-items:center; justify-content:center; gap:8px;
   font-family:'Manrope', sans-serif;
   font-size:0.88rem;
-  font-weight:600;
-  color:#241708;
-  background:linear-gradient(160deg, #FBE7B4 0%, var(--gold-1,#F1D48A) 35%, var(--gold-2,#C9973B) 100%);
-  border:1px solid rgba(255,255,255,0.5);
-  padding:12px 18px;
-  border-radius:999px;
+  font-weight:700;
+  color:var(--forest-dark,#132A1E);
+  background:linear-gradient(120deg, var(--gold-3), var(--gold-1) 50%, var(--gold-2));
+  border:none;
+  padding:12px 16px;
+  border-radius:50px;
   cursor:pointer;
   letter-spacing:0.01em;
-  white-space:nowrap;
-  box-shadow:
-    inset 0 1px 1px rgba(255,255,255,0.7),
-    inset 0 -6px 10px -6px rgba(122,80,15,0.35),
-    0 8px 18px -6px rgba(201,151,59,0.5);
-  transition:all .25s ease;
+  box-shadow:0 1px 0 rgba(255,255,255,0.35) inset, 0 16px 34px -14px rgba(241,212,138,0.55);
+  transition:all .2s ease;
   overflow:hidden;
 }
-.card-buy-now-btn::before{
+.card-buy-now-btn::after{
   content:"";
-  position:absolute; top:0; left:0; width:100%; height:100%;
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
-  transform:translateX(-100%);
-  transition:transform .6s ease;
+  position:absolute; inset:0;
+  background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.55) 48%, transparent 66%);
+  translate:-140% 0;
+  transition:translate .6s ease;
+  pointer-events:none;
 }
-.card-buy-now-btn:hover::before{
-  transform:translateX(100%);
+.card-buy-now-btn:hover::after{
+  translate:140% 0;
 }
 .card-buy-now-btn:hover{
-  transform:translateY(-2px);
-  box-shadow:
-    inset 0 1px 1px rgba(255,255,255,0.8),
-    inset 0 -6px 10px -6px rgba(122,80,15,0.4),
-    0 12px 22px -6px rgba(201,151,59,0.6);
+  background:linear-gradient(120deg, var(--gold-2), var(--gold-1) 50%, var(--gold-3));
+  box-shadow:0 22px 44px -14px rgba(241,212,138,0.75);
+  transform:translateY(-3px);
 }
 .card-buy-now-btn:active{ transform:translateY(0); }
 .card-buy-now-btn:focus-visible{ outline:2px solid var(--parchment); outline-offset:2px; }
 .card-buy-now-btn .btn-icon{
+  position:relative; z-index:1;
   display:flex; align-items:center; justify-content:center; flex:none;
   width:20px; height:20px; border-radius:50%;
-  background:rgba(36,23,8,0.14);
+  background:#FBF9F4;
+  box-shadow:inset 0 0 0 1px rgba(107,68,10,0.1);
 }
+.card-buy-now-btn > *{ position:relative; z-index:1; }
 .card-buy-now-btn svg,.card-buy-now-btn img{ width:12px; height:12px; flex:none; }
-.card-buy-now-btn .whatsapp-icon{ fill:currentColor; }
+.card-buy-now-btn .whatsapp-icon{ fill:#25D366; }
 .card-buy-now-btn.is-disabled{
-  background:rgba(243,236,224,0.1);
+  background:rgba(243,236,224,0.12);
   color:rgba(243,236,224,0.4);
-  border:1px solid rgba(243,236,224,0.15);
   box-shadow:none; cursor:not-allowed;
 }
-.card-buy-now-btn.is-disabled .btn-icon{ background:rgba(243,236,224,0.08); }
-.card-buy-now-btn.is-disabled:hover{ transform:none; box-shadow:none; }
+.card-buy-now-btn.is-disabled:hover{ transform:none; box-shadow:none; filter:none; }
 
 .card-details-btn{
   display:inline-flex; align-items:center; justify-content:center; gap:5px;
